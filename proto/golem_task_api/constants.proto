@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+package golem_task_api;
+
+// workaround for the lack of constants
+import "google/protobuf/descriptor.proto";
+
+extend google.protobuf.FileOptions {
+    string RESOURCES_DIR = 51000;
+    string NETWORK_RESOURCES_DIR = 51001;
+    string RESULTS_DIR = 51002;
+    string NETWORK_RESULTS_DIR = 51003;
+}
+
+option (RESOURCES_DIR) = "resources";
+option (NETWORK_RESOURCES_DIR) = "network_resources";
+option (RESULTS_DIR) = "results";
+option (NETWORK_RESULTS_DIR) = "network_results";

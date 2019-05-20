@@ -1,0 +1,53 @@
+syntax = "proto3";
+
+package golem_task_api;
+
+service GolemApp {
+  rpc CreateTask (CreateTaskRequest) returns (CreateTaskReply) {}
+  rpc NextSubtask (NextSubtaskRequest) returns (NextSubtaskReply) {}
+  rpc Compute (ComputeRequest) returns (ComputeReply) {}
+  rpc Verify (VerifyRequest) returns (VerifyReply) {}
+  rpc RunBenchmark (RunBenchmarkRequest) returns (RunBenchmarkReply) {}
+}
+
+message CreateTaskRequest {
+  string task_id = 1;
+  string task_params_json = 2;
+}
+
+message CreateTaskReply {
+}
+
+message NextSubtaskRequest {
+  string task_id = 1;
+}
+
+message NextSubtaskReply {
+  string subtask_id = 1;
+  string subtask_params_json = 2;
+}
+
+message ComputeRequest {
+  string task_id = 1;
+  string subtask_id = 2;
+  string subtask_params_json = 3;
+}
+
+message ComputeReply {
+}
+
+message VerifyRequest {
+  string task_id = 1;
+  string subtask_id = 2;
+}
+
+message VerifyReply {
+  bool success = 1;
+}
+
+message RunBenchmarkRequest {
+}
+
+message RunBenchmarkReply {
+  float score = 1;
+}
