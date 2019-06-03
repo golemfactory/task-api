@@ -8,6 +8,7 @@ setup(
     maintainer_email='tech@golem.network',
     packages=[
         'golem_task_api',
+        'golem_task_api.proto',
     ],
     python_requires='>=3.5',
     install_requires=[

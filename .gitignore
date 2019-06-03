@@ -1,0 +1,14 @@
+# Python
+python/**/.cache
+python/**/.pytest_cache
+python/**/.mypy_cache
+python/**/.idea
+python/**/.eggs
+python/**/*.egg-info
+python/**/__pycache__/
+python/**/*.py[co]
+python/**/*.sw[ponm]
+
+python/build/
+python/dist/
+python/sdist/
