@@ -1,2 +1,7 @@
-from .client import GolemAppClient
-from .server import GolemAppHandler, GolemAppServer
+from .client import ProviderGolemAppClient, RequestorGolemAppClient
+from .server import (
+    ProviderGolemAppHandler,
+    RequestorGolemAppHandler,
+    ProviderGolemAppServer,
+    RequestorGolemAppServer,
+)

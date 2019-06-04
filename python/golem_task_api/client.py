@@ -17,13 +17,14 @@ from golem_task_api.messages import (
     RunBenchmarkReply,
 )
 from golem_task_api.proto.golem_task_api_grpc import (
-    GolemAppStub,
+    ProviderGolemAppStub,
+    RequestorGolemAppStub,
 )
 
 
-class GolemAppClient:
+class RequestorGolemAppClient:
     def __init__(self, host: str, port: int) -> None:
-        self._golem_app = GolemAppStub(
+        self._golem_app = RequestorGolemAppStub(
             Channel(host, port, loop=asyncio.get_event_loop()),
         )
 
@@ -44,6 +45,28 @@ class GolemAppClient:
         reply = await self._golem_app.NextSubtask(request)
         return reply.subtask_id, json.loads(reply.subtask_params_json)
 
+    async def verify(
+            self,
+            task_id: str,
+            subtask_id: str) -> bool:
+        request = VerifyRequest()
+        request.task_id = task_id
+        request.subtask_id = subtask_id
+        reply = await self._golem_app.Verify(request)
+        return reply.success
+
+    async def run_benchmark(self) -> float:
+        request = RunBenchmarkRequest()
+        reply = await self._golem_app.RunBenchmark(request)
+        return reply.score
+
+
+class ProviderGolemAppClient:
+    def __init__(self, host: str, port: int) -> None:
+        self._golem_app = ProviderGolemAppStub(
+            Channel(host, port, loop=asyncio.get_event_loop()),
+        )
+
     async def compute(
             self,
             task_id: str,
@@ -54,16 +77,6 @@ class GolemAppClient:
         request.subtask_id = subtask_id
         request.subtask_params_json = json.dumps(subtask_params)
         await self._golem_app.Compute(request)
-
-    async def verify(
-            self,
-            task_id: str,
-            subtask_id: str) -> bool:
-        request = VerifyRequest()
-        request.task_id = task_id
-        request.subtask_id = subtask_id
-        reply = await self._golem_app.Verify(request)
-        return reply.success
 
     async def run_benchmark(self) -> float:
         request = RunBenchmarkRequest()

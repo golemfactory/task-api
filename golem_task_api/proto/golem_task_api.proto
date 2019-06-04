@@ -2,13 +2,18 @@ syntax = "proto3";
 
 package golem_task_api;
 
-service GolemApp {
+service RequestorGolemApp {
   rpc CreateTask (CreateTaskRequest) returns (CreateTaskReply) {}
   rpc NextSubtask (NextSubtaskRequest) returns (NextSubtaskReply) {}
-  rpc Compute (ComputeRequest) returns (ComputeReply) {}
   rpc Verify (VerifyRequest) returns (VerifyReply) {}
   rpc RunBenchmark (RunBenchmarkRequest) returns (RunBenchmarkReply) {}
 }
+
+service ProviderGolemApp {
+  rpc Compute (ComputeRequest) returns (ComputeReply) {}
+  rpc RunBenchmark (RunBenchmarkRequest) returns (RunBenchmarkReply) {}
+}
+
 
 message CreateTaskRequest {
   string task_id = 1;

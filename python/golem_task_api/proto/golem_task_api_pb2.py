@@ -20,7 +20,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   package='golem_task_api',
   syntax='proto3',
   serialized_options=None,
-  serialized_pb=_b('\n)golem_task_api/proto/golem_task_api.proto\x12\x0egolem_task_api\">\n\x11\x43reateTaskRequest\x12\x0f\n\x07task_id\x18\x01 \x01(\t\x12\x18\n\x10task_params_json\x18\x02 \x01(\t\"\x11\n\x0f\x43reateTaskReply\"%\n\x12NextSubtaskRequest\x12\x0f\n\x07task_id\x18\x01 \x01(\t\"C\n\x10NextSubtaskReply\x12\x12\n\nsubtask_id\x18\x01 \x01(\t\x12\x1b\n\x13subtask_params_json\x18\x02 \x01(\t\"R\n\x0e\x43omputeRequest\x12\x0f\n\x07task_id\x18\x01 \x01(\t\x12\x12\n\nsubtask_id\x18\x02 \x01(\t\x12\x1b\n\x13subtask_params_json\x18\x03 \x01(\t\"\x0e\n\x0c\x43omputeReply\"4\n\rVerifyRequest\x12\x0f\n\x07task_id\x18\x01 \x01(\t\x12\x12\n\nsubtask_id\x18\x02 \x01(\t\"\x1e\n\x0bVerifyReply\x12\x0f\n\x07success\x18\x01 \x01(\x08\"\x15\n\x13RunBenchmarkRequest\"\"\n\x11RunBenchmarkReply\x12\r\n\x05score\x18\x01 \x01(\x02\x32\xa2\x03\n\x08GolemApp\x12R\n\nCreateTask\x12!.golem_task_api.CreateTaskRequest\x1a\x1f.golem_task_api.CreateTaskReply\"\x00\x12U\n\x0bNextSubtask\x12\".golem_task_api.NextSubtaskRequest\x1a .golem_task_api.NextSubtaskReply\"\x00\x12I\n\x07\x43ompute\x12\x1e.golem_task_api.ComputeRequest\x1a\x1c.golem_task_api.ComputeReply\"\x00\x12\x46\n\x06Verify\x12\x1d.golem_task_api.VerifyRequest\x1a\x1b.golem_task_api.VerifyReply\"\x00\x12X\n\x0cRunBenchmark\x12#.golem_task_api.RunBenchmarkRequest\x1a!.golem_task_api.RunBenchmarkReply\"\x00\x62\x06proto3')
+  serialized_pb=_b('\n)golem_task_api/proto/golem_task_api.proto\x12\x0egolem_task_api\">\n\x11\x43reateTaskRequest\x12\x0f\n\x07task_id\x18\x01 \x01(\t\x12\x18\n\x10task_params_json\x18\x02 \x01(\t\"\x11\n\x0f\x43reateTaskReply\"%\n\x12NextSubtaskRequest\x12\x0f\n\x07task_id\x18\x01 \x01(\t\"C\n\x10NextSubtaskReply\x12\x12\n\nsubtask_id\x18\x01 \x01(\t\x12\x1b\n\x13subtask_params_json\x18\x02 \x01(\t\"R\n\x0e\x43omputeRequest\x12\x0f\n\x07task_id\x18\x01 \x01(\t\x12\x12\n\nsubtask_id\x18\x02 \x01(\t\x12\x1b\n\x13subtask_params_json\x18\x03 \x01(\t\"\x0e\n\x0c\x43omputeReply\"4\n\rVerifyRequest\x12\x0f\n\x07task_id\x18\x01 \x01(\t\x12\x12\n\nsubtask_id\x18\x02 \x01(\t\"\x1e\n\x0bVerifyReply\x12\x0f\n\x07success\x18\x01 \x01(\x08\"\x15\n\x13RunBenchmarkRequest\"\"\n\x11RunBenchmarkReply\x12\r\n\x05score\x18\x01 \x01(\x02\x32\xe0\x02\n\x11RequestorGolemApp\x12R\n\nCreateTask\x12!.golem_task_api.CreateTaskRequest\x1a\x1f.golem_task_api.CreateTaskReply\"\x00\x12U\n\x0bNextSubtask\x12\".golem_task_api.NextSubtaskRequest\x1a .golem_task_api.NextSubtaskReply\"\x00\x12\x46\n\x06Verify\x12\x1d.golem_task_api.VerifyRequest\x1a\x1b.golem_task_api.VerifyReply\"\x00\x12X\n\x0cRunBenchmark\x12#.golem_task_api.RunBenchmarkRequest\x1a!.golem_task_api.RunBenchmarkReply\"\x00\x32\xb7\x01\n\x10ProviderGolemApp\x12I\n\x07\x43ompute\x12\x1e.golem_task_api.ComputeRequest\x1a\x1c.golem_task_api.ComputeReply\"\x00\x12X\n\x0cRunBenchmark\x12#.golem_task_api.RunBenchmarkRequest\x1a!.golem_task_api.RunBenchmarkReply\"\x00\x62\x06proto3')
 )
 
 
@@ -433,18 +433,18 @@ _sym_db.RegisterMessage(RunBenchmarkReply)
 
 
 
-_GOLEMAPP = _descriptor.ServiceDescriptor(
-  name='GolemApp',
-  full_name='golem_task_api.GolemApp',
+_REQUESTORGOLEMAPP = _descriptor.ServiceDescriptor(
+  name='RequestorGolemApp',
+  full_name='golem_task_api.RequestorGolemApp',
   file=DESCRIPTOR,
   index=0,
   serialized_options=None,
   serialized_start=498,
-  serialized_end=916,
+  serialized_end=850,
   methods=[
   _descriptor.MethodDescriptor(
     name='CreateTask',
-    full_name='golem_task_api.GolemApp.CreateTask',
+    full_name='golem_task_api.RequestorGolemApp.CreateTask',
     index=0,
     containing_service=None,
     input_type=_CREATETASKREQUEST,
@@ -453,7 +453,7 @@ _GOLEMAPP = _descriptor.ServiceDescriptor(
   ),
   _descriptor.MethodDescriptor(
     name='NextSubtask',
-    full_name='golem_task_api.GolemApp.NextSubtask',
+    full_name='golem_task_api.RequestorGolemApp.NextSubtask',
     index=1,
     containing_service=None,
     input_type=_NEXTSUBTASKREQUEST,
@@ -461,18 +461,9 @@ _GOLEMAPP = _descriptor.ServiceDescriptor(
     serialized_options=None,
   ),
   _descriptor.MethodDescriptor(
-    name='Compute',
-    full_name='golem_task_api.GolemApp.Compute',
-    index=2,
-    containing_service=None,
-    input_type=_COMPUTEREQUEST,
-    output_type=_COMPUTEREPLY,
-    serialized_options=None,
-  ),
-  _descriptor.MethodDescriptor(
     name='Verify',
-    full_name='golem_task_api.GolemApp.Verify',
-    index=3,
+    full_name='golem_task_api.RequestorGolemApp.Verify',
+    index=2,
     containing_service=None,
     input_type=_VERIFYREQUEST,
     output_type=_VERIFYREPLY,
@@ -480,16 +471,49 @@ _GOLEMAPP = _descriptor.ServiceDescriptor(
   ),
   _descriptor.MethodDescriptor(
     name='RunBenchmark',
-    full_name='golem_task_api.GolemApp.RunBenchmark',
-    index=4,
+    full_name='golem_task_api.RequestorGolemApp.RunBenchmark',
+    index=3,
     containing_service=None,
     input_type=_RUNBENCHMARKREQUEST,
     output_type=_RUNBENCHMARKREPLY,
     serialized_options=None,
   ),
 ])
-_sym_db.RegisterServiceDescriptor(_GOLEMAPP)
+_sym_db.RegisterServiceDescriptor(_REQUESTORGOLEMAPP)
 
-DESCRIPTOR.services_by_name['GolemApp'] = _GOLEMAPP
+DESCRIPTOR.services_by_name['RequestorGolemApp'] = _REQUESTORGOLEMAPP
+
+
+_PROVIDERGOLEMAPP = _descriptor.ServiceDescriptor(
+  name='ProviderGolemApp',
+  full_name='golem_task_api.ProviderGolemApp',
+  file=DESCRIPTOR,
+  index=1,
+  serialized_options=None,
+  serialized_start=853,
+  serialized_end=1036,
+  methods=[
+  _descriptor.MethodDescriptor(
+    name='Compute',
+    full_name='golem_task_api.ProviderGolemApp.Compute',
+    index=0,
+    containing_service=None,
+    input_type=_COMPUTEREQUEST,
+    output_type=_COMPUTEREPLY,
+    serialized_options=None,
+  ),
+  _descriptor.MethodDescriptor(
+    name='RunBenchmark',
+    full_name='golem_task_api.ProviderGolemApp.RunBenchmark',
+    index=1,
+    containing_service=None,
+    input_type=_RUNBENCHMARKREQUEST,
+    output_type=_RUNBENCHMARKREPLY,
+    serialized_options=None,
+  ),
+])
+_sym_db.RegisterServiceDescriptor(_PROVIDERGOLEMAPP)
+
+DESCRIPTOR.services_by_name['ProviderGolemApp'] = _PROVIDERGOLEMAPP
 
 # @@protoc_insertion_point(module_scope)
