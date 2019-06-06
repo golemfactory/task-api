@@ -1,6 +1,8 @@
+import abc
 import asyncio
 import json
 from typing import Tuple
+from pathlib import Path
 
 from grpclib.client import Channel
 
@@ -15,23 +17,63 @@ from golem_task_api.messages import (
     VerifyReply,
     RunBenchmarkRequest,
     RunBenchmarkReply,
+    ShutdownRequest,
 )
 from golem_task_api.proto.golem_task_api_grpc import (
-    ProviderGolemAppStub,
-    RequestorGolemAppStub,
+    RequestorAppStub,
 )
 
 
-class RequestorGolemAppClient:
-    def __init__(self, host: str, port: int) -> None:
-        self._golem_app = RequestorGolemAppStub(
+class RequestorAppCallbacks(abc.ABC):
+    @abc.abstractmethod
+    def spawn_server(self, command: str, port: int) -> Tuple[str, int]:
+        """
+        This method is supposed to pass the command argument to the entrypoint
+        which will spawn requestor's server and should return a tuple
+        (host, port) where one can connect to this server.
+        E.g. for Docker app this could be implemented as:
+        `docker run --detach <command>`
+        """
+        pass
+
+    @abc.abstractmethod
+    async def wait_after_shutdown(self) -> None:
+        """
+        After sending the Shutdown request one should wait for the server to
+        finish it's cleanup and shutdown completely.
+        E.g. for Docker app this should wait for the container to exit
+        """
+        pass
+
+
+class ProviderAppCallbacks(abc.ABC):
+    @abc.abstractmethod
+    async def run_command(self, command: str) -> None:
+        """
+        Similarly to the RequestorAppCallbacks this is supposed to pass the
+        command to the entrypoint, but should wait for it's execution to end.
+        E.g. for Docker app this could be implemented as:
+        `docker run <command>`
+        """
+        pass
+
+
+class RequestorAppClient:
+    def __init__(
+            self,
+            app_callbacks: RequestorAppCallbacks,
+            port: int,
+    ) -> None:
+        host, port = app_callbacks.spawn_server(f'start {port}', port)
+        self._golem_app = RequestorAppStub(
             Channel(host, port, loop=asyncio.get_event_loop()),
         )
 
     async def create_task(
             self,
             task_id: str,
-            task_params: dict) -> None:
+            task_params: dict,
+    ) -> None:
         request = CreateTaskRequest()
         request.task_id = task_id
         request.task_params_json = json.dumps(task_params)
@@ -39,7 +81,8 @@ class RequestorGolemAppClient:
 
     async def next_subtask(
             self,
-            task_id: str) -> Tuple[str, dict]:
+            task_id: str,
+    ) -> Tuple[str, dict]:
         request = NextSubtaskRequest()
         request.task_id = task_id
         reply = await self._golem_app.NextSubtask(request)
@@ -48,7 +91,8 @@ class RequestorGolemAppClient:
     async def verify(
             self,
             task_id: str,
-            subtask_id: str) -> bool:
+            subtask_id: str,
+    ) -> bool:
         request = VerifyRequest()
         request.task_id = task_id
         request.subtask_id = subtask_id
@@ -60,25 +104,35 @@ class RequestorGolemAppClient:
         reply = await self._golem_app.RunBenchmark(request)
         return reply.score
 
+    async def shutdown(self) -> None:
+        request = ShutdownRequest()
+        await self._golem_app.Shutdown(request)
 
-class ProviderGolemAppClient:
-    def __init__(self, host: str, port: int) -> None:
-        self._golem_app = ProviderGolemAppStub(
-            Channel(host, port, loop=asyncio.get_event_loop()),
-        )
 
+class ProviderAppClient:
+    @staticmethod
     async def compute(
-            self,
+            app_callbacks: ProviderAppCallbacks,
+            work_dir: Path,
             task_id: str,
             subtask_id: str,
-            subtask_params: dict) -> None:
+            subtask_params: dict,
+    ) -> None:
         request = ComputeRequest()
         request.task_id = task_id
         request.subtask_id = subtask_id
         request.subtask_params_json = json.dumps(subtask_params)
-        await self._golem_app.Compute(request)
+        request_filepath = f'{subtask_id}.request'
+        with open(work_dir / request_filepath, 'wb') as f:
+            f.write(request.SerializeToString())
+        await app_callbacks.run_command(f'compute {request_filepath}')
 
-    async def run_benchmark(self) -> float:
-        request = RunBenchmarkRequest()
-        reply = await self._golem_app.RunBenchmark(request)
+    @staticmethod
+    async def run_benchmark(
+            app_callbacks: ProviderAppCallbacks,
+            work_dir: Path,
+    ) -> float:
+        await app_callbacks.run_command('benchmark')
+        with open(work_dir / 'benchmark.reply', 'rb') as f:
+            reply = RunBenchmarkReply.ParseFromString(f.read())
         return reply.score

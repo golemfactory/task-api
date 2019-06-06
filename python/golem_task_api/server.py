@@ -1,14 +1,12 @@
-import abc
 import asyncio
 import json
 from pathlib import Path
-from typing import Tuple
+from typing import List, Optional, Tuple
 
 from grpclib.server import Server
 
 from golem_task_api.proto.golem_task_api_grpc import (
-    RequestorGolemAppBase,
-    ProviderGolemAppBase,
+    RequestorAppBase,
 )
 from golem_task_api.messages import (
     CreateTaskRequest,
@@ -21,55 +19,23 @@ from golem_task_api.messages import (
     VerifyReply,
     RunBenchmarkRequest,
     RunBenchmarkReply,
+    ShutdownRequest,
+    ShutdownReply,
+)
+from golem_task_api.handlers import (
+    ProviderAppHandler,
+    RequestorAppHandler,
 )
 
 
-class RequestorGolemAppHandler:
-    @abc.abstractmethod
-    async def create_task(
-            self,
-            task_work_dir: Path,
-            task_params: dict) -> None:
-        pass
-
-    @abc.abstractmethod
-    async def next_subtask(
-            self,
-            task_work_dir: Path) -> Tuple[str, dict]:
-        pass
-
-    @abc.abstractmethod
-    async def verify(
-            self,
-            task_work_dir: Path,
-            subtask_id: str) -> bool:
-        pass
-
-    @abc.abstractmethod
-    async def run_benchmark(self, work_dir: Path) -> float:
-        pass
-
-
-class ProviderGolemAppHandler:
-    @abc.abstractmethod
-    async def compute(
-            self,
-            task_work_dir: Path,
-            subtask_id: str,
-            subtask_params: dict) -> None:
-        pass
-
-    @abc.abstractmethod
-    async def run_benchmark(self, work_dir: Path) -> float:
-        pass
-
-
-class RequestorGolemApp(RequestorGolemAppBase):
-
+class RequestorApp(RequestorAppBase):
     def __init__(
             self,
             work_dir: Path,
-            handler: RequestorGolemAppHandler) -> None:
+            handler: RequestorAppHandler,
+            shutdown_future: asyncio.Future,
+    ) -> None:
+        self._shutdown_future = shutdown_future
         self._work_dir = work_dir
         self._handler = handler
 
@@ -110,71 +76,74 @@ class RequestorGolemApp(RequestorGolemAppBase):
         reply.score = score
         await stream.send_message(reply)
 
+    async def Shutdown(self, stream):
+        _ = await stream.recv_message()
+        self._shutdown_future.set_result(None)
+        reply = ShutdownReply()
+        await stream.send_message(reply)
 
-class ProviderGolemApp(ProviderGolemAppBase):
 
+class RequestorAppServer:
     def __init__(
             self,
             work_dir: Path,
-            handler: ProviderGolemAppHandler) -> None:
-        self._work_dir = work_dir
-        self._handler = handler
+            port: int,
+            handler: RequestorAppHandler,
+    ) -> None:
+        loop = asyncio.get_event_loop()
+        self._shutdown_future = loop.create_future()
+        golem_app = RequestorApp(work_dir, handler, self._shutdown_future)
+        self._server = Server(handlers=[golem_app], loop=loop)
+        self._port = port
 
-    async def Compute(self, stream):
-        request: ComputeRequest = await stream.recv_message()
-        task_id = request.task_id
-        subtask_id = request.subtask_id
-        task_work_dir = self._work_dir / task_id
-        subtask_params = json.loads(request.subtask_params_json)
-        await self._handler.compute(task_work_dir, subtask_id, subtask_params)
-        reply = ComputeReply()
-        await stream.send_message(reply)
+    async def start(self):
+        await self._server.start('', self._port, ssl=None)
+        print(f'Starting server at port {self._port}')
 
-    async def RunBenchmark(self, stream):
-        request: RunBenchmarkRequest = await stream.recv_message()
-        score = await self._handler.run_benchmark(self._work_dir)
+    async def wait_until_shutdown(self):
+        await self._shutdown_future
+
+    async def stop(self):
+        print("Stopping server...")
+        self._server.close()
+        await self._server.wait_closed()
+
+
+async def entrypoint(
+        work_dir: Path,
+        argv: List[str],
+        requestor_handler: Optional[RequestorAppHandler] = None,
+        provider_handler: Optional[ProviderAppHandler] = None,
+):
+    cmd = argv[0]
+    argv = argv[1:]
+    if cmd == 'start':
+        server = RequestorAppServer(
+            work_dir,
+            int(argv[0]),
+            requestor_handler,
+        )
+        await server.start()
+        await server.wait_until_shutdown()
+        print('Shutting down server...')
+        await server.stop()
+    elif cmd == 'compute':
+        params_filepath = argv[0]
+        request = ComputeRequest()
+        with open(work_dir / f'{params_filepath}', 'rb') as f:
+            request.ParseFromString(f.read())
+        await provider_handler.compute(
+            work_dir,
+            request.subtask_id,
+            json.loads(request.subtask_params_json),
+        )
+    elif cmd == 'benchmark':
+        score = await provider_handler.run_benchmark(
+            work_dir,
+        )
         reply = RunBenchmarkReply()
         reply.score = score
-        await stream.send_message(reply)
-
-
-class RequestorGolemAppServer:
-    def __init__(
-            self,
-            work_dir: Path,
-            port: int,
-            handler: RequestorGolemAppHandler) -> None:
-        golem_app = RequestorGolemApp(work_dir, handler)
-        loop = asyncio.get_event_loop()
-        self._server = Server(handlers=[golem_app], loop=loop)
-        self._port = port
-
-    async def start(self):
-        print(f'Starting server at port {self._port}')
-        await self._server.start('', self._port, ssl=None)
-
-    async def stop(self):
-        print("Stopping server...")
-        self._server.close()
-        await self._server.wait_closed()
-
-
-class ProviderGolemAppServer:
-    def __init__(
-            self,
-            work_dir: Path,
-            port: int,
-            handler: ProviderGolemAppHandler) -> None:
-        golem_app = ProviderGolemApp(work_dir, handler)
-        loop = asyncio.get_event_loop()
-        self._server = Server(handlers=[golem_app], loop=loop)
-        self._port = port
-
-    async def start(self):
-        print(f'Starting server at port {self._port}')
-        await self._server.start('', self._port, ssl=None)
-
-    async def stop(self):
-        print("Stopping server...")
-        self._server.close()
-        await self._server.wait_closed()
+        with open(work_dir / 'benchmark.reply', 'wb') as f:
+            f.write(reply.SerializeToString())
+    else:
+        raise Exception(f'Unknown command: {cmd}')

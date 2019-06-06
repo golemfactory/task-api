@@ -1,7 +1,15 @@
-from .client import ProviderGolemAppClient, RequestorGolemAppClient
+from .client import (
+    ProviderAppCallbacks,
+    ProviderAppClient,
+    RequestorAppCallbacks,
+    RequestorAppClient,
+)
+
 from .server import (
-    ProviderGolemAppHandler,
-    RequestorGolemAppHandler,
-    ProviderGolemAppServer,
-    RequestorGolemAppServer,
+    entrypoint,
+)
+
+from .handlers import (
+    ProviderAppHandler,
+    RequestorAppHandler,
 )
