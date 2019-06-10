@@ -24,6 +24,10 @@ class RequestorAppBase(abc.ABC):
         pass
 
     @abc.abstractmethod
+    async def DiscardSubtasks(self, stream):
+        pass
+
+    @abc.abstractmethod
     async def RunBenchmark(self, stream):
         pass
 
@@ -54,6 +58,12 @@ class RequestorAppBase(abc.ABC):
                 grpclib.const.Cardinality.UNARY_UNARY,
                 golem_task_api.proto.golem_task_api_pb2.VerifyRequest,
                 golem_task_api.proto.golem_task_api_pb2.VerifyReply,
+            ),
+            '/golem_task_api.RequestorApp/DiscardSubtasks': grpclib.const.Handler(
+                self.DiscardSubtasks,
+                grpclib.const.Cardinality.UNARY_UNARY,
+                golem_task_api.proto.golem_task_api_pb2.DiscardSubtasksRequest,
+                golem_task_api.proto.golem_task_api_pb2.DiscardSubtasksReply,
             ),
             '/golem_task_api.RequestorApp/RunBenchmark': grpclib.const.Handler(
                 self.RunBenchmark,
@@ -96,6 +106,12 @@ class RequestorAppStub:
             '/golem_task_api.RequestorApp/Verify',
             golem_task_api.proto.golem_task_api_pb2.VerifyRequest,
             golem_task_api.proto.golem_task_api_pb2.VerifyReply,
+        )
+        self.DiscardSubtasks = grpclib.client.UnaryUnaryMethod(
+            channel,
+            '/golem_task_api.RequestorApp/DiscardSubtasks',
+            golem_task_api.proto.golem_task_api_pb2.DiscardSubtasksRequest,
+            golem_task_api.proto.golem_task_api_pb2.DiscardSubtasksReply,
         )
         self.RunBenchmark = grpclib.client.UnaryUnaryMethod(
             channel,

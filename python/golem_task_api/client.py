@@ -1,7 +1,7 @@
 import abc
 import asyncio
 import json
-from typing import Tuple
+from typing import List, Tuple
 from pathlib import Path
 
 from grpclib.client import Channel
@@ -15,6 +15,8 @@ from golem_task_api.messages import (
     ComputeReply,
     VerifyRequest,
     VerifyReply,
+    DiscardSubtasksRequest,
+    DiscardSubtasksReply,
     RunBenchmarkRequest,
     RunBenchmarkReply,
     HasPendingSubtasksRequest,
@@ -100,6 +102,17 @@ class RequestorAppClient:
         request.subtask_id = subtask_id
         reply = await self._golem_app.Verify(request)
         return reply.success
+
+    async def discard_subtasks(
+            self,
+            task_id: str,
+            subtask_ids: List[str],
+    ) -> List[str]:
+        request = DiscardSubtasksRequest()
+        request.task_id = task_id
+        request.subtask_ids.extend(subtask_ids)
+        reply = await self._golem_app.DiscardSubtasks(request)
+        return reply.discarded_subtask_ids
 
     async def run_benchmark(self) -> float:
         request = RunBenchmarkRequest()

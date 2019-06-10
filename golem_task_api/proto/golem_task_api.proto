@@ -6,6 +6,7 @@ service RequestorApp {
   rpc CreateTask (CreateTaskRequest) returns (CreateTaskReply) {}
   rpc NextSubtask (NextSubtaskRequest) returns (NextSubtaskReply) {}
   rpc Verify (VerifyRequest) returns (VerifyReply) {}
+  rpc DiscardSubtasks (DiscardSubtasksRequest) returns (DiscardSubtasksReply) {}
   rpc RunBenchmark (RunBenchmarkRequest) returns (RunBenchmarkReply) {}
   rpc HasPendingSubtasks (HasPendingSubtasksRequest) returns (HasPendingSubtasksReply) {}
 
@@ -46,6 +47,15 @@ message VerifyRequest {
 
 message VerifyReply {
   bool success = 1;
+}
+
+message DiscardSubtasksRequest {
+  string task_id = 1;
+  repeated string subtask_ids = 2;
+}
+
+message DiscardSubtasksReply {
+  repeated string discarded_subtask_ids = 1;
 }
 
 message RunBenchmarkRequest {

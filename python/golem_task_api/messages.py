@@ -7,6 +7,8 @@ from .proto.golem_task_api_pb2 import (
     ComputeReply,
     VerifyRequest,
     VerifyReply,
+    DiscardSubtasksRequest,
+    DiscardSubtasksReply,
     RunBenchmarkRequest,
     RunBenchmarkReply,
     HasPendingSubtasksRequest,

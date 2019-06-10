@@ -10,7 +10,7 @@ setup(
         'golem_task_api',
         'golem_task_api.proto',
     ],
-    python_requires='>=3.5',
+    python_requires='>=3.6',
     install_requires=[
         'grpclib==0.2.4',
         'protobuf==3.7.1',

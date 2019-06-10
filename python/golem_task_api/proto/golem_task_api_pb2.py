@@ -20,7 +20,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   package='golem_task_api',
   syntax='proto3',
   serialized_options=None,
-  serialized_pb=_b('\n)golem_task_api/proto/golem_task_api.proto\x12\x0egolem_task_api\">\n\x11\x43reateTaskRequest\x12\x0f\n\x07task_id\x18\x01 \x01(\t\x12\x18\n\x10task_params_json\x18\x02 \x01(\t\"\x11\n\x0f\x43reateTaskReply\"%\n\x12NextSubtaskRequest\x12\x0f\n\x07task_id\x18\x01 \x01(\t\"C\n\x10NextSubtaskReply\x12\x12\n\nsubtask_id\x18\x01 \x01(\t\x12\x1b\n\x13subtask_params_json\x18\x02 \x01(\t\"R\n\x0e\x43omputeRequest\x12\x0f\n\x07task_id\x18\x01 \x01(\t\x12\x12\n\nsubtask_id\x18\x02 \x01(\t\x12\x1b\n\x13subtask_params_json\x18\x03 \x01(\t\"\x0e\n\x0c\x43omputeReply\"4\n\rVerifyRequest\x12\x0f\n\x07task_id\x18\x01 \x01(\t\x12\x12\n\nsubtask_id\x18\x02 \x01(\t\"\x1e\n\x0bVerifyReply\x12\x0f\n\x07success\x18\x01 \x01(\x08\"\x15\n\x13RunBenchmarkRequest\"\"\n\x11RunBenchmarkReply\x12\r\n\x05score\x18\x01 \x01(\x02\",\n\x19HasPendingSubtasksRequest\x12\x0f\n\x07task_id\x18\x01 \x01(\t\"7\n\x17HasPendingSubtasksReply\x12\x1c\n\x14has_pending_subtasks\x18\x01 \x01(\x08\"\x11\n\x0fShutdownRequest\"\x0f\n\rShutdownReply2\x95\x04\n\x0cRequestorApp\x12R\n\nCreateTask\x12!.golem_task_api.CreateTaskRequest\x1a\x1f.golem_task_api.CreateTaskReply\"\x00\x12U\n\x0bNextSubtask\x12\".golem_task_api.NextSubtaskRequest\x1a .golem_task_api.NextSubtaskReply\"\x00\x12\x46\n\x06Verify\x12\x1d.golem_task_api.VerifyRequest\x1a\x1b.golem_task_api.VerifyReply\"\x00\x12X\n\x0cRunBenchmark\x12#.golem_task_api.RunBenchmarkRequest\x1a!.golem_task_api.RunBenchmarkReply\"\x00\x12j\n\x12HasPendingSubtasks\x12).golem_task_api.HasPendingSubtasksRequest\x1a\'.golem_task_api.HasPendingSubtasksReply\"\x00\x12L\n\x08Shutdown\x12\x1f.golem_task_api.ShutdownRequest\x1a\x1d.golem_task_api.ShutdownReply\"\x00\x62\x06proto3')
+  serialized_pb=_b('\n)golem_task_api/proto/golem_task_api.proto\x12\x0egolem_task_api\">\n\x11\x43reateTaskRequest\x12\x0f\n\x07task_id\x18\x01 \x01(\t\x12\x18\n\x10task_params_json\x18\x02 \x01(\t\"\x11\n\x0f\x43reateTaskReply\"%\n\x12NextSubtaskRequest\x12\x0f\n\x07task_id\x18\x01 \x01(\t\"C\n\x10NextSubtaskReply\x12\x12\n\nsubtask_id\x18\x01 \x01(\t\x12\x1b\n\x13subtask_params_json\x18\x02 \x01(\t\"R\n\x0e\x43omputeRequest\x12\x0f\n\x07task_id\x18\x01 \x01(\t\x12\x12\n\nsubtask_id\x18\x02 \x01(\t\x12\x1b\n\x13subtask_params_json\x18\x03 \x01(\t\"\x0e\n\x0c\x43omputeReply\"4\n\rVerifyRequest\x12\x0f\n\x07task_id\x18\x01 \x01(\t\x12\x12\n\nsubtask_id\x18\x02 \x01(\t\"\x1e\n\x0bVerifyReply\x12\x0f\n\x07success\x18\x01 \x01(\x08\">\n\x16\x44iscardSubtasksRequest\x12\x0f\n\x07task_id\x18\x01 \x01(\t\x12\x13\n\x0bsubtask_ids\x18\x02 \x03(\t\"5\n\x14\x44iscardSubtasksReply\x12\x1d\n\x15\x64iscarded_subtask_ids\x18\x01 \x03(\t\"\x15\n\x13RunBenchmarkRequest\"\"\n\x11RunBenchmarkReply\x12\r\n\x05score\x18\x01 \x01(\x02\",\n\x19HasPendingSubtasksRequest\x12\x0f\n\x07task_id\x18\x01 \x01(\t\"7\n\x17HasPendingSubtasksReply\x12\x1c\n\x14has_pending_subtasks\x18\x01 \x01(\x08\"\x11\n\x0fShutdownRequest\"\x0f\n\rShutdownReply2\xf8\x04\n\x0cRequestorApp\x12R\n\nCreateTask\x12!.golem_task_api.CreateTaskRequest\x1a\x1f.golem_task_api.CreateTaskReply\"\x00\x12U\n\x0bNextSubtask\x12\".golem_task_api.NextSubtaskRequest\x1a .golem_task_api.NextSubtaskReply\"\x00\x12\x46\n\x06Verify\x12\x1d.golem_task_api.VerifyRequest\x1a\x1b.golem_task_api.VerifyReply\"\x00\x12\x61\n\x0f\x44iscardSubtasks\x12&.golem_task_api.DiscardSubtasksRequest\x1a$.golem_task_api.DiscardSubtasksReply\"\x00\x12X\n\x0cRunBenchmark\x12#.golem_task_api.RunBenchmarkRequest\x1a!.golem_task_api.RunBenchmarkReply\"\x00\x12j\n\x12HasPendingSubtasks\x12).golem_task_api.HasPendingSubtasksRequest\x1a\'.golem_task_api.HasPendingSubtasksReply\"\x00\x12L\n\x08Shutdown\x12\x1f.golem_task_api.ShutdownRequest\x1a\x1d.golem_task_api.ShutdownReply\"\x00\x62\x06proto3')
 )
 
 
@@ -295,6 +295,75 @@ _VERIFYREPLY = _descriptor.Descriptor(
 )
 
 
+_DISCARDSUBTASKSREQUEST = _descriptor.Descriptor(
+  name='DiscardSubtasksRequest',
+  full_name='golem_task_api.DiscardSubtasksRequest',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='task_id', full_name='golem_task_api.DiscardSubtasksRequest.task_id', index=0,
+      number=1, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='subtask_ids', full_name='golem_task_api.DiscardSubtasksRequest.subtask_ids', index=1,
+      number=2, type=9, cpp_type=9, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=438,
+  serialized_end=500,
+)
+
+
+_DISCARDSUBTASKSREPLY = _descriptor.Descriptor(
+  name='DiscardSubtasksReply',
+  full_name='golem_task_api.DiscardSubtasksReply',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='discarded_subtask_ids', full_name='golem_task_api.DiscardSubtasksReply.discarded_subtask_ids', index=0,
+      number=1, type=9, cpp_type=9, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=502,
+  serialized_end=555,
+)
+
+
 _RUNBENCHMARKREQUEST = _descriptor.Descriptor(
   name='RunBenchmarkRequest',
   full_name='golem_task_api.RunBenchmarkRequest',
@@ -314,8 +383,8 @@ _RUNBENCHMARKREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=438,
-  serialized_end=459,
+  serialized_start=557,
+  serialized_end=578,
 )
 
 
@@ -345,8 +414,8 @@ _RUNBENCHMARKREPLY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=461,
-  serialized_end=495,
+  serialized_start=580,
+  serialized_end=614,
 )
 
 
@@ -376,8 +445,8 @@ _HASPENDINGSUBTASKSREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=497,
-  serialized_end=541,
+  serialized_start=616,
+  serialized_end=660,
 )
 
 
@@ -407,8 +476,8 @@ _HASPENDINGSUBTASKSREPLY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=543,
-  serialized_end=598,
+  serialized_start=662,
+  serialized_end=717,
 )
 
 
@@ -431,8 +500,8 @@ _SHUTDOWNREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=600,
-  serialized_end=617,
+  serialized_start=719,
+  serialized_end=736,
 )
 
 
@@ -455,8 +524,8 @@ _SHUTDOWNREPLY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=619,
-  serialized_end=634,
+  serialized_start=738,
+  serialized_end=753,
 )
 
 DESCRIPTOR.message_types_by_name['CreateTaskRequest'] = _CREATETASKREQUEST
@@ -467,6 +536,8 @@ DESCRIPTOR.message_types_by_name['ComputeRequest'] = _COMPUTEREQUEST
 DESCRIPTOR.message_types_by_name['ComputeReply'] = _COMPUTEREPLY
 DESCRIPTOR.message_types_by_name['VerifyRequest'] = _VERIFYREQUEST
 DESCRIPTOR.message_types_by_name['VerifyReply'] = _VERIFYREPLY
+DESCRIPTOR.message_types_by_name['DiscardSubtasksRequest'] = _DISCARDSUBTASKSREQUEST
+DESCRIPTOR.message_types_by_name['DiscardSubtasksReply'] = _DISCARDSUBTASKSREPLY
 DESCRIPTOR.message_types_by_name['RunBenchmarkRequest'] = _RUNBENCHMARKREQUEST
 DESCRIPTOR.message_types_by_name['RunBenchmarkReply'] = _RUNBENCHMARKREPLY
 DESCRIPTOR.message_types_by_name['HasPendingSubtasksRequest'] = _HASPENDINGSUBTASKSREQUEST
@@ -531,6 +602,20 @@ VerifyReply = _reflection.GeneratedProtocolMessageType('VerifyReply', (_message.
   ))
 _sym_db.RegisterMessage(VerifyReply)
 
+DiscardSubtasksRequest = _reflection.GeneratedProtocolMessageType('DiscardSubtasksRequest', (_message.Message,), dict(
+  DESCRIPTOR = _DISCARDSUBTASKSREQUEST,
+  __module__ = 'golem_task_api.proto.golem_task_api_pb2'
+  # @@protoc_insertion_point(class_scope:golem_task_api.DiscardSubtasksRequest)
+  ))
+_sym_db.RegisterMessage(DiscardSubtasksRequest)
+
+DiscardSubtasksReply = _reflection.GeneratedProtocolMessageType('DiscardSubtasksReply', (_message.Message,), dict(
+  DESCRIPTOR = _DISCARDSUBTASKSREPLY,
+  __module__ = 'golem_task_api.proto.golem_task_api_pb2'
+  # @@protoc_insertion_point(class_scope:golem_task_api.DiscardSubtasksReply)
+  ))
+_sym_db.RegisterMessage(DiscardSubtasksReply)
+
 RunBenchmarkRequest = _reflection.GeneratedProtocolMessageType('RunBenchmarkRequest', (_message.Message,), dict(
   DESCRIPTOR = _RUNBENCHMARKREQUEST,
   __module__ = 'golem_task_api.proto.golem_task_api_pb2'
@@ -581,8 +666,8 @@ _REQUESTORAPP = _descriptor.ServiceDescriptor(
   file=DESCRIPTOR,
   index=0,
   serialized_options=None,
-  serialized_start=637,
-  serialized_end=1170,
+  serialized_start=756,
+  serialized_end=1388,
   methods=[
   _descriptor.MethodDescriptor(
     name='CreateTask',
@@ -612,9 +697,18 @@ _REQUESTORAPP = _descriptor.ServiceDescriptor(
     serialized_options=None,
   ),
   _descriptor.MethodDescriptor(
+    name='DiscardSubtasks',
+    full_name='golem_task_api.RequestorApp.DiscardSubtasks',
+    index=3,
+    containing_service=None,
+    input_type=_DISCARDSUBTASKSREQUEST,
+    output_type=_DISCARDSUBTASKSREPLY,
+    serialized_options=None,
+  ),
+  _descriptor.MethodDescriptor(
     name='RunBenchmark',
     full_name='golem_task_api.RequestorApp.RunBenchmark',
-    index=3,
+    index=4,
     containing_service=None,
     input_type=_RUNBENCHMARKREQUEST,
     output_type=_RUNBENCHMARKREPLY,
@@ -623,7 +717,7 @@ _REQUESTORAPP = _descriptor.ServiceDescriptor(
   _descriptor.MethodDescriptor(
     name='HasPendingSubtasks',
     full_name='golem_task_api.RequestorApp.HasPendingSubtasks',
-    index=4,
+    index=5,
     containing_service=None,
     input_type=_HASPENDINGSUBTASKSREQUEST,
     output_type=_HASPENDINGSUBTASKSREPLY,
@@ -632,7 +726,7 @@ _REQUESTORAPP = _descriptor.ServiceDescriptor(
   _descriptor.MethodDescriptor(
     name='Shutdown',
     full_name='golem_task_api.RequestorApp.Shutdown',
-    index=5,
+    index=6,
     containing_service=None,
     input_type=_SHUTDOWNREQUEST,
     output_type=_SHUTDOWNREPLY,
