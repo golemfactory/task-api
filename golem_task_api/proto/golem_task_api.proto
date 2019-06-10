@@ -2,13 +2,15 @@ syntax = "proto3";
 
 package golem_task_api;
 
-service GolemApp {
+service RequestorApp {
   rpc CreateTask (CreateTaskRequest) returns (CreateTaskReply) {}
   rpc NextSubtask (NextSubtaskRequest) returns (NextSubtaskReply) {}
-  rpc Compute (ComputeRequest) returns (ComputeReply) {}
   rpc Verify (VerifyRequest) returns (VerifyReply) {}
   rpc RunBenchmark (RunBenchmarkRequest) returns (RunBenchmarkReply) {}
+
+  rpc Shutdown (ShutdownRequest) returns (ShutdownReply) {}
 }
+
 
 message CreateTaskRequest {
   string task_id = 1;
@@ -50,4 +52,11 @@ message RunBenchmarkRequest {
 
 message RunBenchmarkReply {
   float score = 1;
+}
+
+
+message ShutdownRequest {
+}
+
+message ShutdownReply {
 }
