@@ -17,6 +17,8 @@ from golem_task_api.messages import (
     VerifyReply,
     RunBenchmarkRequest,
     RunBenchmarkReply,
+    HasPendingSubtasksRequest,
+    HasPendingSubtasksReply,
     ShutdownRequest,
 )
 from golem_task_api.proto.golem_task_api_grpc import (
@@ -103,6 +105,12 @@ class RequestorAppClient:
         request = RunBenchmarkRequest()
         reply = await self._golem_app.RunBenchmark(request)
         return reply.score
+
+    async def has_pending_subtasks(self, task_id: str) -> bool:
+        request = HasPendingSubtasksRequest()
+        request.task_id = task_id
+        reply = await self._golem_app.HasPendingSubtasks(request)
+        return reply.has_pending_subtasks
 
     async def shutdown(self) -> None:
         request = ShutdownRequest()

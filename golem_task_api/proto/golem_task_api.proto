@@ -7,6 +7,7 @@ service RequestorApp {
   rpc NextSubtask (NextSubtaskRequest) returns (NextSubtaskReply) {}
   rpc Verify (VerifyRequest) returns (VerifyReply) {}
   rpc RunBenchmark (RunBenchmarkRequest) returns (RunBenchmarkReply) {}
+  rpc HasPendingSubtasks (HasPendingSubtasksRequest) returns (HasPendingSubtasksReply) {}
 
   rpc Shutdown (ShutdownRequest) returns (ShutdownReply) {}
 }
@@ -52,6 +53,14 @@ message RunBenchmarkRequest {
 
 message RunBenchmarkReply {
   float score = 1;
+}
+
+message HasPendingSubtasksRequest {
+  string task_id = 1;
+}
+
+message HasPendingSubtasksReply {
+  bool has_pending_subtasks = 1;
 }
 
 

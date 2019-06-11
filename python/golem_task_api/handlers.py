@@ -31,6 +31,10 @@ class RequestorAppHandler:
     async def run_benchmark(self, work_dir: Path) -> float:
         pass
 
+    @abc.abstractmethod
+    async def has_pending_subtasks(self, task_work_dir: Path) -> bool:
+        pass
+
 
 class ProviderAppHandler:
     @abc.abstractmethod
