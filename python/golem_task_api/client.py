@@ -133,6 +133,7 @@ class ProviderAppClient:
             work_dir: Path,
     ) -> float:
         await app_callbacks.run_command('benchmark')
+        reply = RunBenchmarkReply()
         with open(work_dir / 'benchmark.reply', 'rb') as f:
-            reply = RunBenchmarkReply.ParseFromString(f.read())
+            reply.ParseFromString(f.read())
         return reply.score
