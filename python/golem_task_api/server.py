@@ -19,6 +19,8 @@ from golem_task_api.messages import (
     VerifyReply,
     RunBenchmarkRequest,
     RunBenchmarkReply,
+    HasPendingSubtasksRequest,
+    HasPendingSubtasksReply,
     ShutdownRequest,
     ShutdownReply,
 )
@@ -74,6 +76,15 @@ class RequestorApp(RequestorAppBase):
         score = await self._handler.run_benchmark(self._work_dir)
         reply = RunBenchmarkReply()
         reply.score = score
+        await stream.send_message(reply)
+
+    async def HasPendingSubtasks(self, stream):
+        request: HasPendingSubtasksRequest = await stream.recv_message()
+        task_work_dir = self._work_dir / request.task_id
+        has_pending_subtasks = \
+            await self._handler.has_pending_subtasks(task_work_dir)
+        reply = HasPendingSubtasksReply()
+        reply.has_pending_subtasks = has_pending_subtasks
         await stream.send_message(reply)
 
     async def Shutdown(self, stream):

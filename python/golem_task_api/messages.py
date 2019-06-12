@@ -9,7 +9,8 @@ from .proto.golem_task_api_pb2 import (
     VerifyReply,
     RunBenchmarkRequest,
     RunBenchmarkReply,
+    HasPendingSubtasksRequest,
+    HasPendingSubtasksReply,
     ShutdownRequest,
     ShutdownReply,
 )
-
