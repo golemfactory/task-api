@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Tuple
+from typing import List, Tuple
 import abc
 
 
@@ -25,6 +25,14 @@ class RequestorAppHandler:
             task_work_dir: Path,
             subtask_id: str,
     ) -> bool:
+        pass
+
+    @abc.abstractmethod
+    async def discard_subtasks(
+            self,
+            task_work_dir: Path,
+            subtask_ids: List[str],
+    ) -> List[str]:
         pass
 
     @abc.abstractmethod

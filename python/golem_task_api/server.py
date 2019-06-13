@@ -17,6 +17,8 @@ from golem_task_api.messages import (
     ComputeReply,
     VerifyRequest,
     VerifyReply,
+    DiscardSubtasksRequest,
+    DiscardSubtasksReply,
     RunBenchmarkRequest,
     RunBenchmarkReply,
     HasPendingSubtasksRequest,
@@ -71,6 +73,17 @@ class RequestorApp(RequestorAppBase):
         reply.success = success
         await stream.send_message(reply)
 
+    async def DiscardSubtasks(self, stream):
+        request: DiscardSubtasksRequest = await stream.recv_message()
+        task_id = request.task_id
+        subtask_ids = request.subtask_ids
+        task_work_dir = self._work_dir / task_id
+        discarded_subtask_ids = \
+            await self._handler.discard_subtasks(task_work_dir, subtask_ids)
+        reply = DiscardSubtasksReply()
+        reply.discarded_subtask_ids.extend(discarded_subtask_ids)
+        await stream.send_message(reply)
+
     async def RunBenchmark(self, stream):
         request: RunBenchmarkRequest = await stream.recv_message()
         score = await self._handler.run_benchmark(self._work_dir)
@@ -108,8 +121,8 @@ class RequestorAppServer:
         self._port = port
 
     async def start(self):
-        await self._server.start('', self._port, ssl=None)
         print(f'Starting server at port {self._port}')
+        await self._server.start('', self._port, ssl=None)
 
     async def wait_until_shutdown(self):
         await self._shutdown_future
