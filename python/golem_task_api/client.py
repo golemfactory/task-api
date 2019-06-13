@@ -40,15 +40,6 @@ class RequestorAppCallbacks(abc.ABC):
         """
         pass
 
-    @abc.abstractmethod
-    async def wait_after_shutdown(self) -> None:
-        """
-        After sending the Shutdown request one should wait for the server to
-        finish it's cleanup and shutdown completely.
-        E.g. for Docker app this should wait for the container to exit
-        """
-        pass
-
 
 class ProviderAppCallbacks(abc.ABC):
     @abc.abstractmethod
