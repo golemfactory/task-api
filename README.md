@@ -11,26 +11,24 @@ If you don't see a programming language you're interested in, feel free to creat
 The API is divided into two independent parts - requestor and provider.
 
 ## Requestor
-For requestor the app should implement a long running RPC service which implements the `RequestorApp` interface from the proto files. The app should assume it will have access to a single directory (let's call it `work_dir`).
+For requestor the app should implement a long running RPC service which implements the `RequestorApp` interface from the proto files. The app should assume it will have access to a single directory (let's call it `work_dir`). Each task will have its own separate working directory under the main `work_dir`. You can assume that for a given `task_id` the first call will always be `CreateTask` and the following directories will exist under `work_dir` and they will be empty:
+- `{task_id}`
+- `{task_id}/{constants.RESOURCES}`
+- `{task_id}/{constants.NETWORK_RESOURCES}`
+- `{task_id}/{constants.RESULTS}`
+- `{task_id}/{constants.NETWORK_RESULTS}`
 
 ### RPC methods
-
 - `CreateTask`
   - takes two arguments `task_id` and `task_params_json`
-  - can assume that the following directories exist under `work_dir`
-    - `task_id`
-    - `task_id/constants.RESOURCES`
-    - `task_id/constants.NETWORK_RESOURCES`
-    - `task_id/constants.RESULTS`
-    - `task_id/constants.NETWORK_RESULTS`
-  - should treat `work_dir/task_id` as the working directory for the given task
+  - should treat `{work_dir}/{task_id}` as the working directory for the given task
   - `task_params_json` is a JSON string containing task specific parameters
   - will only be called once with given `task_id`
-  - can assume `task_id/constants.RESOURCES` contains all the resources provided by task creator
+  - can assume `{task_id}/{constants.RESOURCES}` contains all the resources provided by task creator
 - `NextSubtask`
   - takes one argument `task_id`
   - can assume `CreateTask` was called earlier with the same `task_id`
-  - returns `subtask_id` which can be an arbitrary string but the same string cannot be returned more than once
+  - returns `subtask_id` which has to be a string without whitespaces and slashes (`/`) but the same string cannot be returned more than once
   - also returns `subtask_params_json` which is the JSON string containing subtask specific parameters
 - `HasPendingSubtasks`
   - takes one argument `task_id`
@@ -63,9 +61,9 @@ Provider side is a set of one-off commands. There are currently two commands it 
   - gets a single working directory to operate on `task_work_dir`
   - different subtasks of the same task will have the same `task_work_dir`
   - takes `task_id`, `subtask_id`, `subtask_params_json` as arguments
-  - can assume the `task_work_dir/constants.NETWORK_RESOURCES` directory exists
-  - can assume that under `task_work_dir/constants.NETWORK_RESOURCES` are the resources specified in the corresponding `NextSubtask` call
-  - generates a single `result.zip` file under `task_work_dir/subtask_id/` (subject likely to change) which is the result that will be sent back to the requestor
+  - can assume the `{task_work_dir}/{constants.NETWORK_RESOURCES}` directory exists
+  - can assume that under `{task_work_dir}/{constants.NETWORK_RESOURCES}` are the resources specified in the corresponding `NextSubtask` call
+  - generates a single `result.zip` file under `{task_work_dir}/{subtask_id}/` (subject likely to change) which is the result that will be sent back to the requestor
 - `Benchmark`
   - takes no arguments
   - returns a score which indicates how efficient the machine is for this type of tasks
