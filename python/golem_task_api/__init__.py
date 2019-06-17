@@ -1,11 +1,10 @@
 from .client import (
-    ProviderAppCallbacks,
+    AppCallbacks,
     ProviderAppClient,
-    RequestorAppCallbacks,
     RequestorAppClient,
 )
 
-from .server import (
+from .entrypoint import (
     entrypoint,
 )
 

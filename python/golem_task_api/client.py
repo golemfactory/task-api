@@ -1,7 +1,7 @@
 import abc
 import asyncio
 import json
-from typing import List, Tuple
+from typing import ClassVar, List, Tuple
 from pathlib import Path
 
 from grpclib.client import Channel
@@ -24,11 +24,12 @@ from golem_task_api.messages import (
     ShutdownRequest,
 )
 from golem_task_api.proto.golem_task_api_grpc import (
+    ProviderAppStub,
     RequestorAppStub,
 )
 
 
-class RequestorAppCallbacks(abc.ABC):
+class AppCallbacks(abc.ABC):
     @abc.abstractmethod
     def spawn_server(self, command: str, port: int) -> Tuple[str, int]:
         """
@@ -40,26 +41,26 @@ class RequestorAppCallbacks(abc.ABC):
         """
         pass
 
-
-class ProviderAppCallbacks(abc.ABC):
     @abc.abstractmethod
-    async def run_command(self, command: str) -> None:
+    async def wait_after_shutdown(self) -> None:
         """
-        Similarly to the RequestorAppCallbacks this is supposed to pass the
-        command to the entrypoint, but should wait for it's execution to end.
-        E.g. for Docker app this could be implemented as:
-        `docker run <command>`
+        After sending the Shutdown request one should wait for the server to
+        finish it's cleanup and shutdown completely.
+        E.g. for Docker app this should wait for the container to exit
         """
         pass
 
 
 class RequestorAppClient:
+    DEFAULT_PORT: ClassVar[int] = 50005
+
     def __init__(
             self,
-            app_callbacks: RequestorAppCallbacks,
-            port: int,
+            app_callbacks: AppCallbacks,
+            port: int = DEFAULT_PORT,
     ) -> None:
-        host, port = app_callbacks.spawn_server(f'start {port}', port)
+        self._app_callbacks = app_callbacks
+        host, port = app_callbacks.spawn_server(f'requestor {port}', port)
         self._golem_app = RequestorAppStub(
             Channel(host, port, loop=asyncio.get_event_loop()),
         )
@@ -119,33 +120,49 @@ class RequestorAppClient:
     async def shutdown(self) -> None:
         request = ShutdownRequest()
         await self._golem_app.Shutdown(request)
+        await self._app_callbacks.wait_after_shutdown()
 
 
 class ProviderAppClient:
-    @staticmethod
+    DEFAULT_PORT: ClassVar[int] = 50006
+
+    @classmethod
+    def _spawn_server(
+            cls,
+            app_callbacks: AppCallbacks,
+    ) -> None:
+        host, port = app_callbacks.spawn_server(
+            f'provider {cls.DEFAULT_PORT}',
+            cls.DEFAULT_PORT,
+        )
+        return ProviderAppStub(
+            Channel(host, port, loop=asyncio.get_event_loop()),
+        )
+
+    @classmethod
     async def compute(
-            app_callbacks: ProviderAppCallbacks,
-            work_dir: Path,
+            cls,
+            app_callbacks: AppCallbacks,
             task_id: str,
             subtask_id: str,
             subtask_params: dict,
-    ) -> None:
+    ) -> Path:
+        golem_app = cls._spawn_server(app_callbacks)
         request = ComputeRequest()
         request.task_id = task_id
         request.subtask_id = subtask_id
         request.subtask_params_json = json.dumps(subtask_params)
-        request_filepath = f'{subtask_id}.request'
-        with open(work_dir / request_filepath, 'wb') as f:
-            f.write(request.SerializeToString())
-        await app_callbacks.run_command(f'compute {request_filepath}')
+        reply = await golem_app.Compute(request)
+        await app_callbacks.wait_after_shutdown()
+        return reply.output_filepath
 
-    @staticmethod
+    @classmethod
     async def run_benchmark(
-            app_callbacks: ProviderAppCallbacks,
-            work_dir: Path,
+            cls,
+            app_callbacks: AppCallbacks,
     ) -> float:
-        await app_callbacks.run_command('benchmark')
-        reply = RunBenchmarkReply()
-        with open(work_dir / 'benchmark.reply', 'rb') as f:
-            reply.ParseFromString(f.read())
+        golem_app = cls._spawn_server(app_callbacks)
+        request = RunBenchmarkRequest()
+        reply = await golem_app.RunBenchmark(request)
+        await app_callbacks.wait_after_shutdown()
         return reply.score

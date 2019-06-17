@@ -13,6 +13,11 @@ service RequestorApp {
   rpc Shutdown (ShutdownRequest) returns (ShutdownReply) {}
 }
 
+service ProviderApp {
+  rpc Compute (ComputeRequest) returns (ComputeReply) {}
+  rpc RunBenchmark (RunBenchmarkRequest) returns (RunBenchmarkReply) {}
+}
+
 
 message CreateTaskRequest {
   string task_id = 1;
@@ -38,6 +43,7 @@ message ComputeRequest {
 }
 
 message ComputeReply {
+  string output_filepath = 1;
 }
 
 message VerifyRequest {
