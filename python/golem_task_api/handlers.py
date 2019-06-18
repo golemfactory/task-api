@@ -51,7 +51,7 @@ class ProviderAppHandler:
             task_work_dir: Path,
             subtask_id: str,
             subtask_params: dict,
-    ) -> None:
+    ) -> Path:
         pass
 
     @abc.abstractmethod

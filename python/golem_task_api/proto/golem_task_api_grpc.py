@@ -131,3 +131,47 @@ class RequestorAppStub:
             golem_task_api.proto.golem_task_api_pb2.ShutdownRequest,
             golem_task_api.proto.golem_task_api_pb2.ShutdownReply,
         )
+
+
+class ProviderAppBase(abc.ABC):
+
+    @abc.abstractmethod
+    async def Compute(self, stream):
+        pass
+
+    @abc.abstractmethod
+    async def RunBenchmark(self, stream):
+        pass
+
+    def __mapping__(self):
+        return {
+            '/golem_task_api.ProviderApp/Compute': grpclib.const.Handler(
+                self.Compute,
+                grpclib.const.Cardinality.UNARY_UNARY,
+                golem_task_api.proto.golem_task_api_pb2.ComputeRequest,
+                golem_task_api.proto.golem_task_api_pb2.ComputeReply,
+            ),
+            '/golem_task_api.ProviderApp/RunBenchmark': grpclib.const.Handler(
+                self.RunBenchmark,
+                grpclib.const.Cardinality.UNARY_UNARY,
+                golem_task_api.proto.golem_task_api_pb2.RunBenchmarkRequest,
+                golem_task_api.proto.golem_task_api_pb2.RunBenchmarkReply,
+            ),
+        }
+
+
+class ProviderAppStub:
+
+    def __init__(self, channel: grpclib.client.Channel) -> None:
+        self.Compute = grpclib.client.UnaryUnaryMethod(
+            channel,
+            '/golem_task_api.ProviderApp/Compute',
+            golem_task_api.proto.golem_task_api_pb2.ComputeRequest,
+            golem_task_api.proto.golem_task_api_pb2.ComputeReply,
+        )
+        self.RunBenchmark = grpclib.client.UnaryUnaryMethod(
+            channel,
+            '/golem_task_api.ProviderApp/RunBenchmark',
+            golem_task_api.proto.golem_task_api_pb2.RunBenchmarkRequest,
+            golem_task_api.proto.golem_task_api_pb2.RunBenchmarkReply,
+        )
