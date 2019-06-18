@@ -34,7 +34,7 @@ class AppCallbacks(abc.ABC):
     def spawn_server(self, command: str, port: int) -> Tuple[str, int]:
         """
         This method is supposed to pass the command argument to the entrypoint
-        which will spawn requestor's server and should return a tuple
+        which will asynchronously spawn the server and should return a tuple
         (host, port) where one can connect to this server.
         E.g. for Docker app this could be implemented as:
         `docker run --detach <command>`

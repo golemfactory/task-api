@@ -55,15 +55,16 @@ For requestor the app should implement a long running RPC service which implemen
 When the last subtask is successfully verified on the requestor's side, the `work_dir/task_id/constants.RESULTS` directory should contain all result files and nothing else.
 
 ## Provider
-Provider side is a set of one-off commands. There are currently two commands it should support.
+Provider app should implement a short-lived RPC service which implements the `ProviderApp` interface from the proto files. Short-lived means that there will be only one request issued per service instance, i.e. the service should shutdown automatically after handling the first and only request.
 
+### RPC commands
 - `Compute`
-  - gets a single working directory to operate on `task_work_dir`
+  - gets a single working directory `task_work_dir` to operate on
   - different subtasks of the same task will have the same `task_work_dir`
   - takes `task_id`, `subtask_id`, `subtask_params_json` as arguments
   - can assume the `{task_work_dir}/{constants.NETWORK_RESOURCES}` directory exists
   - can assume that under `{task_work_dir}/{constants.NETWORK_RESOURCES}` are the resources specified in the corresponding `NextSubtask` call
-  - generates a single `result.zip` file under `{task_work_dir}/{subtask_id}/` (subject likely to change) which is the result that will be sent back to the requestor
+  - returns a filepath (relative to the `task_work_dir`) of the result file which will be sent back to the requestor with unchanged name
 - `Benchmark`
   - takes no arguments
   - returns a score which indicates how efficient the machine is for this type of tasks
