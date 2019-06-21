@@ -1,7 +1,7 @@
 import abc
 import asyncio
 import json
-from typing import ClassVar, List, Tuple
+from typing import ClassVar, List, NamedTuple, Tuple
 from pathlib import Path
 
 from grpclib.client import Channel
@@ -27,6 +27,7 @@ from golem_task_api.proto.golem_task_api_grpc import (
     ProviderAppStub,
     RequestorAppStub,
 )
+from golem_task_api.structs import Subtask
 
 
 class AppCallbacks(abc.ABC):
@@ -78,11 +79,15 @@ class RequestorAppClient:
     async def next_subtask(
             self,
             task_id: str,
-    ) -> Tuple[str, dict]:
+    ) -> Subtask:
         request = NextSubtaskRequest()
         request.task_id = task_id
         reply = await self._golem_app.NextSubtask(request)
-        return reply.subtask_id, json.loads(reply.subtask_params_json)
+        return Subtask(
+            subtask_id=reply.subtask_id,
+            params=json.loads(reply.subtask_params_json),
+            resources=reply.resources,
+        )
 
     async def verify(
             self,

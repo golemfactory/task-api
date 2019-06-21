@@ -1,6 +1,8 @@
 from pathlib import Path
-from typing import List, Tuple
+from typing import List
 import abc
+
+from golem_task_api.structs import Subtask
 
 
 class RequestorAppHandler:
@@ -16,7 +18,7 @@ class RequestorAppHandler:
     async def next_subtask(
             self,
             task_work_dir: Path,
-    ) -> Tuple[str, dict]:
+    ) -> Subtask:
         pass
 
     @abc.abstractmethod
