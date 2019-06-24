@@ -34,6 +34,7 @@ message NextSubtaskRequest {
 message NextSubtaskReply {
   string subtask_id = 1;
   string subtask_params_json = 2;
+  repeated string resources = 3;
 }
 
 message ComputeRequest {

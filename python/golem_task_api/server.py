@@ -57,11 +57,12 @@ class RequestorApp(RequestorAppBase):
         request: NextSubtaskRequest = await stream.recv_message()
         task_id = request.task_id
         task_work_dir = self._work_dir / task_id
-        subtask_id, subtask_params = \
+        subtask_id, subtask_params, resources = \
             await self._handler.next_subtask(task_work_dir)
         reply = NextSubtaskReply()
         reply.subtask_id = subtask_id
         reply.subtask_params_json = json.dumps(subtask_params)
+        reply.resources.extend(resources)
         await stream.send_message(reply)
 
     async def Verify(self, stream):
