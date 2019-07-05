@@ -20,8 +20,8 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   name='golem_task_api/proto/constants.proto',
   package='golem_task_api',
   syntax='proto3',
-  serialized_options=_b('\302\363\030\tresources\312\363\030\021network_resources\322\363\030\007results\332\363\030\017network_results'),
-  serialized_pb=_b('\n$golem_task_api/proto/constants.proto\x12\x0egolem_task_api\x1a google/protobuf/descriptor.proto:5\n\rRESOURCES_DIR\x12\x1c.google.protobuf.FileOptions\x18\xb8\x8e\x03 \x01(\t:=\n\x15NETWORK_RESOURCES_DIR\x12\x1c.google.protobuf.FileOptions\x18\xb9\x8e\x03 \x01(\t:3\n\x0bRESULTS_DIR\x12\x1c.google.protobuf.FileOptions\x18\xba\x8e\x03 \x01(\t:;\n\x13NETWORK_RESULTS_DIR\x12\x1c.google.protobuf.FileOptions\x18\xbb\x8e\x03 \x01(\tB@\xc2\xf3\x18\tresources\xca\xf3\x18\x11network_resources\xd2\xf3\x18\x07results\xda\xf3\x18\x0fnetwork_resultsb\x06proto3')
+  serialized_options=_b('\302\363\030\tresources\312\363\030\021network_resources\322\363\030\007results\332\363\030\017network_results\342\371\030\ngolem/work'),
+  serialized_pb=_b('\n$golem_task_api/proto/constants.proto\x12\x0egolem_task_api\x1a google/protobuf/descriptor.proto:5\n\rRESOURCES_DIR\x12\x1c.google.protobuf.FileOptions\x18\xb8\x8e\x03 \x01(\t:=\n\x15NETWORK_RESOURCES_DIR\x12\x1c.google.protobuf.FileOptions\x18\xb9\x8e\x03 \x01(\t:3\n\x0bRESULTS_DIR\x12\x1c.google.protobuf.FileOptions\x18\xba\x8e\x03 \x01(\t:;\n\x13NETWORK_RESULTS_DIR\x12\x1c.google.protobuf.FileOptions\x18\xbb\x8e\x03 \x01(\t:0\n\x08WORK_DIR\x12\x1c.google.protobuf.FileOptions\x18\x9c\x8f\x03 \x01(\tBN\xc2\xf3\x18\tresources\xca\xf3\x18\x11network_resources\xd2\xf3\x18\x07results\xda\xf3\x18\x0fnetwork_results\xe2\xf9\x18\ngolem/workb\x06proto3')
   ,
   dependencies=[google_dot_protobuf_dot_descriptor__pb2.DESCRIPTOR,])
 
@@ -58,17 +58,27 @@ NETWORK_RESULTS_DIR = _descriptor.FieldDescriptor(
   message_type=None, enum_type=None, containing_type=None,
   is_extension=True, extension_scope=None,
   serialized_options=None, file=DESCRIPTOR)
+WORK_DIR_FIELD_NUMBER = 51100
+WORK_DIR = _descriptor.FieldDescriptor(
+  name='WORK_DIR', full_name='golem_task_api.WORK_DIR', index=4,
+  number=51100, type=9, cpp_type=9, label=1,
+  has_default_value=False, default_value=_b("").decode('utf-8'),
+  message_type=None, enum_type=None, containing_type=None,
+  is_extension=True, extension_scope=None,
+  serialized_options=None, file=DESCRIPTOR)
 
 DESCRIPTOR.extensions_by_name['RESOURCES_DIR'] = RESOURCES_DIR
 DESCRIPTOR.extensions_by_name['NETWORK_RESOURCES_DIR'] = NETWORK_RESOURCES_DIR
 DESCRIPTOR.extensions_by_name['RESULTS_DIR'] = RESULTS_DIR
 DESCRIPTOR.extensions_by_name['NETWORK_RESULTS_DIR'] = NETWORK_RESULTS_DIR
+DESCRIPTOR.extensions_by_name['WORK_DIR'] = WORK_DIR
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
 google_dot_protobuf_dot_descriptor__pb2.FileOptions.RegisterExtension(RESOURCES_DIR)
 google_dot_protobuf_dot_descriptor__pb2.FileOptions.RegisterExtension(NETWORK_RESOURCES_DIR)
 google_dot_protobuf_dot_descriptor__pb2.FileOptions.RegisterExtension(RESULTS_DIR)
 google_dot_protobuf_dot_descriptor__pb2.FileOptions.RegisterExtension(NETWORK_RESULTS_DIR)
+google_dot_protobuf_dot_descriptor__pb2.FileOptions.RegisterExtension(WORK_DIR)
 
 DESCRIPTOR._options = None
 # @@protoc_insertion_point(module_scope)
