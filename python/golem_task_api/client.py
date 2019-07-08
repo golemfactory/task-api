@@ -32,7 +32,7 @@ from golem_task_api.structs import Subtask
 
 class AppCallbacks(abc.ABC):
     @abc.abstractmethod
-    def spawn_server(self, command: str, port: int) -> Tuple[str, int]:
+    async def spawn_server(self, command: str, port: int) -> Tuple[str, int]:
         """
         This method is supposed to pass the command argument to the entrypoint
         which will asynchronously spawn the server and should return a tuple
