@@ -48,8 +48,13 @@ class RequestorApp(RequestorAppBase):
         request: CreateTaskRequest = await stream.recv_message()
         task_id = request.task_id
         task_work_dir = self._work_dir / task_id
+        max_subtasks_count = request.max_subtasks_count
         task_params = json.loads(request.task_params_json)
-        await self._handler.create_task(task_work_dir, task_params)
+        await self._handler.create_task(
+            task_work_dir,
+            max_subtasks_count,
+            task_params,
+        )
         reply = CreateTaskReply()
         await stream.send_message(reply)
 

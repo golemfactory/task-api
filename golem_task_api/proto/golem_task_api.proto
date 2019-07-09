@@ -21,7 +21,8 @@ service ProviderApp {
 
 message CreateTaskRequest {
   string task_id = 1;
-  string task_params_json = 2;
+  int32 max_subtasks_count = 2;
+  string task_params_json = 3;
 }
 
 message CreateTaskReply {

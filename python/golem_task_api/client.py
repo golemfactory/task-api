@@ -69,10 +69,12 @@ class RequestorAppClient:
     async def create_task(
             self,
             task_id: str,
+            max_subtasks_count: int,
             task_params: dict,
     ) -> None:
         request = CreateTaskRequest()
         request.task_id = task_id
+        request.max_subtasks_count = max_subtasks_count
         request.task_params_json = json.dumps(task_params)
         await self._golem_app.CreateTask(request)
 
