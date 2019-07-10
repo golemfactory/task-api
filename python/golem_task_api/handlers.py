@@ -10,6 +10,7 @@ class RequestorAppHandler:
     async def create_task(
             self,
             task_work_dir: Path,
+            max_subtasks_count: int,
             task_params: dict,
     ) -> None:
         pass
