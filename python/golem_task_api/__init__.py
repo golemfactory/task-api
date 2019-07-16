@@ -1,5 +1,5 @@
 from .client import (
-    AppCallbacks,
+    TaskApiService,
     ProviderAppClient,
     RequestorAppClient,
 )

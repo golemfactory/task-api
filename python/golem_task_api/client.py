@@ -1,7 +1,7 @@
 import abc
 import asyncio
 import json
-from typing import ClassVar, List, NamedTuple, Tuple
+from typing import ClassVar, List, Tuple
 from pathlib import Path
 
 from grpclib.client import Channel
@@ -30,9 +30,10 @@ from golem_task_api.proto.golem_task_api_grpc import (
 from golem_task_api.structs import Subtask
 
 
-class AppCallbacks(abc.ABC):
+class TaskApiService(abc.ABC):
+
     @abc.abstractmethod
-    def spawn_server(self, command: str, port: int) -> Tuple[str, int]:
+    def start(self, command: str, port: int) -> Tuple[str, int]:
         """
         This method is supposed to pass the command argument to the entrypoint
         which will asynchronously spawn the server and should return a tuple
@@ -43,7 +44,7 @@ class AppCallbacks(abc.ABC):
         pass
 
     @abc.abstractmethod
-    async def wait_after_shutdown(self) -> None:
+    async def wait_until_shutdown_complete(self) -> None:
         """
         After sending the Shutdown request one should wait for the server to
         finish it's cleanup and shutdown completely.
@@ -57,11 +58,11 @@ class RequestorAppClient:
 
     def __init__(
             self,
-            app_callbacks: AppCallbacks,
+            service: TaskApiService,
             port: int = DEFAULT_PORT,
     ) -> None:
-        self._app_callbacks = app_callbacks
-        host, port = app_callbacks.spawn_server(f'requestor {port}', port)
+        self._service = service
+        host, port = service.start(f'requestor {port}', port)
         self._golem_app = RequestorAppStub(
             Channel(host, port, loop=asyncio.get_event_loop()),
         )
@@ -127,18 +128,18 @@ class RequestorAppClient:
     async def shutdown(self) -> None:
         request = ShutdownRequest()
         await self._golem_app.Shutdown(request)
-        await self._app_callbacks.wait_after_shutdown()
+        await self._service.wait_until_shutdown_complete()
 
 
 class ProviderAppClient:
     DEFAULT_PORT: ClassVar[int] = 50006
 
     @classmethod
-    def _spawn_server(
+    def _start_service(
             cls,
-            app_callbacks: AppCallbacks,
-    ) -> None:
-        host, port = app_callbacks.spawn_server(
+            service: TaskApiService,
+    ) -> ProviderAppStub:
+        host, port = service.start(
             f'provider {cls.DEFAULT_PORT}',
             cls.DEFAULT_PORT,
         )
@@ -149,27 +150,27 @@ class ProviderAppClient:
     @classmethod
     async def compute(
             cls,
-            app_callbacks: AppCallbacks,
+            service: TaskApiService,
             task_id: str,
             subtask_id: str,
             subtask_params: dict,
     ) -> Path:
-        golem_app = cls._spawn_server(app_callbacks)
+        golem_app = cls._start_service(service)
         request = ComputeRequest()
         request.task_id = task_id
         request.subtask_id = subtask_id
         request.subtask_params_json = json.dumps(subtask_params)
         reply = await golem_app.Compute(request)
-        await app_callbacks.wait_after_shutdown()
+        await service.wait_until_shutdown_complete()
         return reply.output_filepath
 
     @classmethod
     async def run_benchmark(
             cls,
-            app_callbacks: AppCallbacks,
+            service: TaskApiService,
     ) -> float:
-        golem_app = cls._spawn_server(app_callbacks)
+        golem_app = cls._start_service(service)
         request = RunBenchmarkRequest()
         reply = await golem_app.RunBenchmark(request)
-        await app_callbacks.wait_after_shutdown()
+        await service.wait_until_shutdown_complete()
         return reply.score
