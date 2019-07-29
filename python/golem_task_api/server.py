@@ -1,9 +1,11 @@
 import asyncio
+import functools
 import json
+import traceback
 from pathlib import Path
-from typing import List, Optional, Tuple
 
-from grpclib.server import Server
+from grpclib import const
+from grpclib import server
 
 from golem_task_api.proto.golem_task_api_grpc import (
     ProviderAppBase,
@@ -33,6 +35,22 @@ from golem_task_api.messages import (
 )
 
 
+def forward_exceptions():
+    def wrapper(func):
+        @functools.wraps(func)
+        async def wrapped(self, stream):
+            try:
+                await func(self, stream)
+            except Exception as e:
+                print(traceback.format_exc())
+                await stream.send_trailing_metadata(
+                    status=const.Status.INTERNAL,
+                    status_message=str(e),
+                )
+        return wrapped
+    return wrapper
+
+
 class RequestorApp(RequestorAppBase):
     def __init__(
             self,
@@ -44,6 +62,7 @@ class RequestorApp(RequestorAppBase):
         self._work_dir = work_dir
         self._handler = handler
 
+    @forward_exceptions()
     async def CreateTask(self, stream):
         request: CreateTaskRequest = await stream.recv_message()
         task_id = request.task_id
@@ -58,6 +77,7 @@ class RequestorApp(RequestorAppBase):
         reply = CreateTaskReply()
         await stream.send_message(reply)
 
+    @forward_exceptions()
     async def NextSubtask(self, stream):
         request: NextSubtaskRequest = await stream.recv_message()
         task_id = request.task_id
@@ -70,6 +90,7 @@ class RequestorApp(RequestorAppBase):
         reply.resources.extend(resources)
         await stream.send_message(reply)
 
+    @forward_exceptions()
     async def Verify(self, stream):
         request: VerifyRequest = await stream.recv_message()
         task_id = request.task_id
@@ -80,6 +101,7 @@ class RequestorApp(RequestorAppBase):
         reply.success = success
         await stream.send_message(reply)
 
+    @forward_exceptions()
     async def DiscardSubtasks(self, stream):
         request: DiscardSubtasksRequest = await stream.recv_message()
         task_id = request.task_id
@@ -91,13 +113,15 @@ class RequestorApp(RequestorAppBase):
         reply.discarded_subtask_ids.extend(discarded_subtask_ids)
         await stream.send_message(reply)
 
+    @forward_exceptions()
     async def RunBenchmark(self, stream):
-        request: RunBenchmarkRequest = await stream.recv_message()
+        _: RunBenchmarkRequest = await stream.recv_message()
         score = await self._handler.run_benchmark(self._work_dir)
         reply = RunBenchmarkReply()
         reply.score = score
         await stream.send_message(reply)
 
+    @forward_exceptions()
     async def HasPendingSubtasks(self, stream):
         request: HasPendingSubtasksRequest = await stream.recv_message()
         task_work_dir = self._work_dir / request.task_id
@@ -107,8 +131,9 @@ class RequestorApp(RequestorAppBase):
         reply.has_pending_subtasks = has_pending_subtasks
         await stream.send_message(reply)
 
+    @forward_exceptions()
     async def Shutdown(self, stream):
-        _ = await stream.recv_message()
+        _: ShutdownRequest = await stream.recv_message()
         self._shutdown_future.set_result(None)
         reply = ShutdownReply()
         await stream.send_message(reply)
@@ -125,14 +150,16 @@ class ProviderApp(ProviderAppBase):
         self._work_dir = work_dir
         self._handler = handler
 
+    @forward_exceptions()
     async def RunBenchmark(self, stream):
-        request: RunBenchmarkRequest = await stream.recv_message()
+        _: RunBenchmarkRequest = await stream.recv_message()
         score = await self._handler.run_benchmark(self._work_dir)
         reply = RunBenchmarkReply()
         reply.score = score
         await stream.send_message(reply)
         self._shutdown_future.set_result(None)
 
+    @forward_exceptions()
     async def Compute(self, stream):
         request: ComputeRequest = await stream.recv_message()
         output_filepath = await self._handler.compute(
@@ -148,7 +175,7 @@ class ProviderApp(ProviderAppBase):
 
 class AppServer:
     def __init__(self, golem_app, port: int, shutdown_future) -> None:
-        self._server = Server(
+        self._server = server.Server(
             handlers=[golem_app],
             loop=asyncio.get_event_loop(),
         )
