@@ -115,7 +115,7 @@ class RequestorApp(RequestorAppBase):
 
     @forward_exceptions()
     async def RunBenchmark(self, stream):
-        _: RunBenchmarkRequest = await stream.recv_message()
+        await stream.recv_message()
         score = await self._handler.run_benchmark(self._work_dir)
         reply = RunBenchmarkReply()
         reply.score = score
@@ -133,7 +133,7 @@ class RequestorApp(RequestorAppBase):
 
     @forward_exceptions()
     async def Shutdown(self, stream):
-        _: ShutdownRequest = await stream.recv_message()
+        await stream.recv_message()
         self._shutdown_future.set_result(None)
         reply = ShutdownReply()
         await stream.send_message(reply)
@@ -152,7 +152,7 @@ class ProviderApp(ProviderAppBase):
 
     @forward_exceptions()
     async def RunBenchmark(self, stream):
-        _: RunBenchmarkRequest = await stream.recv_message()
+        await stream.recv_message()
         score = await self._handler.run_benchmark(self._work_dir)
         reply = RunBenchmarkReply()
         reply.score = score
