@@ -137,9 +137,9 @@ class RequestorApp(RequestorAppBase):
     @forward_exceptions()
     async def Shutdown(self, stream):
         await stream.recv_message()
-        self._shutdown_future.set_result(None)
         reply = ShutdownReply()
         await stream.send_message(reply)
+        self._shutdown_future.set_result(None)
 
 
 class ProviderApp(ProviderAppBase):
@@ -174,6 +174,12 @@ class ProviderApp(ProviderAppBase):
         reply.output_filepath = output_filepath
         await stream.send_message(reply)
         self._shutdown_future.set_result(None)
+
+    async def Shutdown(self, stream):
+        await stream.recv_message()
+        self._shutdown_future.set_result(None)
+        reply = ShutdownReply()
+        await stream.send_message(reply)
 
 
 class AppServer:

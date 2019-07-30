@@ -143,6 +143,10 @@ class ProviderAppBase(abc.ABC):
     async def RunBenchmark(self, stream):
         pass
 
+    @abc.abstractmethod
+    async def Shutdown(self, stream):
+        pass
+
     def __mapping__(self):
         return {
             '/golem_task_api.ProviderApp/Compute': grpclib.const.Handler(
@@ -156,6 +160,12 @@ class ProviderAppBase(abc.ABC):
                 grpclib.const.Cardinality.UNARY_UNARY,
                 golem_task_api.proto.golem_task_api_pb2.RunBenchmarkRequest,
                 golem_task_api.proto.golem_task_api_pb2.RunBenchmarkReply,
+            ),
+            '/golem_task_api.ProviderApp/Shutdown': grpclib.const.Handler(
+                self.Shutdown,
+                grpclib.const.Cardinality.UNARY_UNARY,
+                golem_task_api.proto.golem_task_api_pb2.ShutdownRequest,
+                golem_task_api.proto.golem_task_api_pb2.ShutdownReply,
             ),
         }
 
@@ -174,4 +184,10 @@ class ProviderAppStub:
             '/golem_task_api.ProviderApp/RunBenchmark',
             golem_task_api.proto.golem_task_api_pb2.RunBenchmarkRequest,
             golem_task_api.proto.golem_task_api_pb2.RunBenchmarkReply,
+        )
+        self.Shutdown = grpclib.client.UnaryUnaryMethod(
+            channel,
+            '/golem_task_api.ProviderApp/Shutdown',
+            golem_task_api.proto.golem_task_api_pb2.ShutdownRequest,
+            golem_task_api.proto.golem_task_api_pb2.ShutdownReply,
         )
