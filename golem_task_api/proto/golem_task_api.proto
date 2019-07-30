@@ -55,6 +55,7 @@ message VerifyRequest {
 
 message VerifyReply {
   bool success = 1;
+  string reject_reason = 2;
 }
 
 message DiscardSubtasksRequest {

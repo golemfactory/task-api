@@ -96,9 +96,12 @@ class RequestorApp(RequestorAppBase):
         task_id = request.task_id
         subtask_id = request.subtask_id
         task_work_dir = self._work_dir / task_id
-        success = await self._handler.verify(task_work_dir, subtask_id)
+        success, reject_reason = \
+            await self._handler.verify(task_work_dir, subtask_id)
         reply = VerifyReply()
         reply.success = success
+        if reject_reason:
+            reply.reject_reason = reject_reason
         await stream.send_message(reply)
 
     @forward_exceptions()
