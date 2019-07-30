@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import List
+from typing import List, Tuple, Optional
 import abc
 
 from golem_task_api.structs import Subtask
@@ -27,7 +27,7 @@ class RequestorAppHandler:
             self,
             task_work_dir: Path,
             subtask_id: str,
-    ) -> bool:
+    ) -> Tuple[bool, Optional[str]]:
         pass
 
     @abc.abstractmethod
