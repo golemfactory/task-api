@@ -16,6 +16,8 @@ service RequestorApp {
 service ProviderApp {
   rpc Compute (ComputeRequest) returns (ComputeReply) {}
   rpc RunBenchmark (RunBenchmarkRequest) returns (RunBenchmarkReply) {}
+
+  rpc Shutdown (ShutdownRequest) returns (ShutdownReply) {}
 }
 
 
