@@ -175,11 +175,14 @@ class ProviderApp(ProviderAppBase):
         await stream.send_message(reply)
         self._shutdown_future.set_result(None)
 
+    @forward_exceptions()
     async def Shutdown(self, stream):
         await stream.recv_message()
-        self._shutdown_future.set_result(None)
         reply = ShutdownReply()
         await stream.send_message(reply)
+        # Do not call shutdown multiple times, this can happen in case of errors
+        if not self._shutdown_future.done():
+            self._shutdown_future.set_result(None)
 
 
 class AppServer:
