@@ -134,43 +134,38 @@ class RequestorAppClient:
 class ProviderAppClient:
     DEFAULT_PORT: ClassVar[int] = 50006
 
-    @classmethod
-    def _start_service(
-            cls,
+    def __init__(
+            self,
             service: TaskApiService,
-    ) -> ProviderAppStub:
-        host, port = service.start(
-            f'provider {cls.DEFAULT_PORT}',
-            cls.DEFAULT_PORT,
-        )
-        return ProviderAppStub(
+            port: int = DEFAULT_PORT,
+    ) -> None:
+        self._service = service
+        host, port = service.start(f'requestor {port}', port)
+        self._golem_app = ProviderAppStub(
             Channel(host, port, loop=asyncio.get_event_loop()),
         )
 
-    @classmethod
     async def compute(
-            cls,
-            service: TaskApiService,
+            self,
             task_id: str,
             subtask_id: str,
             subtask_params: dict,
     ) -> Path:
-        golem_app = cls._start_service(service)
         request = ComputeRequest()
         request.task_id = task_id
         request.subtask_id = subtask_id
         request.subtask_params_json = json.dumps(subtask_params)
-        reply = await golem_app.Compute(request)
-        await service.wait_until_shutdown_complete()
+        reply = await self._golem_app.Compute(request)
+        await self._service.wait_until_shutdown_complete()
         return Path(reply.output_filepath)
 
-    @classmethod
-    async def run_benchmark(
-            cls,
-            service: TaskApiService,
-    ) -> float:
-        golem_app = cls._start_service(service)
+    async def run_benchmark(self) -> float:
         request = RunBenchmarkRequest()
-        reply = await golem_app.RunBenchmark(request)
-        await service.wait_until_shutdown_complete()
+        reply = await self._golem_app.RunBenchmark(request)
+        await self._service.wait_until_shutdown_complete()
         return reply.score
+
+    async def shutdown(self) -> None:
+        request = ShutdownRequest()
+        await self._golem_app.Shutdown(request)
+        await self._service.wait_until_shutdown_complete()
