@@ -162,7 +162,7 @@ class ProviderAppClient:
         request.subtask_params_json = json.dumps(subtask_params)
         reply = await golem_app.Compute(request)
         await service.wait_until_shutdown_complete()
-        return reply.output_filepath
+        return Path(reply.output_filepath)
 
     @classmethod
     async def run_benchmark(
