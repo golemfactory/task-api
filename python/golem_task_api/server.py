@@ -155,6 +155,7 @@ class ProviderApp(ProviderAppBase):
 
     @forward_exceptions()
     async def RunBenchmark(self, stream):
+        print('RunBenchmark called')
         await stream.recv_message()
         score = await self._handler.run_benchmark(self._work_dir)
         reply = RunBenchmarkReply()
@@ -177,7 +178,10 @@ class ProviderApp(ProviderAppBase):
 
     @forward_exceptions()
     async def Shutdown(self, stream):
+        print('Shutdown called')
         await stream.recv_message()
+        all_tasks = asyncio.Task.all_tasks()
+        print(all_tasks)
         for task in asyncio.Task.all_tasks():
             print('Canceling task for shutdown')
             print(task)
