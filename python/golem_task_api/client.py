@@ -171,6 +171,10 @@ class ProviderAppClient:
         try:
             await self._golem_app.Shutdown(request)
             await self._service.wait_until_shutdown_complete()
-        except StreamTerminatedError:
+        except (StreamTerminatedError, ConnectionRefusedError) as e:
+            print(e)
             # Already shut(ting) down
             pass
+        except Exception as e:
+            print(e)
+            raise
