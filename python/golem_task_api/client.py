@@ -140,7 +140,7 @@ class ProviderAppClient:
             port: int = DEFAULT_PORT,
     ) -> None:
         self._service = service
-        host, port = service.start(f'requestor {port}', port)
+        host, port = service.start(f'provider {port}', port)
         self._golem_app = ProviderAppStub(
             Channel(host, port, loop=asyncio.get_event_loop()),
         )
