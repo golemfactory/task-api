@@ -5,7 +5,7 @@ from typing import ClassVar, List, Tuple
 from pathlib import Path
 
 from grpclib.client import Channel
-from grpclib.exceptions import StreamTerminatedError
+from grpclib.utils import Wrapper
 
 from golem_task_api.messages import (
     CreateTaskRequest,
@@ -32,6 +32,15 @@ from golem_task_api.structs import Subtask
 
 
 class TaskApiService(abc.ABC):
+
+    @abc.abstractmethod
+    def running(self) -> bool:
+        """
+        Checks if the service is still running.
+        E.g. For inline this would be implemented as:
+        `thread.is_alive()`
+        """
+        pass
 
     @abc.abstractmethod
     def start(self, command: str, port: int) -> Tuple[str, int]:
@@ -145,6 +154,7 @@ class ProviderAppClient:
         self._golem_app = ProviderAppStub(
             Channel(host, port, loop=asyncio.get_event_loop()),
         )
+        self._kill_switch = Wrapper()
 
     async def compute(
             self,
@@ -156,25 +166,33 @@ class ProviderAppClient:
         request.task_id = task_id
         request.subtask_id = subtask_id
         request.subtask_params_json = json.dumps(subtask_params)
-        reply = await self._golem_app.Compute(request)
+        try:
+            with self._kill_switch:
+                reply = await self._golem_app.Compute(request)
+        except Exception as e:
+            print('TODO: Set status / use finally or remove this try block')
+            print('ERROR in Compute:', e)
+            raise
         await self._service.wait_until_shutdown_complete()
         return Path(reply.output_filepath)
 
     async def run_benchmark(self) -> float:
         request = RunBenchmarkRequest()
-        reply = await self._golem_app.RunBenchmark(request)
+        try:
+            with self._kill_switch:
+                reply = await self._golem_app.RunBenchmark(request)
+        except Exception as e:
+            print('TODO: Set status / use finally or remove this try block')
+            print('ERROR in RunBenchmark:', e)
+            raise
         await self._service.wait_until_shutdown_complete()
         return reply.score
 
     async def shutdown(self) -> None:
+        if not self._kill_switch.cancelled:
+            self._kill_switch.cancel(Exception("shutdown"))
+        if not self._service.running():
+            return
         request = ShutdownRequest()
-        try:
-            await self._golem_app.Shutdown(request)
-            await self._service.wait_until_shutdown_complete()
-        except (StreamTerminatedError, ConnectionRefusedError) as e:
-            print(e)
-            # Already shut(ting) down
-            pass
-        except Exception as e:
-            print(e)
-            raise
+        await self._golem_app.Shutdown(request)
+        await self._service.wait_until_shutdown_complete()

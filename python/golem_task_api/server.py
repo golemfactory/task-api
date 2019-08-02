@@ -155,9 +155,13 @@ class ProviderApp(ProviderAppBase):
 
     @forward_exceptions()
     async def RunBenchmark(self, stream):
-        print('RunBenchmark called')
         await stream.recv_message()
-        score = await self._handler.run_benchmark(self._work_dir)
+        try:
+            score = await self._handler.run_benchmark(self._work_dir)
+        except Exception as e:
+            print('TODO: Set status / use finally or remove this try block',
+                  flush=True)
+            raise
         reply = RunBenchmarkReply()
         reply.score = score
         await stream.send_message(reply)
@@ -166,11 +170,16 @@ class ProviderApp(ProviderAppBase):
     @forward_exceptions()
     async def Compute(self, stream):
         request: ComputeRequest = await stream.recv_message()
-        output_filepath = await self._handler.compute(
-            self._work_dir,
-            request.subtask_id,
-            json.loads(request.subtask_params_json),
-        )
+        try:
+            output_filepath = await self._handler.compute(
+                self._work_dir,
+                request.subtask_id,
+                json.loads(request.subtask_params_json),
+            )
+        except Exception as e:
+            print('TODO: Set status / use finally or remove this try block',
+                  flush=True)
+            raise
         reply = ComputeReply()
         reply.output_filepath = output_filepath
         await stream.send_message(reply)
@@ -178,19 +187,15 @@ class ProviderApp(ProviderAppBase):
 
     @forward_exceptions()
     async def Shutdown(self, stream):
-        print('Shutdown called')
         await stream.recv_message()
-        all_tasks = asyncio.Task.all_tasks()
-        print(all_tasks)
-        for task in asyncio.Task.all_tasks():
-            print('Canceling task for shutdown')
-            print(task)
-            task.cancel()
         reply = ShutdownReply()
         await stream.send_message(reply)
         # Do not call shutdown multiple times, this can happen in case of errors
         if not self._shutdown_future.done():
+            print('Triggering shutdown', flush=True)
             self._shutdown_future.set_result(None)
+        else:
+            print('Shutdown already triggered', flush=True)
 
 
 class AppServer:
@@ -203,14 +208,14 @@ class AppServer:
         self._shutdown_future = shutdown_future
 
     async def start(self):
-        print(f'Starting server at port {self._port}')
+        print(f'Starting server at port {self._port}', flush=True)
         await self._server.start('', self._port, ssl=None)
 
     async def wait_until_shutdown(self):
         await self._shutdown_future
 
     async def stop(self):
-        print("Stopping server...")
+        print("Stopping server...", flush=True)
         self._server.close()
         await self._server.wait_closed()
 
