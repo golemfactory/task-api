@@ -152,11 +152,16 @@ class ProviderApp(ProviderAppBase):
         self._shutdown_future = shutdown_future
         self._work_dir = work_dir
         self._handler = handler
+        self._running_tasks = []
 
     @forward_exceptions()
     async def RunBenchmark(self, stream):
         await stream.recv_message()
-        score = await self._handler.run_benchmark(self._work_dir)
+        defer = self._handler.run_benchmark(self._work_dir)
+        task = asyncio.ensure_future(defer)
+        self._running_tasks.append(task)
+        score = await task
+        self._running_tasks.remove(task)
         reply = RunBenchmarkReply()
         reply.score = score
         await stream.send_message(reply)
@@ -165,11 +170,15 @@ class ProviderApp(ProviderAppBase):
     @forward_exceptions()
     async def Compute(self, stream):
         request: ComputeRequest = await stream.recv_message()
-        output_filepath = await self._handler.compute(
+        defer = self._handler.compute(
             self._work_dir,
             request.subtask_id,
             json.loads(request.subtask_params_json),
         )
+        task = asyncio.ensure_future(defer)
+        self._running_tasks.append(task)
+        output_filepath = await task
+        self._running_tasks.remove(task)
         reply = ComputeReply()
         reply.output_filepath = output_filepath
         await stream.send_message(reply)
@@ -178,6 +187,8 @@ class ProviderApp(ProviderAppBase):
     @forward_exceptions()
     async def Shutdown(self, stream):
         await stream.recv_message()
+        for task in self._running_tasks:
+            task.cancel()
         reply = ShutdownReply()
         await stream.send_message(reply)
         # Do not call shutdown multiple times, this can happen in case of errors
