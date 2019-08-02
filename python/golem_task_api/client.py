@@ -5,6 +5,7 @@ from typing import ClassVar, List, Tuple
 from pathlib import Path
 
 from grpclib.client import Channel
+from grpclib.exceptions import StreamTerminatedError
 
 from golem_task_api.messages import (
     CreateTaskRequest,
@@ -167,5 +168,9 @@ class ProviderAppClient:
 
     async def shutdown(self) -> None:
         request = ShutdownRequest()
-        await self._golem_app.Shutdown(request)
-        await self._service.wait_until_shutdown_complete()
+        try:
+            await self._golem_app.Shutdown(request)
+            await self._service.wait_until_shutdown_complete()
+        except StreamTerminatedError:
+            # Already shut(ting) down
+            pass
