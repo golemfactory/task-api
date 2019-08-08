@@ -156,12 +156,7 @@ class ProviderApp(ProviderAppBase):
     @forward_exceptions()
     async def RunBenchmark(self, stream):
         await stream.recv_message()
-        try:
-            score = await self._handler.run_benchmark(self._work_dir)
-        except Exception as e:
-            print('TODO: Set status / use finally or remove this try block',
-                  flush=True)
-            raise
+        score = await self._handler.run_benchmark(self._work_dir)
         reply = RunBenchmarkReply()
         reply.score = score
         await stream.send_message(reply)
@@ -170,16 +165,11 @@ class ProviderApp(ProviderAppBase):
     @forward_exceptions()
     async def Compute(self, stream):
         request: ComputeRequest = await stream.recv_message()
-        try:
-            output_filepath = await self._handler.compute(
-                self._work_dir,
-                request.subtask_id,
-                json.loads(request.subtask_params_json),
-            )
-        except Exception as e:
-            print('TODO: Set status / use finally or remove this try block',
-                  flush=True)
-            raise
+        output_filepath = await self._handler.compute(
+            self._work_dir,
+            request.subtask_id,
+            json.loads(request.subtask_params_json),
+        )
         reply = ComputeReply()
         reply.output_filepath = output_filepath
         await stream.send_message(reply)

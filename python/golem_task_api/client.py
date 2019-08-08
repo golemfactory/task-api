@@ -30,6 +30,8 @@ from golem_task_api.proto.golem_task_api_grpc import (
 )
 from golem_task_api.structs import Subtask
 
+class ShutdownException(Exception):
+    pass
 
 class TaskApiService(abc.ABC):
 
@@ -190,7 +192,7 @@ class ProviderAppClient:
 
     async def shutdown(self) -> None:
         if not self._kill_switch.cancelled:
-            self._kill_switch.cancel(Exception("shutdown"))
+            self._kill_switch.cancel(ShutdownException("Shutdown requested"))
         if not self._service.running():
             return
         request = ShutdownRequest()
