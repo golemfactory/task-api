@@ -49,7 +49,9 @@ class TaskApiService(abc.ABC):
         """
         This method is supposed to pass the command argument to the entrypoint
         which will asynchronously spawn the server and should return a tuple
-        (host, port) where one can connect to this server.
+        (host, port) where one can connect to this server. The method **should
+        not** use the event loop in which it is being called to run the service
+        (but rather spawn a new thread or process).
         E.g. for Docker app this could be implemented as:
         `docker run --detach <command>`
         """
