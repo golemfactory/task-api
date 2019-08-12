@@ -157,25 +157,29 @@ class ProviderApp(ProviderAppBase):
 
     @forward_exceptions()
     async def RunBenchmark(self, stream):
-        await stream.recv_message()
-        score = await self._handler.run_benchmark(self._work_dir)
-        reply = RunBenchmarkReply()
-        reply.score = score
-        await stream.send_message(reply)
-        self._shutdown_future.set_result(None)
+        try:
+            await stream.recv_message()
+            score = await self._handler.run_benchmark(self._work_dir)
+            reply = RunBenchmarkReply()
+            reply.score = score
+            await stream.send_message(reply)
+        finally:
+            self._shutdown_future.set_result(None)
 
     @forward_exceptions()
     async def Compute(self, stream):
-        request: ComputeRequest = await stream.recv_message()
-        output_filepath = await self._handler.compute(
-            self._work_dir,
-            request.subtask_id,
-            json.loads(request.subtask_params_json),
-        )
-        reply = ComputeReply()
-        reply.output_filepath = output_filepath
-        await stream.send_message(reply)
-        self._shutdown_future.set_result(None)
+        try:
+            request: ComputeRequest = await stream.recv_message()
+            output_filepath = await self._handler.compute(
+                self._work_dir,
+                request.subtask_id,
+                json.loads(request.subtask_params_json),
+            )
+            reply = ComputeReply()
+            reply.output_filepath = output_filepath
+            await stream.send_message(reply)
+        finally:
+            self._shutdown_future.set_result(None)
 
     @forward_exceptions()
     async def Shutdown(self, stream):

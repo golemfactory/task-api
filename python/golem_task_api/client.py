@@ -171,11 +171,7 @@ class ProviderAppClient:
         try:
             with self._kill_switch:
                 reply = await self._golem_app.Compute(request)
-        except Exception as e:
-            print('TODO: Set status / use finally or remove this try block')
-            print('ERROR in Compute:', e)
-            raise
-        await self._service.wait_until_shutdown_complete()
+            await self._service.wait_until_shutdown_complete()
         return Path(reply.output_filepath)
 
     async def run_benchmark(self) -> float:
@@ -183,11 +179,8 @@ class ProviderAppClient:
         try:
             with self._kill_switch:
                 reply = await self._golem_app.RunBenchmark(request)
-        except Exception as e:
-            print('TODO: Set status / use finally or remove this try block')
-            print('ERROR in RunBenchmark:', e)
-            raise
-        await self._service.wait_until_shutdown_complete()
+        finally:
+            await self._service.wait_until_shutdown_complete()
         return reply.score
 
     async def shutdown(self) -> None:
