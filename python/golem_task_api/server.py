@@ -44,7 +44,7 @@ def forward_exceptions():
             except Exception as e:
                 print(traceback.format_exc())
                 # TODO: use non private property to check for closed status
-                if stream._steam.closable:
+                if stream._stream.closable:
                     await stream.send_trailing_metadata(
                         status=const.Status.INTERNAL,
                         status_message=str(e),

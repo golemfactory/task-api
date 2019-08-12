@@ -171,6 +171,7 @@ class ProviderAppClient:
         try:
             with self._kill_switch:
                 reply = await self._golem_app.Compute(request)
+        finally:
             await self._service.wait_until_shutdown_complete()
         return Path(reply.output_filepath)
 
