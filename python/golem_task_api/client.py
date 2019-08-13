@@ -5,6 +5,7 @@ from typing import ClassVar, List, Tuple
 from pathlib import Path
 
 from grpclib.client import Channel
+from grpclib.utils import Wrapper
 
 from golem_task_api.messages import (
     CreateTaskRequest,
@@ -29,8 +30,19 @@ from golem_task_api.proto.golem_task_api_grpc import (
 )
 from golem_task_api.structs import Subtask
 
+class ShutdownException(Exception):
+    pass
 
 class TaskApiService(abc.ABC):
+
+    @abc.abstractmethod
+    def running(self) -> bool:
+        """
+        Checks if the service is still running.
+        E.g. For inline this would be implemented as:
+        `thread.is_alive()`
+        """
+        pass
 
     @abc.abstractmethod
     def start(self, command: str, port: int) -> Tuple[str, int]:
@@ -134,43 +146,49 @@ class RequestorAppClient:
 class ProviderAppClient:
     DEFAULT_PORT: ClassVar[int] = 50006
 
-    @classmethod
-    def _start_service(
-            cls,
+    def __init__(
+            self,
             service: TaskApiService,
-    ) -> ProviderAppStub:
-        host, port = service.start(
-            f'provider {cls.DEFAULT_PORT}',
-            cls.DEFAULT_PORT,
-        )
-        return ProviderAppStub(
+            port: int = DEFAULT_PORT,
+    ) -> None:
+        self._service = service
+        host, port = service.start(f'provider {port}', port)
+        self._golem_app = ProviderAppStub(
             Channel(host, port, loop=asyncio.get_event_loop()),
         )
+        self._kill_switch = Wrapper()
 
-    @classmethod
     async def compute(
-            cls,
-            service: TaskApiService,
+            self,
             task_id: str,
             subtask_id: str,
             subtask_params: dict,
     ) -> Path:
-        golem_app = cls._start_service(service)
         request = ComputeRequest()
         request.task_id = task_id
         request.subtask_id = subtask_id
         request.subtask_params_json = json.dumps(subtask_params)
-        reply = await golem_app.Compute(request)
-        await service.wait_until_shutdown_complete()
+        try:
+            with self._kill_switch:
+                reply = await self._golem_app.Compute(request)
+        finally:
+            await self._service.wait_until_shutdown_complete()
         return Path(reply.output_filepath)
 
-    @classmethod
-    async def run_benchmark(
-            cls,
-            service: TaskApiService,
-    ) -> float:
-        golem_app = cls._start_service(service)
+    async def run_benchmark(self) -> float:
         request = RunBenchmarkRequest()
-        reply = await golem_app.RunBenchmark(request)
-        await service.wait_until_shutdown_complete()
+        try:
+            with self._kill_switch:
+                reply = await self._golem_app.RunBenchmark(request)
+        finally:
+            await self._service.wait_until_shutdown_complete()
         return reply.score
+
+    async def shutdown(self) -> None:
+        if not self._kill_switch.cancelled:
+            self._kill_switch.cancel(ShutdownException("Shutdown requested"))
+        if not self._service.running():
+            return
+        request = ShutdownRequest()
+        await self._golem_app.Shutdown(request)
+        await self._service.wait_until_shutdown_complete()

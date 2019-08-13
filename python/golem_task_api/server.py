@@ -43,10 +43,12 @@ def forward_exceptions():
                 await func(self, stream)
             except Exception as e:
                 print(traceback.format_exc())
-                await stream.send_trailing_metadata(
-                    status=const.Status.INTERNAL,
-                    status_message=str(e),
-                )
+                # TODO: use non private property to check for closed status
+                if stream._stream.closable:
+                    await stream.send_trailing_metadata(
+                        status=const.Status.INTERNAL,
+                        status_message=str(e),
+                    )
         return wrapped
     return wrapper
 
@@ -137,9 +139,9 @@ class RequestorApp(RequestorAppBase):
     @forward_exceptions()
     async def Shutdown(self, stream):
         await stream.recv_message()
-        self._shutdown_future.set_result(None)
         reply = ShutdownReply()
         await stream.send_message(reply)
+        self._shutdown_future.set_result(None)
 
 
 class ProviderApp(ProviderAppBase):
@@ -155,25 +157,41 @@ class ProviderApp(ProviderAppBase):
 
     @forward_exceptions()
     async def RunBenchmark(self, stream):
-        await stream.recv_message()
-        score = await self._handler.run_benchmark(self._work_dir)
-        reply = RunBenchmarkReply()
-        reply.score = score
-        await stream.send_message(reply)
-        self._shutdown_future.set_result(None)
+        try:
+            await stream.recv_message()
+            score = await self._handler.run_benchmark(self._work_dir)
+            reply = RunBenchmarkReply()
+            reply.score = score
+            await stream.send_message(reply)
+        finally:
+            self._shutdown_future.set_result(None)
 
     @forward_exceptions()
     async def Compute(self, stream):
-        request: ComputeRequest = await stream.recv_message()
-        output_filepath = await self._handler.compute(
-            self._work_dir,
-            request.subtask_id,
-            json.loads(request.subtask_params_json),
-        )
-        reply = ComputeReply()
-        reply.output_filepath = output_filepath
+        try:
+            request: ComputeRequest = await stream.recv_message()
+            output_filepath = await self._handler.compute(
+                self._work_dir,
+                request.subtask_id,
+                json.loads(request.subtask_params_json),
+            )
+            reply = ComputeReply()
+            reply.output_filepath = output_filepath
+            await stream.send_message(reply)
+        finally:
+            self._shutdown_future.set_result(None)
+
+    @forward_exceptions()
+    async def Shutdown(self, stream):
+        await stream.recv_message()
+        reply = ShutdownReply()
         await stream.send_message(reply)
-        self._shutdown_future.set_result(None)
+        # Do not call shutdown multiple times, this can happen in case of errors
+        if not self._shutdown_future.done():
+            print('Triggering shutdown', flush=True)
+            self._shutdown_future.set_result(None)
+        else:
+            print('Shutdown already triggered', flush=True)
 
 
 class AppServer:
@@ -186,14 +204,14 @@ class AppServer:
         self._shutdown_future = shutdown_future
 
     async def start(self):
-        print(f'Starting server at port {self._port}')
+        print(f'Starting server at port {self._port}', flush=True)
         await self._server.start('', self._port, ssl=None)
 
     async def wait_until_shutdown(self):
         await self._shutdown_future
 
     async def stop(self):
-        print("Stopping server...")
+        print("Stopping server...", flush=True)
         self._server.close()
         await self._server.wait_closed()
 
