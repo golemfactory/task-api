@@ -45,11 +45,13 @@ class TaskApiService(abc.ABC):
         pass
 
     @abc.abstractmethod
-    def start(self, command: str, port: int) -> Tuple[str, int]:
+    async def start(self, command: str, port: int) -> Tuple[str, int]:
         """
         This method is supposed to pass the command argument to the entrypoint
         which will asynchronously spawn the server and should return a tuple
-        (host, port) where one can connect to this server.
+        (host, port) where one can connect to this server. The method **should
+        not** use the event loop in which it is being called to run the service
+        (but rather spawn a new thread or process).
         E.g. for Docker app this could be implemented as:
         `docker run --detach <command>`
         """
@@ -68,16 +70,25 @@ class TaskApiService(abc.ABC):
 class RequestorAppClient:
     DEFAULT_PORT: ClassVar[int] = 50005
 
+    @classmethod
+    async def create(
+            cls,
+            service: TaskApiService,
+            port: int = DEFAULT_PORT
+    ) -> 'RequestorAppClient':
+        host, port = await service.start(f'requestor {port}', port)
+        app_stub = RequestorAppStub(
+            Channel(host, port, loop=asyncio.get_event_loop())
+        )
+        return cls(service, app_stub)
+
     def __init__(
             self,
             service: TaskApiService,
-            port: int = DEFAULT_PORT,
+            app_stub: RequestorAppStub,
     ) -> None:
         self._service = service
-        host, port = service.start(f'requestor {port}', port)
-        self._golem_app = RequestorAppStub(
-            Channel(host, port, loop=asyncio.get_event_loop()),
-        )
+        self._golem_app = app_stub
 
     async def create_task(
             self,
@@ -146,16 +157,25 @@ class RequestorAppClient:
 class ProviderAppClient:
     DEFAULT_PORT: ClassVar[int] = 50006
 
+    @classmethod
+    async def create(
+            cls,
+            service: TaskApiService,
+            port: int = DEFAULT_PORT
+    ) -> 'ProviderAppClient':
+        host, port = await service.start(f'provider {port}', port)
+        app_stub = ProviderAppStub(
+            Channel(host, port, loop=asyncio.get_event_loop())
+        )
+        return cls(service, app_stub)
+
     def __init__(
             self,
             service: TaskApiService,
-            port: int = DEFAULT_PORT,
+            app_stub: ProviderAppStub,
     ) -> None:
         self._service = service
-        host, port = service.start(f'provider {port}', port)
-        self._golem_app = ProviderAppStub(
-            Channel(host, port, loop=asyncio.get_event_loop()),
-        )
+        self._golem_app = app_stub
         self._kill_switch = Wrapper()
 
     async def compute(
