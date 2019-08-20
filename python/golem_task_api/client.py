@@ -30,8 +30,10 @@ from golem_task_api.proto.golem_task_api_grpc import (
 )
 from golem_task_api.structs import Subtask
 
+
 class ShutdownException(Exception):
     pass
+
 
 class TaskApiService(abc.ABC):
 

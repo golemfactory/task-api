@@ -176,7 +176,7 @@ class ProviderApp(ProviderAppBase):
                 json.loads(request.subtask_params_json),
             )
             reply = ComputeReply()
-            reply.output_filepath = output_filepath
+            reply.output_filepath = str(output_filepath)
             await stream.send_message(reply)
         finally:
             self._shutdown_future.set_result(None)
