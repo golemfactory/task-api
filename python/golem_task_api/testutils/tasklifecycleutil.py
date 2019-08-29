@@ -100,25 +100,25 @@ class TaskLifecycleUtil:
     def mkdir_requestor(self, task_id: str) -> None:
         self.req_task_work_dir = self.req_work_dir / task_id
         self.req_task_work_dir.mkdir()
-        self.req_task_resources_dir = \
-            self.req_task_work_dir / constants.RESOURCES_DIR
-        self.req_task_resources_dir.mkdir()
-        self.req_task_net_resources_dir = \
-            self.req_task_work_dir / constants.NETWORK_RESOURCES_DIR
-        self.req_task_net_resources_dir.mkdir()
-        self.req_task_results_dir = \
-            self.req_task_work_dir / constants.RESULTS_DIR
-        self.req_task_results_dir.mkdir()
-        self.req_task_net_results_dir = \
-            self.req_task_work_dir / constants.NETWORK_RESULTS_DIR
-        self.req_task_net_results_dir.mkdir()
+        self.req_task_inputs_dir = \
+            self.req_task_work_dir / constants.TASK_INPUTS_DIR
+        self.req_task_inputs_dir.mkdir()
+        self.req_subtask_inputs_dir = \
+            self.req_task_work_dir / constants.SUBTASK_INPUTS_DIR
+        self.req_subtask_inputs_dir.mkdir()
+        self.req_task_outputs_dir = \
+            self.req_task_work_dir / constants.TASK_OUTPUTS_DIR
+        self.req_task_outputs_dir.mkdir()
+        self.req_subtask_outputs_dir = \
+            self.req_task_work_dir / constants.SUBTASK_OUTPUTS_DIR
+        self.req_subtask_outputs_dir.mkdir()
 
     def mkdir_provider_task(self, task_id: str) -> None:
         self.prov_task_work_dir = self.prov_work_dir / task_id
         self.prov_task_work_dir.mkdir()
-        self.prov_task_net_resources_dir = \
-            self.prov_task_work_dir / constants.NETWORK_RESOURCES_DIR
-        self.prov_task_net_resources_dir.mkdir()
+        self.prov_subtask_inputs_dir = \
+            self.prov_task_work_dir / constants.SUBTASK_INPUTS_DIR
+        self.prov_subtask_inputs_dir.mkdir()
 
     def mkdir_provider_subtask(self, subtask_id: str) -> None:
         prov_subtask_work_dir = self.prov_task_work_dir / subtask_id
@@ -126,13 +126,13 @@ class TaskLifecycleUtil:
 
     def put_resources_to_requestor(self, resources: List[Path]) -> None:
         for resource in resources:
-            shutil.copy2(resource, self.req_task_resources_dir)
+            shutil.copy2(resource, self.req_task_inputs_dir)
 
     def copy_resources_from_requestor(self, resources: List[str]) -> None:
         for resource_id in resources:
-            network_resource = self.req_task_net_resources_dir / resource_id
+            network_resource = self.req_subtask_inputs_dir / resource_id
             assert network_resource.exists()
-            shutil.copy2(network_resource, self.prov_task_net_resources_dir)
+            shutil.copy2(network_resource, self.prov_subtask_inputs_dir)
 
     def copy_result_from_provider(
             self,
@@ -143,7 +143,7 @@ class TaskLifecycleUtil:
         assert result.exists()
         shutil.copy2(
             result,
-            self.req_task_net_results_dir / f'{result.name}',
+            self.req_subtask_outputs_dir / f'{result.name}',
         )
 
     async def create_task(

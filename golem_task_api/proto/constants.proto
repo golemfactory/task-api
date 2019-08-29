@@ -6,17 +6,17 @@ package golem_task_api;
 import "google/protobuf/descriptor.proto";
 
 extend google.protobuf.FileOptions {
-    string RESOURCES_DIR = 51000;
-    string NETWORK_RESOURCES_DIR = 51001;
-    string RESULTS_DIR = 51002;
-    string NETWORK_RESULTS_DIR = 51003;
+    string TASK_INPUTS_DIR = 51000;
+    string SUBTASK_INPUTS_DIR = 51001;
+    string TASK_OUTPUTS_DIR = 51002;
+    string SUBTASK_OUTPUTS_DIR = 51003;
 
     string WORK_DIR = 51100;
 }
 
-option (RESOURCES_DIR) = "resources";
-option (NETWORK_RESOURCES_DIR) = "network_resources";
-option (RESULTS_DIR) = "results";
-option (NETWORK_RESULTS_DIR) = "network_results";
+option (TASK_INPUTS_DIR) = "task_inputs";
+option (SUBTASK_INPUTS_DIR) = "subtask_inputs";
+option (TASK_OUTPUTS_DIR) = "task_outputs";
+option (SUBTASK_OUTPUTS_DIR) = "subtask_outputs";
 
 option (WORK_DIR) = "golem/work";

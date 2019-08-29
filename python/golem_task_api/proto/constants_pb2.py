@@ -20,39 +20,39 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   name='golem_task_api/proto/constants.proto',
   package='golem_task_api',
   syntax='proto3',
-  serialized_options=_b('\302\363\030\tresources\312\363\030\021network_resources\322\363\030\007results\332\363\030\017network_results\342\371\030\ngolem/work'),
-  serialized_pb=_b('\n$golem_task_api/proto/constants.proto\x12\x0egolem_task_api\x1a google/protobuf/descriptor.proto:5\n\rRESOURCES_DIR\x12\x1c.google.protobuf.FileOptions\x18\xb8\x8e\x03 \x01(\t:=\n\x15NETWORK_RESOURCES_DIR\x12\x1c.google.protobuf.FileOptions\x18\xb9\x8e\x03 \x01(\t:3\n\x0bRESULTS_DIR\x12\x1c.google.protobuf.FileOptions\x18\xba\x8e\x03 \x01(\t:;\n\x13NETWORK_RESULTS_DIR\x12\x1c.google.protobuf.FileOptions\x18\xbb\x8e\x03 \x01(\t:0\n\x08WORK_DIR\x12\x1c.google.protobuf.FileOptions\x18\x9c\x8f\x03 \x01(\tBN\xc2\xf3\x18\tresources\xca\xf3\x18\x11network_resources\xd2\xf3\x18\x07results\xda\xf3\x18\x0fnetwork_results\xe2\xf9\x18\ngolem/workb\x06proto3')
+  serialized_options=_b('\302\363\030\013task_inputs\312\363\030\016subtask_inputs\322\363\030\014task_outputs\332\363\030\017subtask_outputs\342\371\030\ngolem/work'),
+  serialized_pb=_b('\n$golem_task_api/proto/constants.proto\x12\x0egolem_task_api\x1a google/protobuf/descriptor.proto:7\n\x0fTASK_INPUTS_DIR\x12\x1c.google.protobuf.FileOptions\x18\xb8\x8e\x03 \x01(\t::\n\x12SUBTASK_INPUTS_DIR\x12\x1c.google.protobuf.FileOptions\x18\xb9\x8e\x03 \x01(\t:8\n\x10TASK_OUTPUTS_DIR\x12\x1c.google.protobuf.FileOptions\x18\xba\x8e\x03 \x01(\t:;\n\x13SUBTASK_OUTPUTS_DIR\x12\x1c.google.protobuf.FileOptions\x18\xbb\x8e\x03 \x01(\t:0\n\x08WORK_DIR\x12\x1c.google.protobuf.FileOptions\x18\x9c\x8f\x03 \x01(\tBR\xc2\xf3\x18\x0btask_inputs\xca\xf3\x18\x0esubtask_inputs\xd2\xf3\x18\x0ctask_outputs\xda\xf3\x18\x0fsubtask_outputs\xe2\xf9\x18\ngolem/workb\x06proto3')
   ,
   dependencies=[google_dot_protobuf_dot_descriptor__pb2.DESCRIPTOR,])
 
 
-RESOURCES_DIR_FIELD_NUMBER = 51000
-RESOURCES_DIR = _descriptor.FieldDescriptor(
-  name='RESOURCES_DIR', full_name='golem_task_api.RESOURCES_DIR', index=0,
+TASK_INPUTS_DIR_FIELD_NUMBER = 51000
+TASK_INPUTS_DIR = _descriptor.FieldDescriptor(
+  name='TASK_INPUTS_DIR', full_name='golem_task_api.TASK_INPUTS_DIR', index=0,
   number=51000, type=9, cpp_type=9, label=1,
   has_default_value=False, default_value=_b("").decode('utf-8'),
   message_type=None, enum_type=None, containing_type=None,
   is_extension=True, extension_scope=None,
   serialized_options=None, file=DESCRIPTOR)
-NETWORK_RESOURCES_DIR_FIELD_NUMBER = 51001
-NETWORK_RESOURCES_DIR = _descriptor.FieldDescriptor(
-  name='NETWORK_RESOURCES_DIR', full_name='golem_task_api.NETWORK_RESOURCES_DIR', index=1,
+SUBTASK_INPUTS_DIR_FIELD_NUMBER = 51001
+SUBTASK_INPUTS_DIR = _descriptor.FieldDescriptor(
+  name='SUBTASK_INPUTS_DIR', full_name='golem_task_api.SUBTASK_INPUTS_DIR', index=1,
   number=51001, type=9, cpp_type=9, label=1,
   has_default_value=False, default_value=_b("").decode('utf-8'),
   message_type=None, enum_type=None, containing_type=None,
   is_extension=True, extension_scope=None,
   serialized_options=None, file=DESCRIPTOR)
-RESULTS_DIR_FIELD_NUMBER = 51002
-RESULTS_DIR = _descriptor.FieldDescriptor(
-  name='RESULTS_DIR', full_name='golem_task_api.RESULTS_DIR', index=2,
+TASK_OUTPUTS_DIR_FIELD_NUMBER = 51002
+TASK_OUTPUTS_DIR = _descriptor.FieldDescriptor(
+  name='TASK_OUTPUTS_DIR', full_name='golem_task_api.TASK_OUTPUTS_DIR', index=2,
   number=51002, type=9, cpp_type=9, label=1,
   has_default_value=False, default_value=_b("").decode('utf-8'),
   message_type=None, enum_type=None, containing_type=None,
   is_extension=True, extension_scope=None,
   serialized_options=None, file=DESCRIPTOR)
-NETWORK_RESULTS_DIR_FIELD_NUMBER = 51003
-NETWORK_RESULTS_DIR = _descriptor.FieldDescriptor(
-  name='NETWORK_RESULTS_DIR', full_name='golem_task_api.NETWORK_RESULTS_DIR', index=3,
+SUBTASK_OUTPUTS_DIR_FIELD_NUMBER = 51003
+SUBTASK_OUTPUTS_DIR = _descriptor.FieldDescriptor(
+  name='SUBTASK_OUTPUTS_DIR', full_name='golem_task_api.SUBTASK_OUTPUTS_DIR', index=3,
   number=51003, type=9, cpp_type=9, label=1,
   has_default_value=False, default_value=_b("").decode('utf-8'),
   message_type=None, enum_type=None, containing_type=None,
@@ -67,17 +67,17 @@ WORK_DIR = _descriptor.FieldDescriptor(
   is_extension=True, extension_scope=None,
   serialized_options=None, file=DESCRIPTOR)
 
-DESCRIPTOR.extensions_by_name['RESOURCES_DIR'] = RESOURCES_DIR
-DESCRIPTOR.extensions_by_name['NETWORK_RESOURCES_DIR'] = NETWORK_RESOURCES_DIR
-DESCRIPTOR.extensions_by_name['RESULTS_DIR'] = RESULTS_DIR
-DESCRIPTOR.extensions_by_name['NETWORK_RESULTS_DIR'] = NETWORK_RESULTS_DIR
+DESCRIPTOR.extensions_by_name['TASK_INPUTS_DIR'] = TASK_INPUTS_DIR
+DESCRIPTOR.extensions_by_name['SUBTASK_INPUTS_DIR'] = SUBTASK_INPUTS_DIR
+DESCRIPTOR.extensions_by_name['TASK_OUTPUTS_DIR'] = TASK_OUTPUTS_DIR
+DESCRIPTOR.extensions_by_name['SUBTASK_OUTPUTS_DIR'] = SUBTASK_OUTPUTS_DIR
 DESCRIPTOR.extensions_by_name['WORK_DIR'] = WORK_DIR
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
-google_dot_protobuf_dot_descriptor__pb2.FileOptions.RegisterExtension(RESOURCES_DIR)
-google_dot_protobuf_dot_descriptor__pb2.FileOptions.RegisterExtension(NETWORK_RESOURCES_DIR)
-google_dot_protobuf_dot_descriptor__pb2.FileOptions.RegisterExtension(RESULTS_DIR)
-google_dot_protobuf_dot_descriptor__pb2.FileOptions.RegisterExtension(NETWORK_RESULTS_DIR)
+google_dot_protobuf_dot_descriptor__pb2.FileOptions.RegisterExtension(TASK_INPUTS_DIR)
+google_dot_protobuf_dot_descriptor__pb2.FileOptions.RegisterExtension(SUBTASK_INPUTS_DIR)
+google_dot_protobuf_dot_descriptor__pb2.FileOptions.RegisterExtension(TASK_OUTPUTS_DIR)
+google_dot_protobuf_dot_descriptor__pb2.FileOptions.RegisterExtension(SUBTASK_OUTPUTS_DIR)
 google_dot_protobuf_dot_descriptor__pb2.FileOptions.RegisterExtension(WORK_DIR)
 
 DESCRIPTOR._options = None
