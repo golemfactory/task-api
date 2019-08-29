@@ -1,6 +1,9 @@
 import abc
 import asyncio
+import contextlib
 import json
+import socket
+import time
 from typing import ClassVar, List, Tuple
 from pathlib import Path
 
@@ -29,6 +32,23 @@ from golem_task_api.proto.golem_task_api_grpc import (
     RequestorAppStub,
 )
 from golem_task_api.structs import Subtask
+
+CONNECTION_TIMEOUT = 5.0  # seconds
+
+
+async def wait_until_socket_open(
+        host: str,
+        port: int,
+        timeout: float = CONNECTION_TIMEOUT
+) -> None:
+    deadline = time.time() + timeout
+    while time.time() < deadline:
+        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        with contextlib.closing(sock):
+            if sock.connect_ex((host, port)) == 0:
+                return
+        await asyncio.sleep(0.1)
+    raise TimeoutError
 
 
 class ShutdownException(Exception):
@@ -79,6 +99,7 @@ class RequestorAppClient:
             port: int = DEFAULT_PORT
     ) -> 'RequestorAppClient':
         host, port = await service.start(f'requestor {port}', port)
+        await wait_until_socket_open(host, port)
         app_stub = RequestorAppStub(
             Channel(host, port, loop=asyncio.get_event_loop())
         )
@@ -166,6 +187,7 @@ class ProviderAppClient:
             port: int = DEFAULT_PORT
     ) -> 'ProviderAppClient':
         host, port = await service.start(f'provider {port}', port)
+        await wait_until_socket_open(host, port)
         app_stub = ProviderAppStub(
             Channel(host, port, loop=asyncio.get_event_loop())
         )
