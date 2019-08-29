@@ -1,9 +1,6 @@
 from pathlib import Path
 import asyncio
-import contextlib
-import socket
 import threading
-import time
 
 from typing import Optional, Tuple
 
@@ -13,17 +10,6 @@ from golem_task_api import (
     ProviderAppHandler,
     RequestorAppHandler,
 )
-
-
-def wait_until_socket_open(host: str, port: int, timeout: float = 3.0) -> None:
-    deadline = time.time() + timeout
-    while time.time() < deadline:
-        with contextlib.closing(
-                socket.socket(socket.AF_INET, socket.SOCK_STREAM)) as sock:
-            if sock.connect_ex((host, port)) == 0:
-                return
-        time.sleep(0.05)
-    raise Exception(f'Could not connect to socket ({host}, {port})')
 
 
 class InlineTaskApiService(TaskApiService):
@@ -61,7 +47,6 @@ class InlineTaskApiService(TaskApiService):
         )
         self._thread.start()
         host = '127.0.0.1'
-        wait_until_socket_open(host, port)
         return host, port
 
     async def wait_until_shutdown_complete(self) -> None:
