@@ -13,10 +13,10 @@ The API is divided into two independent parts - requestor and provider.
 ## Requestor
 For requestor the app should implement a long running RPC service which implements the `RequestorApp` interface from the proto files. The app should assume it will have access to a single directory (let's call it `work_dir`). Each task will have its own separate working directory under the main `work_dir`. You can assume that for a given `task_id` the first call will always be `CreateTask` and the following directories will exist under `work_dir` and they will be empty:
 - `{task_id}`
-- `{task_id}/{constants.RESOURCES}`
-- `{task_id}/{constants.NETWORK_RESOURCES}`
-- `{task_id}/{constants.RESULTS}`
-- `{task_id}/{constants.NETWORK_RESULTS}`
+- `{task_id}/{constants.TASK_INPUTS_DIR}`
+- `{task_id}/{constants.SUBTASK_INPUTS_DIR}`
+- `{task_id}/{constants.TASK_OUTPUTS_DIR}`
+- `{task_id}/{constants.SUBTASK_OUTPUTS_DIR}`
 
 ### RPC methods
 - `CreateTask`
@@ -24,7 +24,7 @@ For requestor the app should implement a long running RPC service which implemen
   - should treat `{work_dir}/{task_id}` as the working directory for the given task
   - `task_params_json` is a JSON string containing task specific parameters
   - will only be called once with given `task_id`
-  - can assume `{task_id}/{constants.RESOURCES}` contains all the resources provided by task creator
+  - can assume `{task_id}/{constants.TASK_INPUTS_DIR}` contains all the resources provided by task creator
 - `NextSubtask`
   - takes one argument `task_id`
   - can assume `CreateTask` was called earlier with the same `task_id`
@@ -52,7 +52,7 @@ For requestor the app should implement a long running RPC service which implemen
   - takes no arguments
   - should gracefully terminate the service
 
-When the last subtask is successfully verified on the requestor's side, the `work_dir/task_id/constants.RESULTS` directory should contain all result files and nothing else.
+When the last subtask is successfully verified on the requestor's side, the `work_dir/task_id/constants.TASK_OUTPUTS_DIR` directory should contain all result files and nothing else.
 
 ## Provider
 Provider app should implement a short-lived RPC service which implements the `ProviderApp` interface from the proto files. Short-lived means that there will be only one request issued per service instance, i.e. the service should shutdown automatically after handling the first and only request.
@@ -62,8 +62,8 @@ Provider app should implement a short-lived RPC service which implements the `Pr
   - gets a single working directory `task_work_dir` to operate on
   - different subtasks of the same task will have the same `task_work_dir`
   - takes `task_id`, `subtask_id`, `subtask_params_json` as arguments
-  - can assume the `{task_work_dir}/{constants.NETWORK_RESOURCES}` directory exists
-  - can assume that under `{task_work_dir}/{constants.NETWORK_RESOURCES}` are the resources specified in the corresponding `NextSubtask` call
+  - can assume the `{task_work_dir}/{constants.SUBTASK_INPUTS_DIR}` directory exists
+  - can assume that under `{task_work_dir}/{constants.SUBTASK_INPUTS_DIR}` are the resources specified in the corresponding `NextSubtask` call
   - returns a filepath (relative to the `task_work_dir`) of the result file which will be sent back to the requestor with unchanged name
 - `Benchmark`
   - takes no arguments
