@@ -4,6 +4,7 @@ from pathlib import Path
 import pytest
 
 from golem_task_api import (
+    AppLifecycleHandler,
     ProviderAppHandler,
     RequestorAppHandler,
     structs,
@@ -19,6 +20,7 @@ class AsyncMock(mock.MagicMock):
 @pytest.mark.asyncio
 async def test_e2e_flow(tmpdir):
     task_lifecycle_util = TaskLifecycleUtil(Path(tmpdir))
+    app_lifecycle_handler = AsyncMock(spec_set=AppLifecycleHandler)
     requestor_handler = AsyncMock(spec_set=RequestorAppHandler)
     provider_handler = AsyncMock(spec_set=ProviderAppHandler)
 
@@ -28,7 +30,7 @@ async def test_e2e_flow(tmpdir):
     task_params = {'test_param': 'test_value'}
 
     async with task_lifecycle_util.init_requestor_with_handler(
-            requestor_handler):
+            requestor_handler, app_lifecycle_handler):
         await task_lifecycle_util.create_task(
             task_id,
             max_subtasks_count,
@@ -42,6 +44,7 @@ async def test_e2e_flow(tmpdir):
         )
         task_lifecycle_util.init_provider_with_handler(
             provider_handler,
+            app_lifecycle_handler,
             task_id,
         )
         requestor_handler.has_pending_subtasks.return_value = True

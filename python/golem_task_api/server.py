@@ -12,6 +12,7 @@ from golem_task_api.proto.golem_task_api_grpc import (
     RequestorAppBase,
 )
 from golem_task_api.handlers import (
+    AppLifecycleHandler,
     ProviderAppHandler,
     RequestorAppHandler,
 )
@@ -58,11 +59,11 @@ class RequestorApp(RequestorAppBase):
             self,
             work_dir: Path,
             handler: RequestorAppHandler,
-            shutdown_future: asyncio.Future,
+            lifecycle: AppLifecycleHandler,
     ) -> None:
-        self._shutdown_future = shutdown_future
         self._work_dir = work_dir
         self._handler = handler
+        self._lifecycle = lifecycle
 
     @forward_exceptions()
     async def CreateTask(self, stream):
@@ -141,7 +142,7 @@ class RequestorApp(RequestorAppBase):
         await stream.recv_message()
         reply = ShutdownReply()
         await stream.send_message(reply)
-        self._shutdown_future.set_result(None)
+        self._lifecycle.request_shutdown()
 
 
 class ProviderApp(ProviderAppBase):
@@ -149,11 +150,11 @@ class ProviderApp(ProviderAppBase):
             self,
             work_dir: Path,
             handler: ProviderAppHandler,
-            shutdown_future: asyncio.Future,
+            lifecycle: AppLifecycleHandler,
     ) -> None:
-        self._shutdown_future = shutdown_future
         self._work_dir = work_dir
         self._handler = handler
+        self._lifecycle = lifecycle
 
     @forward_exceptions()
     async def RunBenchmark(self, stream):
@@ -164,7 +165,7 @@ class ProviderApp(ProviderAppBase):
             reply.score = score
             await stream.send_message(reply)
         finally:
-            self._shutdown_future.set_result(None)
+            self._lifecycle.request_shutdown()
 
     @forward_exceptions()
     async def Compute(self, stream):
@@ -179,41 +180,45 @@ class ProviderApp(ProviderAppBase):
             reply.output_filepath = str(output_filepath)
             await stream.send_message(reply)
         finally:
-            self._shutdown_future.set_result(None)
+            self._lifecycle.request_shutdown()
 
     @forward_exceptions()
     async def Shutdown(self, stream):
         await stream.recv_message()
         reply = ShutdownReply()
         await stream.send_message(reply)
-        # Do not call shutdown multiple times, this can happen in case of errors
-        if not self._shutdown_future.done():
-            print('Triggering shutdown', flush=True)
-            self._shutdown_future.set_result(None)
-        else:
-            print('Shutdown already triggered', flush=True)
+        self._lifecycle.request_shutdown()
 
 
 class AppServer:
-    def __init__(self, golem_app, port: int, shutdown_future) -> None:
+    def __init__(
+            self,
+            golem_app,
+            port: int,
+            lifecycle: AppLifecycleHandler
+    ) -> None:
         self._server = server.Server(
             handlers=[golem_app],
             loop=asyncio.get_event_loop(),
         )
         self._port = port
-        self._shutdown_future = shutdown_future
+        self._lifecycle = lifecycle
 
     async def start(self):
         print(f'Starting server at port {self._port}', flush=True)
-        await self._server.start('', self._port, ssl=None)
+        await self._lifecycle.on_before_startup()
+        await self._server.start(host='', port=self._port, ssl=None)
+        await self._lifecycle.on_after_startup()
 
     async def wait_until_shutdown(self):
-        await self._shutdown_future
+        await self._lifecycle.shutdown_future
 
     async def stop(self):
+        await self._lifecycle.on_before_shutdown()
         print("Stopping server...", flush=True)
         self._server.close()
         await self._server.wait_closed()
+        await self._lifecycle.on_after_shutdown()
 
 
 class RequestorAppServer(AppServer):
@@ -222,10 +227,10 @@ class RequestorAppServer(AppServer):
             work_dir: Path,
             port: int,
             handler: RequestorAppHandler,
+            lifecycle: AppLifecycleHandler,
     ) -> None:
-        shutdown_future = asyncio.get_event_loop().create_future()
-        golem_app = RequestorApp(work_dir, handler, shutdown_future)
-        super().__init__(golem_app, port, shutdown_future)
+        golem_app = RequestorApp(work_dir, handler, lifecycle)
+        super().__init__(golem_app, port, lifecycle)
 
 
 class ProviderAppServer(AppServer):
@@ -234,7 +239,7 @@ class ProviderAppServer(AppServer):
             work_dir: Path,
             port: int,
             handler: ProviderAppHandler,
+            lifecycle: AppLifecycleHandler,
     ) -> None:
-        shutdown_future = asyncio.get_event_loop().create_future()
-        golem_app = ProviderApp(work_dir, handler, shutdown_future)
-        super().__init__(golem_app, port, shutdown_future)
+        golem_app = ProviderApp(work_dir, handler, lifecycle)
+        super().__init__(golem_app, port, lifecycle)

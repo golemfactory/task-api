@@ -9,6 +9,7 @@ from .entrypoint import (
 )
 
 from .handlers import (
+    AppLifecycleHandler,
     ProviderAppHandler,
     RequestorAppHandler,
 )

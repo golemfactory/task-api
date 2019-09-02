@@ -7,6 +7,7 @@ from typing import Optional, Tuple
 from golem_task_api import (
     TaskApiService,
     entrypoint,
+    AppLifecycleHandler,
     ProviderAppHandler,
     RequestorAppHandler,
 )
@@ -16,14 +17,18 @@ class InlineTaskApiService(TaskApiService):
     def __init__(
             self,
             work_dir: Path,
-            provider_handler: Optional[ProviderAppHandler]=None,
-            requestor_handler: Optional[RequestorAppHandler]=None,
+            requestor_handler: Optional[RequestorAppHandler] = None,
+            requestor_lifecycle_handler: Optional[AppLifecycleHandler] = None,
+            provider_handler: Optional[ProviderAppHandler] = None,
+            provider_lifecycle_handler: Optional[AppLifecycleHandler] = None,
     ) -> None:
         # get_child_watcher enables event loops in child threads
         asyncio.get_child_watcher()
         self._work_dir = work_dir
-        self._provider_handler = provider_handler
         self._requestor_handler = requestor_handler
+        self._requestor_lifecycle_handler = requestor_lifecycle_handler
+        self._provider_handler = provider_handler
+        self._provider_lifecycle_handler = provider_lifecycle_handler
         self._thread = None
 
     def _spawn(self, command: str):
@@ -32,8 +37,8 @@ class InlineTaskApiService(TaskApiService):
         loop.run_until_complete(entrypoint(
             self._work_dir,
             command.split(' '),
-            provider_handler=self._provider_handler,
             requestor_handler=self._requestor_handler,
+            provider_handler=self._provider_handler,
         ))
 
     def running(self) -> bool:
