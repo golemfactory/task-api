@@ -16,8 +16,8 @@ class InlineTaskApiService(TaskApiService):
     def __init__(
             self,
             work_dir: Path,
-            provider_handler: Optional[ProviderAppHandler]=None,
-            requestor_handler: Optional[RequestorAppHandler]=None,
+            provider_handler: Optional[ProviderAppHandler] = None,
+            requestor_handler: Optional[RequestorAppHandler] = None,
     ) -> None:
         # get_child_watcher enables event loops in child threads
         asyncio.get_child_watcher()
@@ -48,6 +48,9 @@ class InlineTaskApiService(TaskApiService):
         self._thread.start()
         host = '127.0.0.1'
         return host, port
+
+    async def stop(self) -> None:
+        pass  # Python thread cannot be killed
 
     async def wait_until_shutdown_complete(self) -> None:
         if not self.running():
