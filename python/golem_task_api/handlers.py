@@ -1,8 +1,36 @@
+import abc
+import asyncio
+
 from pathlib import Path
 from typing import List, Tuple, Optional
-import abc
 
 from golem_task_api.structs import Subtask
+
+
+class AppLifecycleHandler:
+
+    def __init__(self) -> None:
+        self.shutdown_future = asyncio.get_event_loop().create_future()
+
+    async def on_before_startup(self) -> None:
+        pass
+
+    async def on_after_startup(self) -> None:
+        pass
+
+    async def on_before_shutdown(self) -> None:
+        pass
+
+    async def on_after_shutdown(self) -> None:
+        pass
+
+    def request_shutdown(self) -> None:
+        # Do not call shutdown multiple times, this can happen in case of errors
+        if not self.shutdown_future.done():
+            print('Triggering shutdown', flush=True)
+            self.shutdown_future.set_result(None)
+        else:
+            print('Shutdown already triggered', flush=True)
 
 
 class RequestorAppHandler:

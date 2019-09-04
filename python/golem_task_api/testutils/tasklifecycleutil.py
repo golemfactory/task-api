@@ -9,6 +9,7 @@ from golem_task_api import (
     constants,
     ProviderAppClient,
     RequestorAppClient,
+    AppLifecycleHandler,
     ProviderAppHandler,
     RequestorAppHandler,
 )
@@ -34,12 +35,14 @@ class TaskLifecycleUtil:
     def init_provider_with_handler(
             self,
             provider_handler: ProviderAppHandler,
+            lifecycle_handler: AppLifecycleHandler,
             task_id: str,
     ) -> None:
         def get_task_api_service(work_dir: Path):
             return InlineTaskApiService(
                 work_dir,
                 provider_handler=provider_handler,
+                provider_lifecycle_handler=lifecycle_handler,
             )
         self.init_provider(get_task_api_service, task_id)
 
@@ -66,12 +69,14 @@ class TaskLifecycleUtil:
     async def init_requestor_with_handler(
             self,
             requestor_handler: RequestorAppHandler,
+            lifecycle_handler: AppLifecycleHandler,
             port: int = 50005,
     ):
         def get_task_api_service(work_dir: Path):
             return InlineTaskApiService(
                 work_dir,
                 requestor_handler=requestor_handler,
+                requestor_lifecycle_handler=lifecycle_handler,
             )
         async with self.init_requestor(get_task_api_service, port):
             yield self.requestor_client
