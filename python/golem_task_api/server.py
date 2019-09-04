@@ -6,6 +6,7 @@ from pathlib import Path
 
 from grpclib import const
 from grpclib import server
+from grpclib.health.service import Health
 
 from golem_task_api.proto.golem_task_api_grpc import (
     ProviderAppBase,
@@ -198,7 +199,7 @@ class AppServer:
             lifecycle: AppLifecycleHandler
     ) -> None:
         self._server = server.Server(
-            handlers=[golem_app],
+            handlers=[golem_app, Health()],
             loop=asyncio.get_event_loop(),
         )
         self._port = port

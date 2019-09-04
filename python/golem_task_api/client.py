@@ -1,14 +1,15 @@
 import abc
 import asyncio
-import contextlib
 import json
-import socket
 import time
+from enum import Enum
 from typing import ClassVar, List, Tuple
 from pathlib import Path
 
 from grpclib.client import Channel
 from grpclib.exceptions import StreamTerminatedError
+from grpclib.health.v1.health_grpc import HealthStub
+from grpclib.health.v1.health_pb2 import HealthCheckRequest
 from grpclib.utils import Wrapper
 
 from golem_task_api.messages import (
@@ -37,18 +38,35 @@ from golem_task_api.structs import Subtask
 CONNECTION_TIMEOUT = 5.0  # seconds
 
 
-async def wait_until_socket_open(
+# grpclib.health.v1.HealthCheckResponse._HEALTHCHECKRESPONSE_SERVINGSTATUS
+class ServingStatus(Enum):
+    UNKNOWN = 0
+    SERVING = 1
+    NOT_SERVING = 2
+    SERVICE_UNKNOWN = 3
+
+
+async def wait_for_channel(
         host: str,
         port: int,
         timeout: float = CONNECTION_TIMEOUT
-) -> None:
+) -> Channel:
+    request = HealthCheckRequest()
+    request.service = ''  # empty service name for a general check
+
     deadline = time.time() + timeout
     while time.time() < deadline:
-        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        with contextlib.closing(sock):
-            if sock.connect_ex((host, port)) == 0:
-                return
+        channel = Channel(host, port, loop=asyncio.get_event_loop())
+        client = HealthStub(channel)
+        try:
+            response = await client.Check(request)
+            status = ServingStatus(response.status)
+            if status is ServingStatus.SERVING:
+                return channel
+        except ConnectionError:
+            pass
         await asyncio.sleep(0.1)
+
     raise TimeoutError
 
 
@@ -92,9 +110,7 @@ class TaskApiService(abc.ABC):
         """
         try:
             host, port = await self.start(command, port)
-            await wait_until_socket_open(host, port)
-            # TODO: Wait for server to start handling requests
-            return Channel(host, port, loop=asyncio.get_event_loop())
+            return await wait_for_channel(host, port)
         except Exception:
             if self.running():
                 await self.stop()
