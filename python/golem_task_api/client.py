@@ -8,6 +8,7 @@ from typing import ClassVar, List, Tuple
 from pathlib import Path
 
 from grpclib.client import Channel
+from grpclib.exceptions import StreamTerminatedError
 from grpclib.utils import Wrapper
 
 from golem_task_api.messages import (
@@ -80,6 +81,26 @@ class TaskApiService(abc.ABC):
         pass
 
     @abc.abstractmethod
+    async def stop(self) -> None:
+        """ Force service shutdown. E.g. by calling `docker stop` """
+
+    async def open_channel(self, command: str, port: int) -> Channel:
+        """
+        Start the service and wait for it to start listening. Return GRPC
+        channel for connecting to the service. In case any exception is raised
+        stop the service to avoid orphaned processes.
+        """
+        try:
+            host, port = await self.start(command, port)
+            await wait_until_socket_open(host, port)
+            # TODO: Wait for server to start handling requests
+            return Channel(host, port, loop=asyncio.get_event_loop())
+        except Exception:
+            if self.running():
+                await self.stop()
+            raise
+
+    @abc.abstractmethod
     async def wait_until_shutdown_complete(self) -> None:
         """
         After sending the Shutdown request one should wait for the server to
@@ -89,7 +110,36 @@ class TaskApiService(abc.ABC):
         pass
 
 
-class RequestorAppClient:
+class AppClient(abc.ABC):
+    SOFT_SHUTDOWN_TIMEOUT: ClassVar[float] = 5.0  # seconds
+
+    def __init__(self, service: TaskApiService) -> None:
+        self._service = service
+        self._kill_switch = Wrapper()
+
+    async def shutdown(self, timeout: float = SOFT_SHUTDOWN_TIMEOUT) -> None:
+        if not self._kill_switch.cancelled:
+            self._kill_switch.cancel(ShutdownException("Shutdown requested"))
+        if not self._service.running():
+            return
+        try:
+            await asyncio.wait_for(self._soft_shutdown(), timeout=timeout)
+        except (
+                asyncio.TimeoutError,
+                StreamTerminatedError,
+                ConnectionRefusedError
+        ):
+            # Catching StreamTerminatedError and ConnectionRefusedError
+            # because server might have stopped between calling
+            # self._service.running() and self._soft_shutdown()
+            await self._service.stop()
+
+    @abc.abstractmethod
+    async def _soft_shutdown(self) -> None:
+        raise NotImplementedError
+
+
+class RequestorAppClient(AppClient):
     DEFAULT_PORT: ClassVar[int] = 50005
 
     @classmethod
@@ -98,11 +148,8 @@ class RequestorAppClient:
             service: TaskApiService,
             port: int = DEFAULT_PORT
     ) -> 'RequestorAppClient':
-        host, port = await service.start(f'requestor {port}', port)
-        await wait_until_socket_open(host, port)
-        app_stub = RequestorAppStub(
-            Channel(host, port, loop=asyncio.get_event_loop())
-        )
+        channel = await service.open_channel(f'requestor {port}', port)
+        app_stub = RequestorAppStub(channel)
         return cls(service, app_stub)
 
     def __init__(
@@ -110,7 +157,7 @@ class RequestorAppClient:
             service: TaskApiService,
             app_stub: RequestorAppStub,
     ) -> None:
-        self._service = service
+        super().__init__(service)
         self._golem_app = app_stub
 
     async def create_task(
@@ -171,13 +218,13 @@ class RequestorAppClient:
         reply = await self._golem_app.HasPendingSubtasks(request)
         return reply.has_pending_subtasks
 
-    async def shutdown(self) -> None:
+    async def _soft_shutdown(self) -> None:
         request = ShutdownRequest()
         await self._golem_app.Shutdown(request)
         await self._service.wait_until_shutdown_complete()
 
 
-class ProviderAppClient:
+class ProviderAppClient(AppClient):
     DEFAULT_PORT: ClassVar[int] = 50006
 
     @classmethod
@@ -186,11 +233,8 @@ class ProviderAppClient:
             service: TaskApiService,
             port: int = DEFAULT_PORT
     ) -> 'ProviderAppClient':
-        host, port = await service.start(f'provider {port}', port)
-        await wait_until_socket_open(host, port)
-        app_stub = ProviderAppStub(
-            Channel(host, port, loop=asyncio.get_event_loop())
-        )
+        channel = await service.open_channel(f'provider {port}', port)
+        app_stub = ProviderAppStub(channel)
         return cls(service, app_stub)
 
     def __init__(
@@ -198,9 +242,8 @@ class ProviderAppClient:
             service: TaskApiService,
             app_stub: ProviderAppStub,
     ) -> None:
-        self._service = service
+        super().__init__(service)
         self._golem_app = app_stub
-        self._kill_switch = Wrapper()
 
     async def compute(
             self,
@@ -215,6 +258,9 @@ class ProviderAppClient:
         try:
             with self._kill_switch:
                 reply = await self._golem_app.Compute(request)
+        except Exception:
+            await self.shutdown()
+            raise
         finally:
             await self._service.wait_until_shutdown_complete()
         return Path(reply.output_filepath)
@@ -224,15 +270,14 @@ class ProviderAppClient:
         try:
             with self._kill_switch:
                 reply = await self._golem_app.RunBenchmark(request)
+        except Exception:
+            await self.shutdown()
+            raise
         finally:
             await self._service.wait_until_shutdown_complete()
         return reply.score
 
-    async def shutdown(self) -> None:
-        if not self._kill_switch.cancelled:
-            self._kill_switch.cancel(ShutdownException("Shutdown requested"))
-        if not self._service.running():
-            return
+    async def _soft_shutdown(self) -> None:
         request = ShutdownRequest()
         await self._golem_app.Shutdown(request)
         await self._service.wait_until_shutdown_complete()

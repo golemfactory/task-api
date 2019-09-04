@@ -54,6 +54,9 @@ class InlineTaskApiService(TaskApiService):
         host = '127.0.0.1'
         return host, port
 
+    async def stop(self) -> None:
+        pass  # Python thread cannot be killed
+
     async def wait_until_shutdown_complete(self) -> None:
         if not self.running():
             print('Service no longer running')
