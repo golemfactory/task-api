@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+package golem_task_api;
+
+// workaround for the lack of constants
+import "google/protobuf/descriptor.proto";
+
+extend google.protobuf.FileOptions {
+    string DOCKER_CPU_ENV_ID = 52000;
+    string DOCKER_GPU_ENV_ID = 52001;
+}
+
+option (DOCKER_CPU_ENV_ID) = 'docker_cpu';
+option (DOCKER_GPU_ENV_ID) = 'docker_gpu';
+
+message DockerPrerequisites {
+    string image = 1;
+    string tag = 2;
+}

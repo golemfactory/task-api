@@ -28,6 +28,8 @@ message CreateTaskRequest {
 }
 
 message CreateTaskReply {
+  string env_id = 1;
+  string prerequisites_json = 2;
 }
 
 message NextSubtaskRequest {
