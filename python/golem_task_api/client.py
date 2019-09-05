@@ -53,7 +53,7 @@ async def _wait_for_channel(
             response = await client.Check(request)
             if response.status == HealthCheckResponse.SERVING:
                 return channel
-        except ConnectionError:
+        except (StreamTerminatedError, ConnectionError):
             pass
         await asyncio.sleep(0.1)
 
