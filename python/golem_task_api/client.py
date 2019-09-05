@@ -2,13 +2,11 @@ import abc
 import asyncio
 import json
 import time
-from enum import Enum
 from typing import ClassVar, List, Tuple
 from pathlib import Path
 
 from grpclib.client import Channel
 from grpclib.exceptions import StreamTerminatedError
-from grpclib.health.service import OVERALL
 from grpclib.health.v1.health_grpc import HealthStub
 from grpclib.health.v1.health_pb2 import HealthCheckRequest, HealthCheckResponse
 from grpclib.utils import Wrapper
