@@ -8,8 +8,9 @@ from pathlib import Path
 
 from grpclib.client import Channel
 from grpclib.exceptions import StreamTerminatedError
+from grpclib.health.service import OVERALL
 from grpclib.health.v1.health_grpc import HealthStub
-from grpclib.health.v1.health_pb2 import HealthCheckRequest
+from grpclib.health.v1.health_pb2 import HealthCheckRequest, HealthCheckResponse
 from grpclib.utils import Wrapper
 
 from golem_task_api.messages import (
@@ -38,21 +39,13 @@ from golem_task_api.structs import Subtask
 CONNECTION_TIMEOUT = 5.0  # seconds
 
 
-# grpclib.health.v1.HealthCheckResponse._HEALTHCHECKRESPONSE_SERVINGSTATUS
-class ServingStatus(Enum):
-    UNKNOWN = 0
-    SERVING = 1
-    NOT_SERVING = 2
-    SERVICE_UNKNOWN = 3
-
-
-async def wait_for_channel(
+async def _wait_for_channel(
         host: str,
         port: int,
         timeout: float = CONNECTION_TIMEOUT
 ) -> Channel:
     request = HealthCheckRequest()
-    request.service = ''  # empty service name for a general check
+    request.service = ''
 
     deadline = time.time() + timeout
     while time.time() < deadline:
@@ -60,8 +53,7 @@ async def wait_for_channel(
         client = HealthStub(channel)
         try:
             response = await client.Check(request)
-            status = ServingStatus(response.status)
-            if status is ServingStatus.SERVING:
+            if response.status == HealthCheckResponse.SERVING:
                 return channel
         except ConnectionError:
             pass
@@ -110,7 +102,7 @@ class TaskApiService(abc.ABC):
         """
         try:
             host, port = await self.start(command, port)
-            return await wait_for_channel(host, port)
+            return await _wait_for_channel(host, port)
         except Exception:
             if self.running():
                 await self.stop()
