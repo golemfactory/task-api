@@ -43,7 +43,7 @@ async def _wait_for_channel(
         timeout: float = CONNECTION_TIMEOUT
 ) -> Channel:
     request = HealthCheckRequest()
-    request.service = ''
+    request.service = ''  # empty service name for a server check
 
     deadline = time.time() + timeout
     while time.time() < deadline:
@@ -55,6 +55,7 @@ async def _wait_for_channel(
                 return channel
         except (StreamTerminatedError, ConnectionError):
             pass
+        channel.close()
         await asyncio.sleep(0.1)
 
     raise TimeoutError
