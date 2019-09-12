@@ -2,7 +2,7 @@ import abc
 import asyncio
 import json
 import time
-from typing import ClassVar, List, Tuple
+from typing import ClassVar, List, Tuple, Optional
 from pathlib import Path
 
 from grpclib.client import Channel
@@ -183,14 +183,18 @@ class RequestorAppClient(AppClient):
     async def next_subtask(
             self,
             task_id: str,
-    ) -> Subtask:
+            opaque_node_id: str,
+    ) -> Optional[Subtask]:
         request = NextSubtaskRequest()
         request.task_id = task_id
+        request.opaque_node_id = opaque_node_id
         reply = await self._golem_app.NextSubtask(request)
+        if not reply.HasField('subtask'):
+            return None
         return Subtask(
-            subtask_id=reply.subtask_id,
-            params=json.loads(reply.subtask_params_json),
-            resources=reply.resources,
+            subtask_id=reply.subtask.subtask_id,
+            params=json.loads(reply.subtask.subtask_params_json),
+            resources=reply.subtask.resources,
         )
 
     async def verify(

@@ -177,10 +177,16 @@ class TaskLifecycleUtil:
             subtask_ids.append(subtask_id)
         return subtask_ids
 
-    async def compute_next_subtask(self, task_id: str) -> Tuple[str, bool]:
+    async def compute_next_subtask(
+            self,
+            task_id: str,
+            opaque_node_id: str,
+    ) -> Tuple[str, bool]:
         """ Returns (subtask_id, verification result) """
         assert await self.requestor_client.has_pending_subtasks(task_id)
-        subtask = await self.requestor_client.next_subtask(task_id)
+        subtask = await self.requestor_client.next_subtask(
+            task_id,
+            opaque_node_id)
 
         self.copy_resources_from_requestor(subtask.resources)
         self.mkdir_provider_subtask(subtask.subtask_id)

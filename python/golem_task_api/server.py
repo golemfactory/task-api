@@ -24,6 +24,7 @@ from golem_task_api.messages import (
     ComputeReply,
     NextSubtaskRequest,
     NextSubtaskReply,
+    SubtaskReply,
     VerifyRequest,
     VerifyReply,
     DiscardSubtasksRequest,
@@ -85,13 +86,18 @@ class RequestorApp(RequestorAppBase):
     async def NextSubtask(self, stream):
         request: NextSubtaskRequest = await stream.recv_message()
         task_id = request.task_id
+        opaque_node_id = request.opaque_node_id
         task_work_dir = self._work_dir / task_id
-        subtask_id, subtask_params, resources = \
-            await self._handler.next_subtask(task_work_dir)
         reply = NextSubtaskReply()
-        reply.subtask_id = subtask_id
-        reply.subtask_params_json = json.dumps(subtask_params)
-        reply.resources.extend(resources)
+        subtask = await self._handler.next_subtask(
+            task_work_dir, opaque_node_id)
+        if subtask:
+            subtask_id, subtask_params, resources = subtask
+            subtask_reply = SubtaskReply()
+            subtask_reply.subtask_id = subtask_id
+            subtask_reply.subtask_params_json = json.dumps(subtask_params)
+            subtask_reply.resources.extend(resources)
+            reply.subtask.MergeFrom(subtask_reply)
         await stream.send_message(reply)
 
     @forward_exceptions()

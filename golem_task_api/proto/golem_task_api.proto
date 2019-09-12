@@ -34,9 +34,18 @@ message CreateTaskReply {
 
 message NextSubtaskRequest {
   string task_id = 1;
+  string opaque_node_id = 2;
 }
 
 message NextSubtaskReply {
+  // workaround for the lack of null values in proto3
+  // where "one of" means "at most one of"
+  oneof subtask_oneof {
+      SubtaskReply subtask = 1;
+  }
+}
+
+message SubtaskReply {
   string subtask_id = 1;
   string subtask_params_json = 2;
   repeated string resources = 3;

@@ -47,6 +47,7 @@ class RequestorAppHandler:
     async def next_subtask(
             self,
             task_work_dir: Path,
+            opaque_node_id: str,
     ) -> Subtask:
         pass
 
