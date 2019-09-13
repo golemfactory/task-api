@@ -48,7 +48,7 @@ class RequestorAppHandler:
             self,
             task_work_dir: Path,
             opaque_node_id: str,
-    ) -> Subtask:
+     ) -> Optional[Subtask]:
         pass
 
     @abc.abstractmethod
