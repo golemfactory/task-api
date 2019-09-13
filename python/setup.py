@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name='Golem-Task-Api',
-    version='0.17.0',
+    version='0.18.0',
     url='https://github.com/golemfactory/golem/task-api/python',
     maintainer='The Golem team',
     maintainer_email='tech@golem.network',
@@ -15,6 +15,7 @@ setup(
     python_requires='>=3.6',
     install_requires=[
         'async-generator==1.10',
+        'dataclasses==0.6',
         'grpclib==0.2.4',
         'protobuf==3.7.1',
     ],
