@@ -4,7 +4,7 @@ import asyncio
 from pathlib import Path
 from typing import List, Tuple, Optional
 
-from golem_task_api.structs import Subtask
+from golem_task_api.structs import Subtask, Task
 
 
 class AppLifecycleHandler:
@@ -40,7 +40,7 @@ class RequestorAppHandler:
             task_work_dir: Path,
             max_subtasks_count: int,
             task_params: dict,
-    ) -> None:
+    ) -> Task:
         pass
 
     @abc.abstractmethod

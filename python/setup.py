@@ -15,6 +15,7 @@ setup(
     python_requires='>=3.6',
     install_requires=[
         'async-generator==1.10',
+        'dataclasses==0.6',
         'grpclib==0.2.4',
         'protobuf==3.7.1',
     ],

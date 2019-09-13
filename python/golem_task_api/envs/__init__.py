@@ -1,29 +1,31 @@
-from google.protobuf.json_format import MessageToJson
+from google.protobuf.json_format import MessageToDict
 
 from golem_task_api.envs.constants import DOCKER_CPU_ENV_ID, DOCKER_GPU_ENV_ID
 from golem_task_api.proto.envs_pb2 import DockerPrerequisites
-from golem_task_api.proto.golem_task_api_pb2 import CreateTaskReply
+from golem_task_api.structs import Task
 
 
-def _create_docker_task_reply(
+def _create_docker_task(
         env_id: str,
         image: str,
         tag: str
-) -> CreateTaskReply:
+) -> Task:
     prerequisites = DockerPrerequisites()
     prerequisites.image = image
     prerequisites.tag = tag
-    prerequisites_json = MessageToJson(prerequisites)
+    prerequisites_dict = MessageToDict(
+        prerequisites,
+        preserving_proto_field_name=True)
 
-    reply = CreateTaskReply()
-    reply.env_id = env_id
-    reply.prerequisites_json = prerequisites_json
-    return reply
-
-
-def create_docker_cpu_task_reply(image: str, tag: str) -> CreateTaskReply:
-    return _create_docker_task_reply(DOCKER_CPU_ENV_ID, image, tag)
+    return Task(
+        env_id=env_id,
+        prerequisites=prerequisites_dict
+    )
 
 
-def create_docker_gpu_task_reply(image: str, tag: str) -> CreateTaskReply:
-    return _create_docker_task_reply(DOCKER_GPU_ENV_ID, image, tag)
+def create_docker_cpu_task(image: str, tag: str) -> Task:
+    return _create_docker_task(DOCKER_CPU_ENV_ID, image, tag)
+
+
+def create_docker_gpu_task(image: str, tag: str) -> Task:
+    return _create_docker_task(DOCKER_GPU_ENV_ID, image, tag)

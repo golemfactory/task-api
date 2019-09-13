@@ -74,12 +74,14 @@ class RequestorApp(RequestorAppBase):
         task_work_dir = self._work_dir / task_id
         max_subtasks_count = request.max_subtasks_count
         task_params = json.loads(request.task_params_json)
-        await self._handler.create_task(
+        task = await self._handler.create_task(
             task_work_dir,
             max_subtasks_count,
             task_params,
         )
         reply = CreateTaskReply()
+        reply.env_id = task.env_id
+        reply.prerequisites_json = json.dumps(task.prerequisites)
         await stream.send_message(reply)
 
     @forward_exceptions()
@@ -92,11 +94,10 @@ class RequestorApp(RequestorAppBase):
         subtask = await self._handler.next_subtask(
             task_work_dir, opaque_node_id)
         if subtask:
-            subtask_id, subtask_params, resources = subtask
             subtask_reply = SubtaskReply()
-            subtask_reply.subtask_id = subtask_id
-            subtask_reply.subtask_params_json = json.dumps(subtask_params)
-            subtask_reply.resources.extend(resources)
+            subtask_reply.subtask_id = subtask.subtask_id
+            subtask_reply.subtask_params_json = json.dumps(subtask.params)
+            subtask_reply.resources.extend(subtask.resources)
             reply.subtask.MergeFrom(subtask_reply)
         await stream.send_message(reply)
 

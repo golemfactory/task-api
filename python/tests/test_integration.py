@@ -31,6 +31,10 @@ async def test_e2e_flow(tmpdir):
 
     async with task_lifecycle_util.init_requestor_with_handler(
             requestor_handler, app_lifecycle_handler):
+        requestor_handler.create_task.return_value = structs.Task(
+            env_id='test_env',
+            prerequisites={}
+        )
         await task_lifecycle_util.create_task(
             task_id,
             max_subtasks_count,
