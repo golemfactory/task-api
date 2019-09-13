@@ -90,6 +90,7 @@ class TaskLifecycleUtil:
     ):
         async with self.init_requestor(get_task_api_service):
             task_id = 'test_task_id123'
+            opaque_node_id = 'node_id123'
             await self.create_task(
                 task_id,
                 max_subtasks_count,
@@ -97,7 +98,8 @@ class TaskLifecycleUtil:
                 task_params,
             )
             self.init_provider(get_task_api_service, task_id)
-            subtask_ids = await self.compute_remaining_subtasks(task_id)
+            subtask_ids = await self.compute_remaining_subtasks(
+                task_id, opaque_node_id)
             assert len(subtask_ids) <= max_subtasks_count
 
             assert not await self.requestor_client.has_pending_subtasks(task_id)
@@ -168,11 +170,16 @@ class TaskLifecycleUtil:
             task_params,
         )
 
-    async def compute_remaining_subtasks(self, task_id: str) -> List[str]:
+    async def compute_remaining_subtasks(
+            self,
+            task_id: str,
+            opaque_node_id: str,
+    ) -> List[str]:
         """ Returns list of subtask IDs """
         subtask_ids = []
         while await self.requestor_client.has_pending_subtasks(task_id):
-            subtask_id, verdict = await self.compute_next_subtask(task_id)
+            subtask_id, verdict = await self.compute_next_subtask(
+                task_id, opaque_node_id)
             assert verdict
             subtask_ids.append(subtask_id)
         return subtask_ids
