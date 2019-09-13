@@ -141,8 +141,7 @@ class AppClient(abc.ABC):
             # self._service.running() and self._soft_shutdown()
             if self._service.runnning():
                 await self._service.stop()
-        finally:
-            await self._service.wait_until_shutdown_complete()
+                await self._service.wait_until_shutdown_complete()
 
     @abc.abstractmethod
     async def _soft_shutdown(self) -> None:
@@ -231,6 +230,7 @@ class RequestorAppClient(AppClient):
     async def _soft_shutdown(self) -> None:
         request = ShutdownRequest()
         await self._golem_app.Shutdown(request)
+        await self._service.wait_until_shutdown_complete()
 
 
 class ProviderAppClient(AppClient):
@@ -289,3 +289,4 @@ class ProviderAppClient(AppClient):
     async def _soft_shutdown(self) -> None:
         request = ShutdownRequest()
         await self._golem_app.Shutdown(request)
+        await self._service.wait_until_shutdown_complete()
