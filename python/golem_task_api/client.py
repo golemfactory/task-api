@@ -11,6 +11,7 @@ from grpclib.health.v1.health_grpc import HealthStub
 from grpclib.health.v1.health_pb2 import HealthCheckRequest, HealthCheckResponse
 from grpclib.utils import Wrapper
 
+from golem_task_api.enums import VerifyResult
 from golem_task_api.messages import (
     CreateTaskRequest,
     CreateTaskReply,
@@ -202,12 +203,12 @@ class RequestorAppClient(AppClient):
             self,
             task_id: str,
             subtask_id: str,
-    ) -> bool:
+    ) -> Tuple[VerifyResult, str]:
         request = VerifyRequest()
         request.task_id = task_id
         request.subtask_id = subtask_id
         reply = await self._golem_app.Verify(request)
-        return reply.success
+        return VerifyResult(reply.result), reply.reason
 
     async def discard_subtasks(
             self,

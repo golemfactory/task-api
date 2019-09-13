@@ -5,8 +5,9 @@ from typing import Callable, List, Tuple
 from async_generator import asynccontextmanager
 
 from golem_task_api import (
-    TaskApiService,
+    enums,
     constants,
+    TaskApiService,
     ProviderAppClient,
     RequestorAppClient,
     AppLifecycleHandler,
@@ -180,7 +181,7 @@ class TaskLifecycleUtil:
         while await self.requestor_client.has_pending_subtasks(task_id):
             subtask_id, verdict = await self.compute_next_subtask(
                 task_id, opaque_node_id)
-            assert verdict
+            assert verdict is enums.VerifyResult.SUCCESS
             subtask_ids.append(subtask_id)
         return subtask_ids
 
@@ -188,7 +189,7 @@ class TaskLifecycleUtil:
             self,
             task_id: str,
             opaque_node_id: str,
-    ) -> Tuple[str, bool]:
+    ) -> Tuple[str, enums.VerifyResult]:
         """ Returns (subtask_id, verification result) """
         assert await self.requestor_client.has_pending_subtasks(task_id)
         subtask = await self.requestor_client.next_subtask(
@@ -206,9 +207,10 @@ class TaskLifecycleUtil:
         )
         self.copy_result_from_provider(output_filepath, subtask.subtask_id)
 
-        verdict = \
-            await self.requestor_client.verify(task_id, subtask.subtask_id)
-        return (subtask.subtask_id, verdict)
+        result, reason = await self.requestor_client.verify(
+            task_id,
+            subtask.subtask_id)
+        return subtask.subtask_id, result
 
     async def run_provider_benchmark(self) -> float:
         await self.start_provider()
