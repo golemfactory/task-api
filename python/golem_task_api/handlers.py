@@ -47,7 +47,8 @@ class RequestorAppHandler:
     async def next_subtask(
             self,
             task_work_dir: Path,
-    ) -> Subtask:
+            opaque_node_id: str,
+     ) -> Optional[Subtask]:
         pass
 
     @abc.abstractmethod

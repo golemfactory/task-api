@@ -3,6 +3,7 @@ from .proto.golem_task_api_pb2 import (
     CreateTaskReply,
     NextSubtaskRequest,
     NextSubtaskReply,
+    SubtaskReply,
     ComputeRequest,
     ComputeReply,
     VerifyRequest,
