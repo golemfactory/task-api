@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name='Golem-Task-Api',
-    version='0.18.1',
+    version='0.18.2',
     url='https://github.com/golemfactory/golem/task-api/python',
     maintainer='The Golem team',
     maintainer_email='tech@golem.network',
