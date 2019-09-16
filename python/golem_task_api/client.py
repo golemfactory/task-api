@@ -140,7 +140,7 @@ class AppClient(abc.ABC):
             # Catching StreamTerminatedError and ConnectionRefusedError
             # because server might have stopped between calling
             # self._service.running() and self._soft_shutdown()
-            if self._service.runnning():
+            if self._service.running():
                 await self._service.stop()
                 await self._service.wait_until_shutdown_complete()
 
