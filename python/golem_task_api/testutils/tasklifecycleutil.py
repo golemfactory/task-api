@@ -36,8 +36,8 @@ class TaskLifecycleUtil:
     def init_provider_with_handler(
             self,
             provider_handler: ProviderAppHandler,
-            lifecycle_handler: AppLifecycleHandler,
             task_id: str,
+            lifecycle_handler: Optional[AppLifecycleHandler] = None,
     ) -> None:
         def get_task_api_service(work_dir: Path):
             return InlineTaskApiService(
@@ -70,7 +70,7 @@ class TaskLifecycleUtil:
     async def init_requestor_with_handler(
             self,
             requestor_handler: RequestorAppHandler,
-            lifecycle_handler: AppLifecycleHandler,
+            lifecycle_handler: Optional[AppLifecycleHandler] = None,
             port: int = 50005,
     ):
         def get_task_api_service(work_dir: Path):
