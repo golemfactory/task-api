@@ -1,3 +1,4 @@
+import asyncio
 from unittest import mock
 from pathlib import Path
 
@@ -20,7 +21,12 @@ class AsyncMock(mock.MagicMock):
 @pytest.mark.asyncio
 async def test_e2e_flow(tmpdir):
     task_lifecycle_util = TaskLifecycleUtil(Path(tmpdir))
-    app_lifecycle_handler = AsyncMock(spec_set=AppLifecycleHandler)
+    shutdown_future = asyncio.Future()
+    shutdown_future.set_result(None)
+    app_lifecycle_handler = AsyncMock(
+        spec=AppLifecycleHandler,
+        shutdown_future=shutdown_future
+    )
     requestor_handler = AsyncMock(spec_set=RequestorAppHandler)
     provider_handler = AsyncMock(spec_set=ProviderAppHandler)
 
