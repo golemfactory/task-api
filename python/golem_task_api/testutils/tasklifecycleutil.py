@@ -1,6 +1,6 @@
 import shutil
 from pathlib import Path
-from typing import Callable, List, Tuple
+from typing import Callable, List, Tuple, Optional
 
 from async_generator import asynccontextmanager
 
@@ -12,6 +12,7 @@ from golem_task_api import (
     AppLifecycleHandler,
     ProviderAppHandler,
     RequestorAppHandler,
+    structs
 )
 from golem_task_api.testutils import InlineTaskApiService
 
@@ -35,8 +36,8 @@ class TaskLifecycleUtil:
     def init_provider_with_handler(
             self,
             provider_handler: ProviderAppHandler,
-            lifecycle_handler: AppLifecycleHandler,
             task_id: str,
+            lifecycle_handler: Optional[AppLifecycleHandler] = None,
     ) -> None:
         def get_task_api_service(work_dir: Path):
             return InlineTaskApiService(
@@ -69,7 +70,7 @@ class TaskLifecycleUtil:
     async def init_requestor_with_handler(
             self,
             requestor_handler: RequestorAppHandler,
-            lifecycle_handler: AppLifecycleHandler,
+            lifecycle_handler: Optional[AppLifecycleHandler] = None,
             port: int = 50005,
     ):
         def get_task_api_service(work_dir: Path):
@@ -159,12 +160,12 @@ class TaskLifecycleUtil:
             max_subtasks_count: int,
             resources: List[Path],
             task_params: dict,
-    ) -> None:
+    ) -> structs.Task:
         self.mkdir_requestor(task_id)
 
         self.put_resources_to_requestor(resources)
 
-        await self.requestor_client.create_task(
+        return await self.requestor_client.create_task(
             task_id,
             max_subtasks_count,
             task_params,
