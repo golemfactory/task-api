@@ -4,9 +4,9 @@ from pathlib import Path
 import pytest
 
 from golem_task_api import (
-    AppLifecycleHandler,
     ProviderAppHandler,
     RequestorAppHandler,
+    enums,
     structs,
 )
 from golem_task_api.testutils import TaskLifecycleUtil
@@ -40,7 +40,7 @@ async def test_e2e_flow(tmpdir):
     requestor_handler.next_subtask.return_value = \
         structs.Subtask('subtask_id', {}, [])
     provider_handler.compute.return_value = result_path
-    requestor_handler.verify.return_value = (True, None)
+    requestor_handler.verify.return_value = (enums.VerifyResult.SUCCESS, None)
 
     async with task_lifecycle_util.init_requestor_with_handler(
             requestor_handler):
@@ -56,8 +56,7 @@ async def test_e2e_flow(tmpdir):
             task_id
         )
         (task_lifecycle_util.prov_task_work_dir / result_path).touch()
-
         node_id = '0xdead'
-        subtask_id, verdict = \
-            await task_lifecycle_util.compute_next_subtask(task_id, node_id)
-        assert verdict
+        subtask_id, verdict = await task_lifecycle_util.compute_next_subtask(
+            task_id, node_id)
+        assert verdict is enums.VerifyResult.SUCCESS

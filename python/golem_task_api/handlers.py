@@ -4,6 +4,7 @@ import asyncio
 from pathlib import Path
 from typing import List, Tuple, Optional
 
+from golem_task_api.enums import VerifyResult
 from golem_task_api.structs import Subtask, Task
 
 
@@ -56,7 +57,7 @@ class RequestorAppHandler:
             self,
             task_work_dir: Path,
             subtask_id: str,
-    ) -> Tuple[bool, Optional[str]]:
+    ) -> Tuple[VerifyResult, Optional[str]]:
         pass
 
     @abc.abstractmethod

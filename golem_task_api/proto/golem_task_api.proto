@@ -67,8 +67,14 @@ message VerifyRequest {
 }
 
 message VerifyReply {
-  bool success = 1;
-  string reject_reason = 2;
+  enum VerifyResult {
+    SUCCESS = 0;
+    FAILURE = 1;
+    AWAITING_DATA = 2;
+    INCONCLUSIVE = 3;
+  }
+  VerifyResult result = 1;
+  string reason = 2;
 }
 
 message DiscardSubtasksRequest {
