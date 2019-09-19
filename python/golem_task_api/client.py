@@ -124,10 +124,13 @@ class AppClient(abc.ABC):
     def __init__(self, service: TaskApiService) -> None:
         self._service = service
         self._kill_switch = Wrapper()
+        self._shutdown_future = asyncio.get_event_loop().create_future()
 
     async def shutdown(self, timeout: float = SOFT_SHUTDOWN_TIMEOUT) -> None:
-        if not self._kill_switch.cancelled:
-            self._kill_switch.cancel(ShutdownException("Shutdown requested"))
+        if self._kill_switch.cancelled:
+            await self._shutdown_future
+            return
+        self._kill_switch.cancel(ShutdownException("Shutdown requested"))
         if not self._service.running():
             return
         try:
@@ -143,6 +146,8 @@ class AppClient(abc.ABC):
             if self._service.running():
                 await self._service.stop()
                 await self._service.wait_until_shutdown_complete()
+        finally:
+            self._shutdown_future.set_result(None)
 
     @abc.abstractmethod
     async def _soft_shutdown(self) -> None:
