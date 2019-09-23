@@ -47,7 +47,7 @@ For requestor the app should implement a long running RPC service which implemen
     - `INCONCLUSIVE` - cannot determine whether the subtask was computed correctly,
     - `AWAITING_DATA` - cannot perform verificaton until results of other subtasks are available.
   - Also returns `reason` which is a string providing more detail about the result.
-  - For successfully verified subtasks it most likely should also perform merging the partial results into the final one.
+  - For successfully verified subtasks it can also perform merging of the partial results into the final one.
 - `DiscardSubtasks`
   - Takes two arguments: `task_id` and `subtask_ids`.
   - Should discard results of given subtasks and any dependent subtasks.
