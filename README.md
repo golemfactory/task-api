@@ -37,7 +37,7 @@ For requestor the app should implement a long running RPC service which implemen
 - `HasPendingSubtasks`
   - Takes one argument `task_id`.
   - Returns a boolean indicating whether there are any more pending subtasks waiting for computation at given moment.
-  - In case when it returns `true`, the next `NextSubtask` call should return successfully (it can return an empty message altough).
+  - In case when it returns `true`, the next `NextSubtask` call should return successfully (although it can still return an empty message).
 - `Verify`
   - Takes two arguments: `task_id` and `subtask_id` which specify which subtask results should be verified.
   - Will be called with only valid `task_id` and `subtask_id` values.
