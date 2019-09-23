@@ -96,4 +96,4 @@ Provider app should implement a short-lived RPC service which implements the `Pr
 - `Shutdown`
   - Takes no arguments.
   - Should gracefully terminate the service.
-  - Will be called in case the provider interrupts task computation or benchmark.
+  - Can be called in case the provider wants to interrupt task computation or benchmark.
