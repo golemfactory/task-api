@@ -51,11 +51,11 @@ async def test_e2e_flow(tmpdir):
             task_params,
         )
         assert created_task == task_struct
-        task_lifecycle_util.init_provider_with_handler(
+        provider_task_dir = task_lifecycle_util.init_provider_with_handler(
             provider_handler,
             task_id
         )
-        (task_lifecycle_util.prov_task_work_dir / result_path).touch()
+        (provider_task_dir / result_path).touch()
         node_id = '0xdead'
         subtask_id, verdict = await task_lifecycle_util.compute_next_subtask(
             task_id, node_id)
