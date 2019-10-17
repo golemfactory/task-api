@@ -13,6 +13,8 @@ from grpclib.utils import Wrapper
 
 from golem_task_api.enums import VerifyResult
 from golem_task_api.messages import (
+    AbortTaskRequest,
+    AbortTaskReply,
     CreateTaskRequest,
     CreateTaskReply,
     NextSubtaskRequest,
@@ -240,6 +242,11 @@ class RequestorAppClient(AppClient):
         request.task_id = task_id
         reply = await self._golem_app.HasPendingSubtasks(request)
         return reply.has_pending_subtasks
+
+    async def abort_task(self, task_id: str) -> None:
+        request = AbortTaskRequest()
+        request.task_id = task_id
+        await self._golem_app.AbortTask(request)
 
     async def _soft_shutdown(self) -> None:
         request = ShutdownRequest()
