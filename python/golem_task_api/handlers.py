@@ -74,7 +74,14 @@ class RequestorAppHandler:
         pass
 
     @abc.abstractmethod
-    async def has_pending_subtasks(self, task_work_dir: Path) -> bool:
+    async def has_pending_subtasks(
+            self,
+            task_work_dir: RequestorTaskDir
+    ) -> bool:
+        pass
+
+    @abc.abstractmethod
+    async def abort_task(self, task_work_dir: RequestorTaskDir) -> None:
         pass
 
 

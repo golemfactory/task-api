@@ -9,6 +9,7 @@ service RequestorApp {
   rpc DiscardSubtasks (DiscardSubtasksRequest) returns (DiscardSubtasksReply) {}
   rpc RunBenchmark (RunBenchmarkRequest) returns (RunBenchmarkReply) {}
   rpc HasPendingSubtasks (HasPendingSubtasksRequest) returns (HasPendingSubtasksReply) {}
+  rpc AbortTask (AbortTaskRequest) returns (AbortTaskReply) {}
 
   rpc Shutdown (ShutdownRequest) returns (ShutdownReply) {}
 }
@@ -99,6 +100,13 @@ message HasPendingSubtasksRequest {
 
 message HasPendingSubtasksReply {
   bool has_pending_subtasks = 1;
+}
+
+message AbortTaskRequest {
+  string task_id = 1;
+}
+
+message AbortTaskReply {
 }
 
 
