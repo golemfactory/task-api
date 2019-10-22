@@ -2,7 +2,7 @@ import abc
 import asyncio
 import json
 import time
-from typing import ClassVar, List, Tuple
+from typing import ClassVar, List, Tuple, Optional
 from pathlib import Path
 
 from grpclib.client import Channel
@@ -11,7 +11,10 @@ from grpclib.health.v1.health_grpc import HealthStub
 from grpclib.health.v1.health_pb2 import HealthCheckRequest, HealthCheckResponse
 from grpclib.utils import Wrapper
 
+from golem_task_api.enums import VerifyResult
 from golem_task_api.messages import (
+    AbortTaskRequest,
+    AbortTaskReply,
     CreateTaskRequest,
     CreateTaskReply,
     NextSubtaskRequest,
@@ -32,7 +35,7 @@ from golem_task_api.proto.golem_task_api_grpc import (
     ProviderAppStub,
     RequestorAppStub,
 )
-from golem_task_api.structs import Subtask
+from golem_task_api.structs import Subtask, Task
 
 CONNECTION_TIMEOUT = 5.0  # seconds
 
@@ -123,10 +126,13 @@ class AppClient(abc.ABC):
     def __init__(self, service: TaskApiService) -> None:
         self._service = service
         self._kill_switch = Wrapper()
+        self._shutdown_future = asyncio.get_event_loop().create_future()
 
     async def shutdown(self, timeout: float = SOFT_SHUTDOWN_TIMEOUT) -> None:
-        if not self._kill_switch.cancelled:
-            self._kill_switch.cancel(ShutdownException("Shutdown requested"))
+        if self._kill_switch.cancelled:
+            await self._shutdown_future
+            return
+        self._kill_switch.cancel(ShutdownException("Shutdown requested"))
         if not self._service.running():
             return
         try:
@@ -139,7 +145,11 @@ class AppClient(abc.ABC):
             # Catching StreamTerminatedError and ConnectionRefusedError
             # because server might have stopped between calling
             # self._service.running() and self._soft_shutdown()
-            await self._service.stop()
+            if self._service.running():
+                await self._service.stop()
+                await self._service.wait_until_shutdown_complete()
+        finally:
+            self._shutdown_future.set_result(None)
 
     @abc.abstractmethod
     async def _soft_shutdown(self) -> None:
@@ -172,36 +182,44 @@ class RequestorAppClient(AppClient):
             task_id: str,
             max_subtasks_count: int,
             task_params: dict,
-    ) -> None:
+    ) -> Task:
         request = CreateTaskRequest()
         request.task_id = task_id
         request.max_subtasks_count = max_subtasks_count
         request.task_params_json = json.dumps(task_params)
-        await self._golem_app.CreateTask(request)
+        reply = await self._golem_app.CreateTask(request)
+        return Task(
+            env_id=reply.env_id,
+            prerequisites=json.loads(reply.prerequisites_json)
+        )
 
     async def next_subtask(
             self,
             task_id: str,
-    ) -> Subtask:
+            opaque_node_id: str,
+    ) -> Optional[Subtask]:
         request = NextSubtaskRequest()
         request.task_id = task_id
+        request.opaque_node_id = opaque_node_id
         reply = await self._golem_app.NextSubtask(request)
+        if not reply.HasField('subtask'):
+            return None
         return Subtask(
-            subtask_id=reply.subtask_id,
-            params=json.loads(reply.subtask_params_json),
-            resources=reply.resources,
+            subtask_id=reply.subtask.subtask_id,
+            params=json.loads(reply.subtask.subtask_params_json),
+            resources=reply.subtask.resources,
         )
 
     async def verify(
             self,
             task_id: str,
             subtask_id: str,
-    ) -> bool:
+    ) -> Tuple[VerifyResult, str]:
         request = VerifyRequest()
         request.task_id = task_id
         request.subtask_id = subtask_id
         reply = await self._golem_app.Verify(request)
-        return reply.success
+        return VerifyResult(reply.result), reply.reason
 
     async def discard_subtasks(
             self,
@@ -224,6 +242,11 @@ class RequestorAppClient(AppClient):
         request.task_id = task_id
         reply = await self._golem_app.HasPendingSubtasks(request)
         return reply.has_pending_subtasks
+
+    async def abort_task(self, task_id: str) -> None:
+        request = AbortTaskRequest()
+        request.task_id = task_id
+        await self._golem_app.AbortTask(request)
 
     async def _soft_shutdown(self) -> None:
         request = ShutdownRequest()

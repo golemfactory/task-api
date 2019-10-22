@@ -8,6 +8,7 @@ from grpclib import const
 from grpclib import server
 from grpclib.health.service import Health
 
+from golem_task_api.dirutils import ProviderTaskDir, RequestorDir
 from golem_task_api.proto.golem_task_api_grpc import (
     ProviderAppBase,
     RequestorAppBase,
@@ -18,12 +19,15 @@ from golem_task_api.handlers import (
     RequestorAppHandler,
 )
 from golem_task_api.messages import (
+    AbortTaskRequest,
+    AbortTaskReply,
     CreateTaskRequest,
     CreateTaskReply,
     ComputeRequest,
     ComputeReply,
     NextSubtaskRequest,
     NextSubtaskReply,
+    SubtaskReply,
     VerifyRequest,
     VerifyReply,
     DiscardSubtasksRequest,
@@ -62,58 +66,59 @@ class RequestorApp(RequestorAppBase):
             handler: RequestorAppHandler,
             lifecycle: AppLifecycleHandler,
     ) -> None:
-        self._work_dir = work_dir
+        self._work_dir = RequestorDir(work_dir)
         self._handler = handler
         self._lifecycle = lifecycle
 
     @forward_exceptions()
     async def CreateTask(self, stream):
         request: CreateTaskRequest = await stream.recv_message()
-        task_id = request.task_id
-        task_work_dir = self._work_dir / task_id
+        task_work_dir = self._work_dir.task_dir(request.task_id)
         max_subtasks_count = request.max_subtasks_count
         task_params = json.loads(request.task_params_json)
-        await self._handler.create_task(
+        task = await self._handler.create_task(
             task_work_dir,
             max_subtasks_count,
             task_params,
         )
         reply = CreateTaskReply()
+        reply.env_id = task.env_id
+        reply.prerequisites_json = json.dumps(task.prerequisites)
         await stream.send_message(reply)
 
     @forward_exceptions()
     async def NextSubtask(self, stream):
         request: NextSubtaskRequest = await stream.recv_message()
-        task_id = request.task_id
-        task_work_dir = self._work_dir / task_id
-        subtask_id, subtask_params, resources = \
-            await self._handler.next_subtask(task_work_dir)
+        task_work_dir = self._work_dir.task_dir(request.task_id)
+        opaque_node_id = request.opaque_node_id
         reply = NextSubtaskReply()
-        reply.subtask_id = subtask_id
-        reply.subtask_params_json = json.dumps(subtask_params)
-        reply.resources.extend(resources)
+        subtask = await self._handler.next_subtask(
+            task_work_dir, opaque_node_id)
+        if subtask:
+            subtask_reply = SubtaskReply()
+            subtask_reply.subtask_id = subtask.subtask_id
+            subtask_reply.subtask_params_json = json.dumps(subtask.params)
+            subtask_reply.resources.extend(subtask.resources)
+            reply.subtask.MergeFrom(subtask_reply)
         await stream.send_message(reply)
 
     @forward_exceptions()
     async def Verify(self, stream):
         request: VerifyRequest = await stream.recv_message()
-        task_id = request.task_id
+        task_work_dir = self._work_dir.task_dir(request.task_id)
         subtask_id = request.subtask_id
-        task_work_dir = self._work_dir / task_id
-        success, reject_reason = \
-            await self._handler.verify(task_work_dir, subtask_id)
+        result, reason = await self._handler.verify(task_work_dir, subtask_id)
         reply = VerifyReply()
-        reply.success = success
-        if reject_reason:
-            reply.reject_reason = reject_reason
+        reply.result = result.value
+        if reason:
+            reply.reason = reason
         await stream.send_message(reply)
 
     @forward_exceptions()
     async def DiscardSubtasks(self, stream):
         request: DiscardSubtasksRequest = await stream.recv_message()
-        task_id = request.task_id
+        task_work_dir = self._work_dir.task_dir(request.task_id)
         subtask_ids = request.subtask_ids
-        task_work_dir = self._work_dir / task_id
         discarded_subtask_ids = \
             await self._handler.discard_subtasks(task_work_dir, subtask_ids)
         reply = DiscardSubtasksReply()
@@ -131,11 +136,19 @@ class RequestorApp(RequestorAppBase):
     @forward_exceptions()
     async def HasPendingSubtasks(self, stream):
         request: HasPendingSubtasksRequest = await stream.recv_message()
-        task_work_dir = self._work_dir / request.task_id
+        task_work_dir = self._work_dir.task_dir(request.task_id)
         has_pending_subtasks = \
             await self._handler.has_pending_subtasks(task_work_dir)
         reply = HasPendingSubtasksReply()
         reply.has_pending_subtasks = has_pending_subtasks
+        await stream.send_message(reply)
+
+    @forward_exceptions()
+    async def AbortTask(self, stream):
+        request: AbortTaskRequest = await stream.recv_message()
+        task_work_dir = self._work_dir.task_dir(request.task_id)
+        await self._handler.abort_task(task_work_dir)
+        reply = AbortTaskReply()
         await stream.send_message(reply)
 
     @forward_exceptions()
@@ -153,7 +166,7 @@ class ProviderApp(ProviderAppBase):
             handler: ProviderAppHandler,
             lifecycle: AppLifecycleHandler,
     ) -> None:
-        self._work_dir = work_dir
+        self._work_dir = ProviderTaskDir(work_dir)
         self._handler = handler
         self._lifecycle = lifecycle
 

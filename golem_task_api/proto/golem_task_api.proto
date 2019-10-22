@@ -9,6 +9,7 @@ service RequestorApp {
   rpc DiscardSubtasks (DiscardSubtasksRequest) returns (DiscardSubtasksReply) {}
   rpc RunBenchmark (RunBenchmarkRequest) returns (RunBenchmarkReply) {}
   rpc HasPendingSubtasks (HasPendingSubtasksRequest) returns (HasPendingSubtasksReply) {}
+  rpc AbortTask (AbortTaskRequest) returns (AbortTaskReply) {}
 
   rpc Shutdown (ShutdownRequest) returns (ShutdownReply) {}
 }
@@ -28,13 +29,24 @@ message CreateTaskRequest {
 }
 
 message CreateTaskReply {
+  string env_id = 1;
+  string prerequisites_json = 2;
 }
 
 message NextSubtaskRequest {
   string task_id = 1;
+  string opaque_node_id = 2;
 }
 
 message NextSubtaskReply {
+  // workaround for the lack of null values in proto3
+  // where "one of" means "at most one of"
+  oneof subtask_oneof {
+      SubtaskReply subtask = 1;
+  }
+}
+
+message SubtaskReply {
   string subtask_id = 1;
   string subtask_params_json = 2;
   repeated string resources = 3;
@@ -56,8 +68,14 @@ message VerifyRequest {
 }
 
 message VerifyReply {
-  bool success = 1;
-  string reject_reason = 2;
+  enum VerifyResult {
+    SUCCESS = 0;
+    FAILURE = 1;
+    AWAITING_DATA = 2;
+    INCONCLUSIVE = 3;
+  }
+  VerifyResult result = 1;
+  string reason = 2;
 }
 
 message DiscardSubtasksRequest {
@@ -82,6 +100,13 @@ message HasPendingSubtasksRequest {
 
 message HasPendingSubtasksReply {
   bool has_pending_subtasks = 1;
+}
+
+message AbortTaskRequest {
+  string task_id = 1;
+}
+
+message AbortTaskReply {
 }
 
 
