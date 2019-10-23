@@ -19,6 +19,9 @@ class Executor:
             *args,
             **kwargs
     ) -> Any:
+        if cls._shutting_down.is_set():
+            return
+
         func = functools.partial(func, **kwargs)
         loop = asyncio.get_event_loop()
         task = loop.run_in_executor(None, func, *args)
@@ -39,7 +42,7 @@ class Executor:
             return
 
         tasks = list(cls._tasks)
-        cls._tasks = None
+        cls._tasks = set()
         await asyncio.wait(tasks, timeout=timeout)
 
     @classmethod
