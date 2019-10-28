@@ -90,13 +90,13 @@ class RequestorApp(RequestorAppBase):
     async def NextSubtask(self, stream):
         request: NextSubtaskRequest = await stream.recv_message()
         task_work_dir = self._work_dir.task_dir(request.task_id)
-        opaque_node_id = request.opaque_node_id
         reply = NextSubtaskReply()
         subtask = await self._handler.next_subtask(
-            task_work_dir, opaque_node_id)
+            task_work_dir,
+            request.subtask_id,
+            request.opaque_node_id)
         if subtask:
             subtask_reply = SubtaskReply()
-            subtask_reply.subtask_id = subtask.subtask_id
             subtask_reply.subtask_params_json = json.dumps(subtask.params)
             subtask_reply.resources.extend(subtask.resources)
             reply.subtask.MergeFrom(subtask_reply)

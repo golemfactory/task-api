@@ -24,15 +24,16 @@ For requestor the app should implement a long running RPC service which implemen
   - Should treat `{work_dir}/{task_id}` as the working directory for the given task.
   - `task_params_json` is a JSON string containing app-specific task parameters. Format of these parameters is entirely up to the application developer.
   - Will only be called once with given `task_id`.
+  - Can assume that `task_id` is unique per node.
   - Can assume `{task_id}/{constants.TASK_INPUTS_DIR}` contains all the resources provided by task creator.
   - Returns `env_id` and `prerequisites_json` specifying the environment and prerequisites required for providers to compute the task. See environments section for details.
 - `NextSubtask`
-  - Takes two arguments: `task_id` and `opaque_node_id`.
+  - Takes three arguments: `task_id`, `subtask_id` and `opaque_node_id`.
   - `opaque_node_id` is an identifier of the node which is going to compute the requested subtask. 'Opaque' means that the identifier doesn't allow to obtain any further information about the node (e.g. public key, IP address).
+  - Can assume that `subtask_id` is unique per node.
   - Can assume `CreateTask` was called earlier with the same `task_id`.
   - Can return an empty message meaning that the app refuses to assign a subtask to the provider node (for whatever reason).
-  - Returns `subtask_id` which has to be a string without whitespaces and slashes (`/`) but the same string cannot be returned more than once.
-  - Also returns `subtask_params_json` which is the JSON string containing subtask specific parameters.
+  - Returns `subtask_params_json` which is the JSON string containing subtask specific parameters.
   - Also returns `resources` which is a list of names of files required for computing the subtask. Files with these names are required to be present in `{task_id}/{constants.SUBTASK_INPUTS_DIR}` directory.
 - `HasPendingSubtasks`
   - Takes one argument `task_id`.

@@ -38,7 +38,7 @@ async def test_e2e_flow(tmpdir):
     requestor_handler.create_task.return_value = task_struct
     requestor_handler.has_pending_subtasks.return_value = True
     requestor_handler.next_subtask.return_value = \
-        structs.Subtask('subtask_id', {}, [])
+        structs.Subtask({}, [])
     provider_handler.compute.return_value = result_path
     requestor_handler.verify.return_value = (enums.VerifyResult.SUCCESS, None)
 
