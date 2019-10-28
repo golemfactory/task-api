@@ -4,6 +4,7 @@ import asyncio
 from pathlib import Path
 from typing import List, Tuple, Optional
 
+from golem_task_api import threading
 from golem_task_api.dirutils import ProviderTaskDir, RequestorTaskDir
 from golem_task_api.enums import VerifyResult
 from golem_task_api.structs import Subtask, Task
@@ -15,13 +16,13 @@ class AppLifecycleHandler:
         self.shutdown_future = asyncio.get_event_loop().create_future()
 
     async def on_before_startup(self) -> None:
-        pass
+        threading.Executor.initialize()
 
     async def on_after_startup(self) -> None:
         pass
 
     async def on_before_shutdown(self) -> None:
-        pass
+        await threading.Executor.wait_for_shutdown()
 
     async def on_after_shutdown(self) -> None:
         pass
@@ -30,6 +31,7 @@ class AppLifecycleHandler:
         # Do not call shutdown multiple times, this can happen in case of errors
         if not self.shutdown_future.done():
             print('Triggering shutdown', flush=True)
+            threading.Executor.request_shutdown()
             self.shutdown_future.set_result(None)
         else:
             print('Shutdown already triggered', flush=True)
