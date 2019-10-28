@@ -5,7 +5,6 @@ from dataclasses import dataclass
 
 @dataclass
 class Subtask:
-    subtask_id: str
     params: dict
     resources: List[str]
 

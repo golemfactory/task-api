@@ -35,7 +35,8 @@ message CreateTaskReply {
 
 message NextSubtaskRequest {
   string task_id = 1;
-  string opaque_node_id = 2;
+  string subtask_id = 2;
+  string opaque_node_id = 3;
 }
 
 message NextSubtaskReply {
@@ -47,9 +48,8 @@ message NextSubtaskReply {
 }
 
 message SubtaskReply {
-  string subtask_id = 1;
-  string subtask_params_json = 2;
-  repeated string resources = 3;
+  string subtask_params_json = 1;
+  repeated string resources = 2;
 }
 
 message ComputeRequest {

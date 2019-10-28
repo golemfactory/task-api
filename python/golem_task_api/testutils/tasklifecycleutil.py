@@ -1,4 +1,5 @@
 import shutil
+import uuid
 from pathlib import Path
 from typing import Callable, List, Tuple, Optional
 
@@ -189,11 +190,12 @@ class TaskLifecycleUtil:
     ) -> Tuple[str, enums.VerifyResult]:
         """ Returns (subtask_id, verification result) """
         assert await self.requestor_client.has_pending_subtasks(task_id)
+        subtask_id = str(uuid.uuid4())
         subtask = await self.requestor_client.next_subtask(
             task_id,
+            subtask_id,
             opaque_node_id
         )
-        subtask_id = subtask.subtask_id
 
         self.copy_resources_from_requestor(subtask.resources, task_id)
         self.prov_dir.subtask_dir(task_id, subtask_id).mkdir()
@@ -210,7 +212,7 @@ class TaskLifecycleUtil:
             task_id,
             subtask_id
         )
-        return subtask.subtask_id, result
+        return subtask_id, result
 
     async def run_provider_benchmark(self) -> float:
         await self.start_provider()
