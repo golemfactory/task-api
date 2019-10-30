@@ -87,6 +87,14 @@ class RequestorAppHandler:
     async def abort_task(self, task_work_dir: RequestorTaskDir) -> None:
         pass
 
+    @abc.abstractmethod
+    async def abort_subtask(
+            self,
+            task_work_dir: RequestorTaskDir,
+            subtask_id: str
+    ) -> None:
+        pass
+
 
 class ProviderAppHandler:
     @abc.abstractmethod

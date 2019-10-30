@@ -60,7 +60,10 @@ For requestor the app should implement a long running RPC service which implemen
   - Shouldn't take much time (preferably less than a minute for medium range machines).
 - `AbortTask`
   - Takes one argument: `task_id`.
-  - Will be called when the task is aborted by the user. Should stop all running subtask verifications for this task and perform any other necessary cleanup.
+  - Will be called when the task is aborted by the user or timed out. Should stop all running subtask verifications for this task and perform any other necessary cleanup.
+- `AbortSubtask`
+  - Takes two arguments: `task_id` and `subtask_ids`.
+  - Will be called when the subtask is aborted by the user timed out. Should stop verification of the subtask (if it's running) and perform any other necessary cleanup.
 - `Shutdown`
   - Takes no arguments.
   - Should gracefully terminate the service.

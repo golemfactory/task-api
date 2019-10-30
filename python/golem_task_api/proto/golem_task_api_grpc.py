@@ -40,6 +40,10 @@ class RequestorAppBase(abc.ABC):
         pass
 
     @abc.abstractmethod
+    async def AbortSubtask(self, stream):
+        pass
+
+    @abc.abstractmethod
     async def Shutdown(self, stream):
         pass
 
@@ -86,6 +90,12 @@ class RequestorAppBase(abc.ABC):
                 grpclib.const.Cardinality.UNARY_UNARY,
                 golem_task_api.proto.golem_task_api_pb2.AbortTaskRequest,
                 golem_task_api.proto.golem_task_api_pb2.AbortTaskReply,
+            ),
+            '/golem_task_api.RequestorApp/AbortSubtask': grpclib.const.Handler(
+                self.AbortSubtask,
+                grpclib.const.Cardinality.UNARY_UNARY,
+                golem_task_api.proto.golem_task_api_pb2.AbortSubtaskRequest,
+                golem_task_api.proto.golem_task_api_pb2.AbortSubtaskReply,
             ),
             '/golem_task_api.RequestorApp/Shutdown': grpclib.const.Handler(
                 self.Shutdown,
@@ -140,6 +150,12 @@ class RequestorAppStub:
             '/golem_task_api.RequestorApp/AbortTask',
             golem_task_api.proto.golem_task_api_pb2.AbortTaskRequest,
             golem_task_api.proto.golem_task_api_pb2.AbortTaskReply,
+        )
+        self.AbortSubtask = grpclib.client.UnaryUnaryMethod(
+            channel,
+            '/golem_task_api.RequestorApp/AbortSubtask',
+            golem_task_api.proto.golem_task_api_pb2.AbortSubtaskRequest,
+            golem_task_api.proto.golem_task_api_pb2.AbortSubtaskReply,
         )
         self.Shutdown = grpclib.client.UnaryUnaryMethod(
             channel,

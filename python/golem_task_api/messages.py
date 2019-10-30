@@ -1,4 +1,6 @@
 from .proto.golem_task_api_pb2 import (
+    AbortSubtaskRequest,
+    AbortSubtaskReply,
     AbortTaskRequest,
     AbortTaskReply,
     CreateTaskRequest,

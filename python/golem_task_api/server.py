@@ -19,6 +19,8 @@ from golem_task_api.handlers import (
     RequestorAppHandler,
 )
 from golem_task_api.messages import (
+    AbortSubtaskRequest,
+    AbortSubtaskReply,
     AbortTaskRequest,
     AbortTaskReply,
     CreateTaskRequest,
@@ -60,6 +62,7 @@ def forward_exceptions():
 
 
 class RequestorApp(RequestorAppBase):
+
     def __init__(
             self,
             work_dir: Path,
@@ -149,6 +152,15 @@ class RequestorApp(RequestorAppBase):
         task_work_dir = self._work_dir.task_dir(request.task_id)
         await self._handler.abort_task(task_work_dir)
         reply = AbortTaskReply()
+        await stream.send_message(reply)
+
+    @forward_exceptions()
+    async def AbortSubtask(self, stream):
+        request: AbortSubtaskRequest = await stream.recv_message()
+        task_work_dir = self._work_dir.task_dir(request.task_id)
+        subtask_id = request.subtask_id
+        await self._handler.abort_subtask(task_work_dir, subtask_id)
+        reply = AbortSubtaskReply()
         await stream.send_message(reply)
 
     @forward_exceptions()
