@@ -19,6 +19,7 @@ from golem_task_api.messages import (
     AbortTaskReply,
     CreateTaskRequest,
     CreateTaskReply,
+    Infrastructure,
     NextSubtaskRequest,
     NextSubtaskReply,
     ComputeRequest,
@@ -184,16 +185,18 @@ class RequestorAppClient(AppClient):
             task_id: str,
             max_subtasks_count: int,
             task_params: dict,
-    ) -> Task:
+    ) -> Tuple[Task, Infrastructure]:
         request = CreateTaskRequest()
         request.task_id = task_id
         request.max_subtasks_count = max_subtasks_count
         request.task_params_json = json.dumps(task_params)
         reply = await self._golem_app.CreateTask(request)
-        return Task(
+
+        task = Task(
             env_id=reply.env_id,
-            prerequisites=json.loads(reply.prerequisites_json)
-        )
+            prerequisites=json.loads(reply.prerequisites_json))
+
+        return task, reply.inf_requirements
 
     async def next_subtask(
             self,

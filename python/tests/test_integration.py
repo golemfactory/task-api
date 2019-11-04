@@ -9,6 +9,7 @@ from golem_task_api import (
     enums,
     structs,
 )
+from golem_task_api.proto.golem_task_api_pb2 import Infrastructure
 from golem_task_api.testutils import TaskLifecycleUtil
 
 
@@ -27,6 +28,7 @@ async def test_e2e_flow(tmpdir):
         env_id='test_env',
         prerequisites={}
     )
+    infrastructure = Infrastructure()
     task_id = 'test_task_id123'
     max_subtasks_count = 1
     resources = []
@@ -35,7 +37,7 @@ async def test_e2e_flow(tmpdir):
 
     # Mocks have to be configured before calling init_requestor_with_handler
     # because it creates copies of these objects when spawning server process.
-    requestor_handler.create_task.return_value = task_struct
+    requestor_handler.create_task.return_value = task_struct, infrastructure
     requestor_handler.has_pending_subtasks.return_value = True
     requestor_handler.next_subtask.return_value = \
         structs.Subtask({}, [])
@@ -44,7 +46,7 @@ async def test_e2e_flow(tmpdir):
 
     async with task_lifecycle_util.init_requestor_with_handler(
             requestor_handler):
-        created_task = await task_lifecycle_util.create_task(
+        created_task, _ = await task_lifecycle_util.create_task(
             task_id,
             max_subtasks_count,
             resources,

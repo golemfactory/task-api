@@ -21,6 +21,7 @@ from golem_task_api.dirutils import (
     RequestorDir,
     RequestorTaskDir
 )
+from golem_task_api.proto.golem_task_api_pb2 import Infrastructure
 from golem_task_api.testutils import InlineTaskApiService
 
 
@@ -158,7 +159,7 @@ class TaskLifecycleUtil:
             max_subtasks_count: int,
             resources: List[Path],
             task_params: dict,
-    ) -> structs.Task:
+    ) -> Tuple[structs.Task, Infrastructure]:
         self.req_dir.task_dir(task_id).prepare()
 
         self.put_resources_to_requestor(resources, task_id)

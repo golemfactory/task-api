@@ -7,6 +7,7 @@ from typing import List, Tuple, Optional
 from golem_task_api import threading
 from golem_task_api.dirutils import ProviderTaskDir, RequestorTaskDir
 from golem_task_api.enums import VerifyResult
+from golem_task_api.proto.golem_task_api_pb2 import Infrastructure
 from golem_task_api.structs import Subtask, Task
 
 
@@ -44,7 +45,7 @@ class RequestorAppHandler:
             task_work_dir: RequestorTaskDir,
             max_subtasks_count: int,
             task_params: dict,
-    ) -> Task:
+    ) -> Tuple[Task, Infrastructure]:
         pass
 
     @abc.abstractmethod
