@@ -20,7 +20,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   package='golem_task_api',
   syntax='proto3',
   serialized_options=None,
-  serialized_pb=_b('\n)golem_task_api/proto/golem_task_api.proto\x12\x0egolem_task_api\"\xfb\x05\n\x0eInfrastructure\x12/\n\x03\x63pu\x18\x01 \x01(\x0b\x32\".golem_task_api.Infrastructure.CPU\x12/\n\x03gpu\x18\x02 \x01(\x0b\x32\".golem_task_api.Infrastructure.GPU\x12\x32\n\x03mem\x18\x03 \x01(\x0b\x32%.golem_task_api.Infrastructure.Memory\x12/\n\x03net\x18\x04 \x01(\x0b\x32\".golem_task_api.Infrastructure.Net\x1a\xda\x02\n\x03\x43PU\x12\x14\n\x0c\x61rchitecture\x18\x01 \x01(\t\x12\x0b\n\x03\x62it\x18\x02 \x03(\t\x12\r\n\x05\x63ores\x18\x03 \x01(\x05\x12\x0f\n\x07threads\x18\x04 \x01(\x05\x12\x14\n\x0cmax_freq_mhz\x18\x05 \x01(\x02\x12\x0e\n\x06vendor\x18\x06 \x01(\t\x12\r\n\x05model\x18\x07 \x01(\t\x12\x14\n\x0c\x63\x61pabilities\x18\x08 \x01(\t\x12\x39\n\x07l1cache\x18\t \x01(\x0b\x32(.golem_task_api.Infrastructure.CPU.Cache\x12\x39\n\x07l2cache\x18\n \x01(\x0b\x32(.golem_task_api.Infrastructure.CPU.Cache\x12\x39\n\x07l3cache\x18\x0b \x01(\x0b\x32(.golem_task_api.Infrastructure.CPU.Cache\x1a\x14\n\x05\x43\x61\x63he\x12\x0b\n\x03kib\x18\x01 \x01(\x02\x1a@\n\x03GPU\x12\x0e\n\x06vendor\x18\x01 \x01(\t\x12\r\n\x05model\x18\x02 \x01(\t\x12\r\n\x05\x63ount\x18\x03 \x01(\x05\x12\x0b\n\x03gib\x18\x04 \x01(\x02\x1a\'\n\x06Memory\x12\x0b\n\x03gib\x18\x01 \x01(\x02\x12\x10\n\x08\x66req_mhz\x18\x02 \x01(\x02\x1aZ\n\x03Net\x12\x35\n\x04ipv4\x18\x01 \x01(\x0b\x32\'.golem_task_api.Infrastructure.Net.IPv4\x1a\x1c\n\x04IPv4\x12\x14\n\x0chas_pub_addr\x18\x01 \x01(\x08\"Z\n\x11\x43reateTaskRequest\x12\x0f\n\x07task_id\x18\x01 \x01(\t\x12\x1a\n\x12max_subtasks_count\x18\x02 \x01(\x05\x12\x18\n\x10task_params_json\x18\x03 \x01(\t\"w\n\x0f\x43reateTaskReply\x12\x0e\n\x06\x65nv_id\x18\x01 \x01(\t\x12\x1a\n\x12prerequisites_json\x18\x02 \x01(\t\x12\x38\n\x10inf_requirements\x18\x03 \x01(\x0b\x32\x1e.golem_task_api.Infrastructure\"Q\n\x12NextSubtaskRequest\x12\x0f\n\x07task_id\x18\x01 \x01(\t\x12\x12\n\nsubtask_id\x18\x02 \x01(\t\x12\x16\n\x0eopaque_node_id\x18\x03 \x01(\t\"T\n\x10NextSubtaskReply\x12/\n\x07subtask\x18\x01 \x01(\x0b\x32\x1c.golem_task_api.SubtaskReplyH\x00\x42\x0f\n\rsubtask_oneof\">\n\x0cSubtaskReply\x12\x1b\n\x13subtask_params_json\x18\x01 \x01(\t\x12\x11\n\tresources\x18\x02 \x03(\t\"R\n\x0e\x43omputeRequest\x12\x0f\n\x07task_id\x18\x01 \x01(\t\x12\x12\n\nsubtask_id\x18\x02 \x01(\t\x12\x1b\n\x13subtask_params_json\x18\x03 \x01(\t\"\'\n\x0c\x43omputeReply\x12\x17\n\x0foutput_filepath\x18\x01 \x01(\t\"4\n\rVerifyRequest\x12\x0f\n\x07task_id\x18\x01 \x01(\t\x12\x12\n\nsubtask_id\x18\x02 \x01(\t\"\xa6\x01\n\x0bVerifyReply\x12\x38\n\x06result\x18\x01 \x01(\x0e\x32(.golem_task_api.VerifyReply.VerifyResult\x12\x0e\n\x06reason\x18\x02 \x01(\t\"M\n\x0cVerifyResult\x12\x0b\n\x07SUCCESS\x10\x00\x12\x0b\n\x07\x46\x41ILURE\x10\x01\x12\x11\n\rAWAITING_DATA\x10\x02\x12\x10\n\x0cINCONCLUSIVE\x10\x03\">\n\x16\x44iscardSubtasksRequest\x12\x0f\n\x07task_id\x18\x01 \x01(\t\x12\x13\n\x0bsubtask_ids\x18\x02 \x03(\t\"5\n\x14\x44iscardSubtasksReply\x12\x1d\n\x15\x64iscarded_subtask_ids\x18\x01 \x03(\t\"\x15\n\x13RunBenchmarkRequest\"\"\n\x11RunBenchmarkReply\x12\r\n\x05score\x18\x01 \x01(\x02\",\n\x19HasPendingSubtasksRequest\x12\x0f\n\x07task_id\x18\x01 \x01(\t\"7\n\x17HasPendingSubtasksReply\x12\x1c\n\x14has_pending_subtasks\x18\x01 \x01(\x08\"#\n\x10\x41\x62ortTaskRequest\x12\x0f\n\x07task_id\x18\x01 \x01(\t\"\x10\n\x0e\x41\x62ortTaskReply\":\n\x13\x41\x62ortSubtaskRequest\x12\x0f\n\x07task_id\x18\x01 \x01(\t\x12\x12\n\nsubtask_id\x18\x02 \x01(\t\"\x13\n\x11\x41\x62ortSubtaskReply\"\x11\n\x0fShutdownRequest\"\x0f\n\rShutdownReply2\xa3\x06\n\x0cRequestorApp\x12R\n\nCreateTask\x12!.golem_task_api.CreateTaskRequest\x1a\x1f.golem_task_api.CreateTaskReply\"\x00\x12U\n\x0bNextSubtask\x12\".golem_task_api.NextSubtaskRequest\x1a .golem_task_api.NextSubtaskReply\"\x00\x12\x46\n\x06Verify\x12\x1d.golem_task_api.VerifyRequest\x1a\x1b.golem_task_api.VerifyReply\"\x00\x12\x61\n\x0f\x44iscardSubtasks\x12&.golem_task_api.DiscardSubtasksRequest\x1a$.golem_task_api.DiscardSubtasksReply\"\x00\x12X\n\x0cRunBenchmark\x12#.golem_task_api.RunBenchmarkRequest\x1a!.golem_task_api.RunBenchmarkReply\"\x00\x12j\n\x12HasPendingSubtasks\x12).golem_task_api.HasPendingSubtasksRequest\x1a\'.golem_task_api.HasPendingSubtasksReply\"\x00\x12O\n\tAbortTask\x12 .golem_task_api.AbortTaskRequest\x1a\x1e.golem_task_api.AbortTaskReply\"\x00\x12X\n\x0c\x41\x62ortSubtask\x12#.golem_task_api.AbortSubtaskRequest\x1a!.golem_task_api.AbortSubtaskReply\"\x00\x12L\n\x08Shutdown\x12\x1f.golem_task_api.ShutdownRequest\x1a\x1d.golem_task_api.ShutdownReply\"\x00\x32\x80\x02\n\x0bProviderApp\x12I\n\x07\x43ompute\x12\x1e.golem_task_api.ComputeRequest\x1a\x1c.golem_task_api.ComputeReply\"\x00\x12X\n\x0cRunBenchmark\x12#.golem_task_api.RunBenchmarkRequest\x1a!.golem_task_api.RunBenchmarkReply\"\x00\x12L\n\x08Shutdown\x12\x1f.golem_task_api.ShutdownRequest\x1a\x1d.golem_task_api.ShutdownReply\"\x00\x62\x06proto3')
+  serialized_pb=_b('\n)golem_task_api/proto/golem_task_api.proto\x12\x0egolem_task_api\"[\n\x0eInfrastructure\x12\x32\n\x03mem\x18\x01 \x01(\x0b\x32%.golem_task_api.Infrastructure.Memory\x1a\x15\n\x06Memory\x12\x0b\n\x03gib\x18\x01 \x01(\x02\"Z\n\x11\x43reateTaskRequest\x12\x0f\n\x07task_id\x18\x01 \x01(\t\x12\x1a\n\x12max_subtasks_count\x18\x02 \x01(\x05\x12\x18\n\x10task_params_json\x18\x03 \x01(\t\"w\n\x0f\x43reateTaskReply\x12\x0e\n\x06\x65nv_id\x18\x01 \x01(\t\x12\x1a\n\x12prerequisites_json\x18\x02 \x01(\t\x12\x38\n\x10inf_requirements\x18\x03 \x01(\x0b\x32\x1e.golem_task_api.Infrastructure\"Q\n\x12NextSubtaskRequest\x12\x0f\n\x07task_id\x18\x01 \x01(\t\x12\x12\n\nsubtask_id\x18\x02 \x01(\t\x12\x16\n\x0eopaque_node_id\x18\x03 \x01(\t\"T\n\x10NextSubtaskReply\x12/\n\x07subtask\x18\x01 \x01(\x0b\x32\x1c.golem_task_api.SubtaskReplyH\x00\x42\x0f\n\rsubtask_oneof\">\n\x0cSubtaskReply\x12\x1b\n\x13subtask_params_json\x18\x01 \x01(\t\x12\x11\n\tresources\x18\x02 \x03(\t\"R\n\x0e\x43omputeRequest\x12\x0f\n\x07task_id\x18\x01 \x01(\t\x12\x12\n\nsubtask_id\x18\x02 \x01(\t\x12\x1b\n\x13subtask_params_json\x18\x03 \x01(\t\"\'\n\x0c\x43omputeReply\x12\x17\n\x0foutput_filepath\x18\x01 \x01(\t\"4\n\rVerifyRequest\x12\x0f\n\x07task_id\x18\x01 \x01(\t\x12\x12\n\nsubtask_id\x18\x02 \x01(\t\"\xa6\x01\n\x0bVerifyReply\x12\x38\n\x06result\x18\x01 \x01(\x0e\x32(.golem_task_api.VerifyReply.VerifyResult\x12\x0e\n\x06reason\x18\x02 \x01(\t\"M\n\x0cVerifyResult\x12\x0b\n\x07SUCCESS\x10\x00\x12\x0b\n\x07\x46\x41ILURE\x10\x01\x12\x11\n\rAWAITING_DATA\x10\x02\x12\x10\n\x0cINCONCLUSIVE\x10\x03\">\n\x16\x44iscardSubtasksRequest\x12\x0f\n\x07task_id\x18\x01 \x01(\t\x12\x13\n\x0bsubtask_ids\x18\x02 \x03(\t\"5\n\x14\x44iscardSubtasksReply\x12\x1d\n\x15\x64iscarded_subtask_ids\x18\x01 \x03(\t\"\x15\n\x13RunBenchmarkRequest\"\"\n\x11RunBenchmarkReply\x12\r\n\x05score\x18\x01 \x01(\x02\",\n\x19HasPendingSubtasksRequest\x12\x0f\n\x07task_id\x18\x01 \x01(\t\"7\n\x17HasPendingSubtasksReply\x12\x1c\n\x14has_pending_subtasks\x18\x01 \x01(\x08\"#\n\x10\x41\x62ortTaskRequest\x12\x0f\n\x07task_id\x18\x01 \x01(\t\"\x10\n\x0e\x41\x62ortTaskReply\":\n\x13\x41\x62ortSubtaskRequest\x12\x0f\n\x07task_id\x18\x01 \x01(\t\x12\x12\n\nsubtask_id\x18\x02 \x01(\t\"\x13\n\x11\x41\x62ortSubtaskReply\"\x11\n\x0fShutdownRequest\"\x0f\n\rShutdownReply2\xa3\x06\n\x0cRequestorApp\x12R\n\nCreateTask\x12!.golem_task_api.CreateTaskRequest\x1a\x1f.golem_task_api.CreateTaskReply\"\x00\x12U\n\x0bNextSubtask\x12\".golem_task_api.NextSubtaskRequest\x1a .golem_task_api.NextSubtaskReply\"\x00\x12\x46\n\x06Verify\x12\x1d.golem_task_api.VerifyRequest\x1a\x1b.golem_task_api.VerifyReply\"\x00\x12\x61\n\x0f\x44iscardSubtasks\x12&.golem_task_api.DiscardSubtasksRequest\x1a$.golem_task_api.DiscardSubtasksReply\"\x00\x12X\n\x0cRunBenchmark\x12#.golem_task_api.RunBenchmarkRequest\x1a!.golem_task_api.RunBenchmarkReply\"\x00\x12j\n\x12HasPendingSubtasks\x12).golem_task_api.HasPendingSubtasksRequest\x1a\'.golem_task_api.HasPendingSubtasksReply\"\x00\x12O\n\tAbortTask\x12 .golem_task_api.AbortTaskRequest\x1a\x1e.golem_task_api.AbortTaskReply\"\x00\x12X\n\x0c\x41\x62ortSubtask\x12#.golem_task_api.AbortSubtaskRequest\x1a!.golem_task_api.AbortSubtaskReply\"\x00\x12L\n\x08Shutdown\x12\x1f.golem_task_api.ShutdownRequest\x1a\x1d.golem_task_api.ShutdownReply\"\x00\x32\x80\x02\n\x0bProviderApp\x12I\n\x07\x43ompute\x12\x1e.golem_task_api.ComputeRequest\x1a\x1c.golem_task_api.ComputeReply\"\x00\x12X\n\x0cRunBenchmark\x12#.golem_task_api.RunBenchmarkRequest\x1a!.golem_task_api.RunBenchmarkReply\"\x00\x12L\n\x08Shutdown\x12\x1f.golem_task_api.ShutdownRequest\x1a\x1d.golem_task_api.ShutdownReply\"\x00\x62\x06proto3')
 )
 
 
@@ -50,192 +50,11 @@ _VERIFYREPLY_VERIFYRESULT = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   serialized_options=None,
-  serialized_start=1542,
-  serialized_end=1619,
+  serialized_start=869,
+  serialized_end=946,
 )
 _sym_db.RegisterEnumDescriptor(_VERIFYREPLY_VERIFYRESULT)
 
-
-_INFRASTRUCTURE_CPU_CACHE = _descriptor.Descriptor(
-  name='Cache',
-  full_name='golem_task_api.Infrastructure.CPU.Cache',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='kib', full_name='golem_task_api.Infrastructure.CPU.Cache.kib', index=0,
-      number=1, type=2, cpp_type=6, label=1,
-      has_default_value=False, default_value=float(0),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR),
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  serialized_options=None,
-  is_extendable=False,
-  syntax='proto3',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=606,
-  serialized_end=626,
-)
-
-_INFRASTRUCTURE_CPU = _descriptor.Descriptor(
-  name='CPU',
-  full_name='golem_task_api.Infrastructure.CPU',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='architecture', full_name='golem_task_api.Infrastructure.CPU.architecture', index=0,
-      number=1, type=9, cpp_type=9, label=1,
-      has_default_value=False, default_value=_b("").decode('utf-8'),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR),
-    _descriptor.FieldDescriptor(
-      name='bit', full_name='golem_task_api.Infrastructure.CPU.bit', index=1,
-      number=2, type=9, cpp_type=9, label=3,
-      has_default_value=False, default_value=[],
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR),
-    _descriptor.FieldDescriptor(
-      name='cores', full_name='golem_task_api.Infrastructure.CPU.cores', index=2,
-      number=3, type=5, cpp_type=1, label=1,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR),
-    _descriptor.FieldDescriptor(
-      name='threads', full_name='golem_task_api.Infrastructure.CPU.threads', index=3,
-      number=4, type=5, cpp_type=1, label=1,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR),
-    _descriptor.FieldDescriptor(
-      name='max_freq_mhz', full_name='golem_task_api.Infrastructure.CPU.max_freq_mhz', index=4,
-      number=5, type=2, cpp_type=6, label=1,
-      has_default_value=False, default_value=float(0),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR),
-    _descriptor.FieldDescriptor(
-      name='vendor', full_name='golem_task_api.Infrastructure.CPU.vendor', index=5,
-      number=6, type=9, cpp_type=9, label=1,
-      has_default_value=False, default_value=_b("").decode('utf-8'),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR),
-    _descriptor.FieldDescriptor(
-      name='model', full_name='golem_task_api.Infrastructure.CPU.model', index=6,
-      number=7, type=9, cpp_type=9, label=1,
-      has_default_value=False, default_value=_b("").decode('utf-8'),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR),
-    _descriptor.FieldDescriptor(
-      name='capabilities', full_name='golem_task_api.Infrastructure.CPU.capabilities', index=7,
-      number=8, type=9, cpp_type=9, label=1,
-      has_default_value=False, default_value=_b("").decode('utf-8'),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR),
-    _descriptor.FieldDescriptor(
-      name='l1cache', full_name='golem_task_api.Infrastructure.CPU.l1cache', index=8,
-      number=9, type=11, cpp_type=10, label=1,
-      has_default_value=False, default_value=None,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR),
-    _descriptor.FieldDescriptor(
-      name='l2cache', full_name='golem_task_api.Infrastructure.CPU.l2cache', index=9,
-      number=10, type=11, cpp_type=10, label=1,
-      has_default_value=False, default_value=None,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR),
-    _descriptor.FieldDescriptor(
-      name='l3cache', full_name='golem_task_api.Infrastructure.CPU.l3cache', index=10,
-      number=11, type=11, cpp_type=10, label=1,
-      has_default_value=False, default_value=None,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR),
-  ],
-  extensions=[
-  ],
-  nested_types=[_INFRASTRUCTURE_CPU_CACHE, ],
-  enum_types=[
-  ],
-  serialized_options=None,
-  is_extendable=False,
-  syntax='proto3',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=280,
-  serialized_end=626,
-)
-
-_INFRASTRUCTURE_GPU = _descriptor.Descriptor(
-  name='GPU',
-  full_name='golem_task_api.Infrastructure.GPU',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='vendor', full_name='golem_task_api.Infrastructure.GPU.vendor', index=0,
-      number=1, type=9, cpp_type=9, label=1,
-      has_default_value=False, default_value=_b("").decode('utf-8'),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR),
-    _descriptor.FieldDescriptor(
-      name='model', full_name='golem_task_api.Infrastructure.GPU.model', index=1,
-      number=2, type=9, cpp_type=9, label=1,
-      has_default_value=False, default_value=_b("").decode('utf-8'),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR),
-    _descriptor.FieldDescriptor(
-      name='count', full_name='golem_task_api.Infrastructure.GPU.count', index=2,
-      number=3, type=5, cpp_type=1, label=1,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR),
-    _descriptor.FieldDescriptor(
-      name='gib', full_name='golem_task_api.Infrastructure.GPU.gib', index=3,
-      number=4, type=2, cpp_type=6, label=1,
-      has_default_value=False, default_value=float(0),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR),
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  serialized_options=None,
-  is_extendable=False,
-  syntax='proto3',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=628,
-  serialized_end=692,
-)
 
 _INFRASTRUCTURE_MEMORY = _descriptor.Descriptor(
   name='Memory',
@@ -251,13 +70,6 @@ _INFRASTRUCTURE_MEMORY = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
-    _descriptor.FieldDescriptor(
-      name='freq_mhz', full_name='golem_task_api.Infrastructure.Memory.freq_mhz', index=1,
-      number=2, type=2, cpp_type=6, label=1,
-      has_default_value=False, default_value=float(0),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR),
   ],
   extensions=[
   ],
@@ -270,68 +82,8 @@ _INFRASTRUCTURE_MEMORY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=694,
-  serialized_end=733,
-)
-
-_INFRASTRUCTURE_NET_IPV4 = _descriptor.Descriptor(
-  name='IPv4',
-  full_name='golem_task_api.Infrastructure.Net.IPv4',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='has_pub_addr', full_name='golem_task_api.Infrastructure.Net.IPv4.has_pub_addr', index=0,
-      number=1, type=8, cpp_type=7, label=1,
-      has_default_value=False, default_value=False,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR),
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  serialized_options=None,
-  is_extendable=False,
-  syntax='proto3',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=797,
-  serialized_end=825,
-)
-
-_INFRASTRUCTURE_NET = _descriptor.Descriptor(
-  name='Net',
-  full_name='golem_task_api.Infrastructure.Net',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='ipv4', full_name='golem_task_api.Infrastructure.Net.ipv4', index=0,
-      number=1, type=11, cpp_type=10, label=1,
-      has_default_value=False, default_value=None,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR),
-  ],
-  extensions=[
-  ],
-  nested_types=[_INFRASTRUCTURE_NET_IPV4, ],
-  enum_types=[
-  ],
-  serialized_options=None,
-  is_extendable=False,
-  syntax='proto3',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=735,
-  serialized_end=825,
+  serialized_start=131,
+  serialized_end=152,
 )
 
 _INFRASTRUCTURE = _descriptor.Descriptor(
@@ -342,29 +94,8 @@ _INFRASTRUCTURE = _descriptor.Descriptor(
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='cpu', full_name='golem_task_api.Infrastructure.cpu', index=0,
+      name='mem', full_name='golem_task_api.Infrastructure.mem', index=0,
       number=1, type=11, cpp_type=10, label=1,
-      has_default_value=False, default_value=None,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR),
-    _descriptor.FieldDescriptor(
-      name='gpu', full_name='golem_task_api.Infrastructure.gpu', index=1,
-      number=2, type=11, cpp_type=10, label=1,
-      has_default_value=False, default_value=None,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR),
-    _descriptor.FieldDescriptor(
-      name='mem', full_name='golem_task_api.Infrastructure.mem', index=2,
-      number=3, type=11, cpp_type=10, label=1,
-      has_default_value=False, default_value=None,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR),
-    _descriptor.FieldDescriptor(
-      name='net', full_name='golem_task_api.Infrastructure.net', index=3,
-      number=4, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
@@ -372,7 +103,7 @@ _INFRASTRUCTURE = _descriptor.Descriptor(
   ],
   extensions=[
   ],
-  nested_types=[_INFRASTRUCTURE_CPU, _INFRASTRUCTURE_GPU, _INFRASTRUCTURE_MEMORY, _INFRASTRUCTURE_NET, ],
+  nested_types=[_INFRASTRUCTURE_MEMORY, ],
   enum_types=[
   ],
   serialized_options=None,
@@ -381,8 +112,8 @@ _INFRASTRUCTURE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=62,
-  serialized_end=825,
+  serialized_start=61,
+  serialized_end=152,
 )
 
 
@@ -426,8 +157,8 @@ _CREATETASKREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=827,
-  serialized_end=917,
+  serialized_start=154,
+  serialized_end=244,
 )
 
 
@@ -471,8 +202,8 @@ _CREATETASKREPLY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=919,
-  serialized_end=1038,
+  serialized_start=246,
+  serialized_end=365,
 )
 
 
@@ -516,8 +247,8 @@ _NEXTSUBTASKREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1040,
-  serialized_end=1121,
+  serialized_start=367,
+  serialized_end=448,
 )
 
 
@@ -550,8 +281,8 @@ _NEXTSUBTASKREPLY = _descriptor.Descriptor(
       name='subtask_oneof', full_name='golem_task_api.NextSubtaskReply.subtask_oneof',
       index=0, containing_type=None, fields=[]),
   ],
-  serialized_start=1123,
-  serialized_end=1207,
+  serialized_start=450,
+  serialized_end=534,
 )
 
 
@@ -588,8 +319,8 @@ _SUBTASKREPLY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1209,
-  serialized_end=1271,
+  serialized_start=536,
+  serialized_end=598,
 )
 
 
@@ -633,8 +364,8 @@ _COMPUTEREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1273,
-  serialized_end=1355,
+  serialized_start=600,
+  serialized_end=682,
 )
 
 
@@ -664,8 +395,8 @@ _COMPUTEREPLY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1357,
-  serialized_end=1396,
+  serialized_start=684,
+  serialized_end=723,
 )
 
 
@@ -702,8 +433,8 @@ _VERIFYREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1398,
-  serialized_end=1450,
+  serialized_start=725,
+  serialized_end=777,
 )
 
 
@@ -741,8 +472,8 @@ _VERIFYREPLY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1453,
-  serialized_end=1619,
+  serialized_start=780,
+  serialized_end=946,
 )
 
 
@@ -779,8 +510,8 @@ _DISCARDSUBTASKSREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1621,
-  serialized_end=1683,
+  serialized_start=948,
+  serialized_end=1010,
 )
 
 
@@ -810,8 +541,8 @@ _DISCARDSUBTASKSREPLY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1685,
-  serialized_end=1738,
+  serialized_start=1012,
+  serialized_end=1065,
 )
 
 
@@ -834,8 +565,8 @@ _RUNBENCHMARKREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1740,
-  serialized_end=1761,
+  serialized_start=1067,
+  serialized_end=1088,
 )
 
 
@@ -865,8 +596,8 @@ _RUNBENCHMARKREPLY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1763,
-  serialized_end=1797,
+  serialized_start=1090,
+  serialized_end=1124,
 )
 
 
@@ -896,8 +627,8 @@ _HASPENDINGSUBTASKSREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1799,
-  serialized_end=1843,
+  serialized_start=1126,
+  serialized_end=1170,
 )
 
 
@@ -927,8 +658,8 @@ _HASPENDINGSUBTASKSREPLY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1845,
-  serialized_end=1900,
+  serialized_start=1172,
+  serialized_end=1227,
 )
 
 
@@ -958,8 +689,8 @@ _ABORTTASKREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1902,
-  serialized_end=1937,
+  serialized_start=1229,
+  serialized_end=1264,
 )
 
 
@@ -982,8 +713,8 @@ _ABORTTASKREPLY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1939,
-  serialized_end=1955,
+  serialized_start=1266,
+  serialized_end=1282,
 )
 
 
@@ -1020,8 +751,8 @@ _ABORTSUBTASKREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1957,
-  serialized_end=2015,
+  serialized_start=1284,
+  serialized_end=1342,
 )
 
 
@@ -1044,8 +775,8 @@ _ABORTSUBTASKREPLY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2017,
-  serialized_end=2036,
+  serialized_start=1344,
+  serialized_end=1363,
 )
 
 
@@ -1068,8 +799,8 @@ _SHUTDOWNREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2038,
-  serialized_end=2055,
+  serialized_start=1365,
+  serialized_end=1382,
 )
 
 
@@ -1092,24 +823,12 @@ _SHUTDOWNREPLY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2057,
-  serialized_end=2072,
+  serialized_start=1384,
+  serialized_end=1399,
 )
 
-_INFRASTRUCTURE_CPU_CACHE.containing_type = _INFRASTRUCTURE_CPU
-_INFRASTRUCTURE_CPU.fields_by_name['l1cache'].message_type = _INFRASTRUCTURE_CPU_CACHE
-_INFRASTRUCTURE_CPU.fields_by_name['l2cache'].message_type = _INFRASTRUCTURE_CPU_CACHE
-_INFRASTRUCTURE_CPU.fields_by_name['l3cache'].message_type = _INFRASTRUCTURE_CPU_CACHE
-_INFRASTRUCTURE_CPU.containing_type = _INFRASTRUCTURE
-_INFRASTRUCTURE_GPU.containing_type = _INFRASTRUCTURE
 _INFRASTRUCTURE_MEMORY.containing_type = _INFRASTRUCTURE
-_INFRASTRUCTURE_NET_IPV4.containing_type = _INFRASTRUCTURE_NET
-_INFRASTRUCTURE_NET.fields_by_name['ipv4'].message_type = _INFRASTRUCTURE_NET_IPV4
-_INFRASTRUCTURE_NET.containing_type = _INFRASTRUCTURE
-_INFRASTRUCTURE.fields_by_name['cpu'].message_type = _INFRASTRUCTURE_CPU
-_INFRASTRUCTURE.fields_by_name['gpu'].message_type = _INFRASTRUCTURE_GPU
 _INFRASTRUCTURE.fields_by_name['mem'].message_type = _INFRASTRUCTURE_MEMORY
-_INFRASTRUCTURE.fields_by_name['net'].message_type = _INFRASTRUCTURE_NET
 _CREATETASKREPLY.fields_by_name['inf_requirements'].message_type = _INFRASTRUCTURE
 _NEXTSUBTASKREPLY.fields_by_name['subtask'].message_type = _SUBTASKREPLY
 _NEXTSUBTASKREPLY.oneofs_by_name['subtask_oneof'].fields.append(
@@ -1143,45 +862,10 @@ _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
 Infrastructure = _reflection.GeneratedProtocolMessageType('Infrastructure', (_message.Message,), {
 
-  'CPU' : _reflection.GeneratedProtocolMessageType('CPU', (_message.Message,), {
-
-    'Cache' : _reflection.GeneratedProtocolMessageType('Cache', (_message.Message,), {
-      'DESCRIPTOR' : _INFRASTRUCTURE_CPU_CACHE,
-      '__module__' : 'golem_task_api.proto.golem_task_api_pb2'
-      # @@protoc_insertion_point(class_scope:golem_task_api.Infrastructure.CPU.Cache)
-      })
-    ,
-    'DESCRIPTOR' : _INFRASTRUCTURE_CPU,
-    '__module__' : 'golem_task_api.proto.golem_task_api_pb2'
-    # @@protoc_insertion_point(class_scope:golem_task_api.Infrastructure.CPU)
-    })
-  ,
-
-  'GPU' : _reflection.GeneratedProtocolMessageType('GPU', (_message.Message,), {
-    'DESCRIPTOR' : _INFRASTRUCTURE_GPU,
-    '__module__' : 'golem_task_api.proto.golem_task_api_pb2'
-    # @@protoc_insertion_point(class_scope:golem_task_api.Infrastructure.GPU)
-    })
-  ,
-
   'Memory' : _reflection.GeneratedProtocolMessageType('Memory', (_message.Message,), {
     'DESCRIPTOR' : _INFRASTRUCTURE_MEMORY,
     '__module__' : 'golem_task_api.proto.golem_task_api_pb2'
     # @@protoc_insertion_point(class_scope:golem_task_api.Infrastructure.Memory)
-    })
-  ,
-
-  'Net' : _reflection.GeneratedProtocolMessageType('Net', (_message.Message,), {
-
-    'IPv4' : _reflection.GeneratedProtocolMessageType('IPv4', (_message.Message,), {
-      'DESCRIPTOR' : _INFRASTRUCTURE_NET_IPV4,
-      '__module__' : 'golem_task_api.proto.golem_task_api_pb2'
-      # @@protoc_insertion_point(class_scope:golem_task_api.Infrastructure.Net.IPv4)
-      })
-    ,
-    'DESCRIPTOR' : _INFRASTRUCTURE_NET,
-    '__module__' : 'golem_task_api.proto.golem_task_api_pb2'
-    # @@protoc_insertion_point(class_scope:golem_task_api.Infrastructure.Net)
     })
   ,
   'DESCRIPTOR' : _INFRASTRUCTURE,
@@ -1189,12 +873,7 @@ Infrastructure = _reflection.GeneratedProtocolMessageType('Infrastructure', (_me
   # @@protoc_insertion_point(class_scope:golem_task_api.Infrastructure)
   })
 _sym_db.RegisterMessage(Infrastructure)
-_sym_db.RegisterMessage(Infrastructure.CPU)
-_sym_db.RegisterMessage(Infrastructure.CPU.Cache)
-_sym_db.RegisterMessage(Infrastructure.GPU)
 _sym_db.RegisterMessage(Infrastructure.Memory)
-_sym_db.RegisterMessage(Infrastructure.Net)
-_sym_db.RegisterMessage(Infrastructure.Net.IPv4)
 
 CreateTaskRequest = _reflection.GeneratedProtocolMessageType('CreateTaskRequest', (_message.Message,), {
   'DESCRIPTOR' : _CREATETASKREQUEST,
@@ -1351,8 +1030,8 @@ _REQUESTORAPP = _descriptor.ServiceDescriptor(
   file=DESCRIPTOR,
   index=0,
   serialized_options=None,
-  serialized_start=2075,
-  serialized_end=2878,
+  serialized_start=1402,
+  serialized_end=2205,
   methods=[
   _descriptor.MethodDescriptor(
     name='CreateTask',
@@ -1447,8 +1126,8 @@ _PROVIDERAPP = _descriptor.ServiceDescriptor(
   file=DESCRIPTOR,
   index=1,
   serialized_options=None,
-  serialized_start=2881,
-  serialized_end=3137,
+  serialized_start=2208,
+  serialized_end=2464,
   methods=[
   _descriptor.MethodDescriptor(
     name='Compute',

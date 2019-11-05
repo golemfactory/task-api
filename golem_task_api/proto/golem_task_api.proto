@@ -23,48 +23,10 @@ service ProviderApp {
 }
 
 message Infrastructure {
-  message CPU {
-    message Cache {
-      float kib = 1;
-    }
-
-    string architecture = 1;
-    repeated string bit = 2;
-    int32 cores = 3;
-    int32 threads = 4;
-    float max_freq_mhz = 5;
-    string vendor = 6;
-    string model = 7;
-    string capabilities = 8;
-    Cache l1cache = 9;
-    Cache l2cache = 10;
-    Cache l3cache = 11;
-  }
-
-  message GPU {
-    string vendor = 1;
-    string model = 2;
-    int32 count = 3;
-    float gib = 4;
-  }
-
   message Memory {
     float gib = 1;
-    float freq_mhz = 2;
   }
-
-  message Net {
-    message IPv4 {
-      bool has_pub_addr = 1;
-    }
-
-    IPv4 ipv4 = 1;
-  }
-
-  CPU cpu = 1;
-  GPU gpu = 2;
-  Memory mem = 3;
-  Net net = 4;
+  Memory mem = 1;
 }
 
 message CreateTaskRequest {
