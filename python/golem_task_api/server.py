@@ -80,15 +80,20 @@ class RequestorApp(RequestorAppBase):
         task_work_dir = self._work_dir.task_dir(request.task_id)
         max_subtasks_count = request.max_subtasks_count
         task_params = json.loads(request.task_params_json)
-        task, inf = await self._handler.create_task(
+        task = await self._handler.create_task(
             task_work_dir,
             max_subtasks_count,
             task_params,
         )
+
+        inf_requirements = Infrastructure()
+        inf_requirements.mem.gib = task.inf_requirements.mem.gib
+
         reply = CreateTaskReply()
         reply.env_id = task.env_id
         reply.prerequisites_json = json.dumps(task.prerequisites)
-        reply.inf_requirements.CopyFrom(inf)
+        reply.inf_requirements.CopyFrom(inf_requirements)
+
         await stream.send_message(reply)
 
     @forward_exceptions()

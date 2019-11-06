@@ -19,7 +19,6 @@ from golem_task_api.messages import (
     AbortTaskReply,
     CreateTaskRequest,
     CreateTaskReply,
-    Infrastructure,
     NextSubtaskRequest,
     NextSubtaskReply,
     ComputeRequest,
@@ -38,7 +37,7 @@ from golem_task_api.proto.golem_task_api_grpc import (
     ProviderAppStub,
     RequestorAppStub,
 )
-from golem_task_api.structs import Subtask, Task
+from golem_task_api.structs import Subtask, Task, Infrastructure
 
 CONNECTION_TIMEOUT = 5.0  # seconds
 
@@ -185,18 +184,22 @@ class RequestorAppClient(AppClient):
             task_id: str,
             max_subtasks_count: int,
             task_params: dict,
-    ) -> Tuple[Task, Infrastructure]:
+    ) -> Task:
         request = CreateTaskRequest()
         request.task_id = task_id
         request.max_subtasks_count = max_subtasks_count
         request.task_params_json = json.dumps(task_params)
         reply = await self._golem_app.CreateTask(request)
 
+        inf_requirements = Infrastructure()
+        inf_requirements.mem.gib = reply.inf_requirements.mem.gib
+
         task = Task(
             env_id=reply.env_id,
-            prerequisites=json.loads(reply.prerequisites_json))
+            prerequisites=json.loads(reply.prerequisites_json),
+            inf_requirements=inf_requirements)
 
-        return task, reply.inf_requirements
+        return task
 
     async def next_subtask(
             self,
