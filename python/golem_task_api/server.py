@@ -87,7 +87,7 @@ class RequestorApp(RequestorAppBase):
         )
 
         inf_requirements = Infrastructure()
-        inf_requirements.mem.gib = task.inf_requirements.mem.gib
+        inf_requirements.min_memory_mib = task.inf_requirements.min_memory_mib
 
         reply = CreateTaskReply()
         reply.env_id = task.env_id

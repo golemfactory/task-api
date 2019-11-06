@@ -192,7 +192,7 @@ class RequestorAppClient(AppClient):
         reply = await self._golem_app.CreateTask(request)
 
         inf_requirements = Infrastructure()
-        inf_requirements.mem.gib = reply.inf_requirements.mem.gib
+        inf_requirements.min_memory_mib = reply.inf_requirements.min_memory_mib
 
         task = Task(
             env_id=reply.env_id,

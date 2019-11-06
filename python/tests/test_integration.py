@@ -26,9 +26,7 @@ async def test_e2e_flow(tmpdir):
     task_struct = structs.Task(
         env_id='test_env',
         prerequisites={},
-        inf_requirements=structs.Infrastructure(
-            mem=structs.Infrastructure.Memory(gib=2.0))
-    )
+        inf_requirements=structs.Infrastructure(min_memory_mib=2000.0))
     task_id = 'test_task_id123'
     max_subtasks_count = 1
     resources = []

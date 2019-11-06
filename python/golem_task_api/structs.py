@@ -5,11 +5,7 @@ from dataclasses import dataclass, field
 
 @dataclass
 class Infrastructure:
-    @dataclass
-    class Memory:
-        gib: Optional[float] = None
-
-    mem: Memory = field(default_factory=Memory)
+    min_memory_mib: Optional[float] = None
 
 
 @dataclass

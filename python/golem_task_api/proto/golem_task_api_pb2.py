@@ -20,7 +20,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   package='golem_task_api',
   syntax='proto3',
   serialized_options=None,
-  serialized_pb=_b('\n)golem_task_api/proto/golem_task_api.proto\x12\x0egolem_task_api\"[\n\x0eInfrastructure\x12\x32\n\x03mem\x18\x01 \x01(\x0b\x32%.golem_task_api.Infrastructure.Memory\x1a\x15\n\x06Memory\x12\x0b\n\x03gib\x18\x01 \x01(\x02\"Z\n\x11\x43reateTaskRequest\x12\x0f\n\x07task_id\x18\x01 \x01(\t\x12\x1a\n\x12max_subtasks_count\x18\x02 \x01(\x05\x12\x18\n\x10task_params_json\x18\x03 \x01(\t\"w\n\x0f\x43reateTaskReply\x12\x0e\n\x06\x65nv_id\x18\x01 \x01(\t\x12\x1a\n\x12prerequisites_json\x18\x02 \x01(\t\x12\x38\n\x10inf_requirements\x18\x03 \x01(\x0b\x32\x1e.golem_task_api.Infrastructure\"Q\n\x12NextSubtaskRequest\x12\x0f\n\x07task_id\x18\x01 \x01(\t\x12\x12\n\nsubtask_id\x18\x02 \x01(\t\x12\x16\n\x0eopaque_node_id\x18\x03 \x01(\t\"T\n\x10NextSubtaskReply\x12/\n\x07subtask\x18\x01 \x01(\x0b\x32\x1c.golem_task_api.SubtaskReplyH\x00\x42\x0f\n\rsubtask_oneof\">\n\x0cSubtaskReply\x12\x1b\n\x13subtask_params_json\x18\x01 \x01(\t\x12\x11\n\tresources\x18\x02 \x03(\t\"R\n\x0e\x43omputeRequest\x12\x0f\n\x07task_id\x18\x01 \x01(\t\x12\x12\n\nsubtask_id\x18\x02 \x01(\t\x12\x1b\n\x13subtask_params_json\x18\x03 \x01(\t\"\'\n\x0c\x43omputeReply\x12\x17\n\x0foutput_filepath\x18\x01 \x01(\t\"4\n\rVerifyRequest\x12\x0f\n\x07task_id\x18\x01 \x01(\t\x12\x12\n\nsubtask_id\x18\x02 \x01(\t\"\xa6\x01\n\x0bVerifyReply\x12\x38\n\x06result\x18\x01 \x01(\x0e\x32(.golem_task_api.VerifyReply.VerifyResult\x12\x0e\n\x06reason\x18\x02 \x01(\t\"M\n\x0cVerifyResult\x12\x0b\n\x07SUCCESS\x10\x00\x12\x0b\n\x07\x46\x41ILURE\x10\x01\x12\x11\n\rAWAITING_DATA\x10\x02\x12\x10\n\x0cINCONCLUSIVE\x10\x03\">\n\x16\x44iscardSubtasksRequest\x12\x0f\n\x07task_id\x18\x01 \x01(\t\x12\x13\n\x0bsubtask_ids\x18\x02 \x03(\t\"5\n\x14\x44iscardSubtasksReply\x12\x1d\n\x15\x64iscarded_subtask_ids\x18\x01 \x03(\t\"\x15\n\x13RunBenchmarkRequest\"\"\n\x11RunBenchmarkReply\x12\r\n\x05score\x18\x01 \x01(\x02\",\n\x19HasPendingSubtasksRequest\x12\x0f\n\x07task_id\x18\x01 \x01(\t\"7\n\x17HasPendingSubtasksReply\x12\x1c\n\x14has_pending_subtasks\x18\x01 \x01(\x08\"#\n\x10\x41\x62ortTaskRequest\x12\x0f\n\x07task_id\x18\x01 \x01(\t\"\x10\n\x0e\x41\x62ortTaskReply\":\n\x13\x41\x62ortSubtaskRequest\x12\x0f\n\x07task_id\x18\x01 \x01(\t\x12\x12\n\nsubtask_id\x18\x02 \x01(\t\"\x13\n\x11\x41\x62ortSubtaskReply\"\x11\n\x0fShutdownRequest\"\x0f\n\rShutdownReply2\xa3\x06\n\x0cRequestorApp\x12R\n\nCreateTask\x12!.golem_task_api.CreateTaskRequest\x1a\x1f.golem_task_api.CreateTaskReply\"\x00\x12U\n\x0bNextSubtask\x12\".golem_task_api.NextSubtaskRequest\x1a .golem_task_api.NextSubtaskReply\"\x00\x12\x46\n\x06Verify\x12\x1d.golem_task_api.VerifyRequest\x1a\x1b.golem_task_api.VerifyReply\"\x00\x12\x61\n\x0f\x44iscardSubtasks\x12&.golem_task_api.DiscardSubtasksRequest\x1a$.golem_task_api.DiscardSubtasksReply\"\x00\x12X\n\x0cRunBenchmark\x12#.golem_task_api.RunBenchmarkRequest\x1a!.golem_task_api.RunBenchmarkReply\"\x00\x12j\n\x12HasPendingSubtasks\x12).golem_task_api.HasPendingSubtasksRequest\x1a\'.golem_task_api.HasPendingSubtasksReply\"\x00\x12O\n\tAbortTask\x12 .golem_task_api.AbortTaskRequest\x1a\x1e.golem_task_api.AbortTaskReply\"\x00\x12X\n\x0c\x41\x62ortSubtask\x12#.golem_task_api.AbortSubtaskRequest\x1a!.golem_task_api.AbortSubtaskReply\"\x00\x12L\n\x08Shutdown\x12\x1f.golem_task_api.ShutdownRequest\x1a\x1d.golem_task_api.ShutdownReply\"\x00\x32\x80\x02\n\x0bProviderApp\x12I\n\x07\x43ompute\x12\x1e.golem_task_api.ComputeRequest\x1a\x1c.golem_task_api.ComputeReply\"\x00\x12X\n\x0cRunBenchmark\x12#.golem_task_api.RunBenchmarkRequest\x1a!.golem_task_api.RunBenchmarkReply\"\x00\x12L\n\x08Shutdown\x12\x1f.golem_task_api.ShutdownRequest\x1a\x1d.golem_task_api.ShutdownReply\"\x00\x62\x06proto3')
+  serialized_pb=_b('\n)golem_task_api/proto/golem_task_api.proto\x12\x0egolem_task_api\"(\n\x0eInfrastructure\x12\x16\n\x0emin_memory_mib\x18\x01 \x01(\x02\"Z\n\x11\x43reateTaskRequest\x12\x0f\n\x07task_id\x18\x01 \x01(\t\x12\x1a\n\x12max_subtasks_count\x18\x02 \x01(\x05\x12\x18\n\x10task_params_json\x18\x03 \x01(\t\"w\n\x0f\x43reateTaskReply\x12\x0e\n\x06\x65nv_id\x18\x01 \x01(\t\x12\x1a\n\x12prerequisites_json\x18\x02 \x01(\t\x12\x38\n\x10inf_requirements\x18\x03 \x01(\x0b\x32\x1e.golem_task_api.Infrastructure\"Q\n\x12NextSubtaskRequest\x12\x0f\n\x07task_id\x18\x01 \x01(\t\x12\x12\n\nsubtask_id\x18\x02 \x01(\t\x12\x16\n\x0eopaque_node_id\x18\x03 \x01(\t\"T\n\x10NextSubtaskReply\x12/\n\x07subtask\x18\x01 \x01(\x0b\x32\x1c.golem_task_api.SubtaskReplyH\x00\x42\x0f\n\rsubtask_oneof\">\n\x0cSubtaskReply\x12\x1b\n\x13subtask_params_json\x18\x01 \x01(\t\x12\x11\n\tresources\x18\x02 \x03(\t\"R\n\x0e\x43omputeRequest\x12\x0f\n\x07task_id\x18\x01 \x01(\t\x12\x12\n\nsubtask_id\x18\x02 \x01(\t\x12\x1b\n\x13subtask_params_json\x18\x03 \x01(\t\"\'\n\x0c\x43omputeReply\x12\x17\n\x0foutput_filepath\x18\x01 \x01(\t\"4\n\rVerifyRequest\x12\x0f\n\x07task_id\x18\x01 \x01(\t\x12\x12\n\nsubtask_id\x18\x02 \x01(\t\"\xa6\x01\n\x0bVerifyReply\x12\x38\n\x06result\x18\x01 \x01(\x0e\x32(.golem_task_api.VerifyReply.VerifyResult\x12\x0e\n\x06reason\x18\x02 \x01(\t\"M\n\x0cVerifyResult\x12\x0b\n\x07SUCCESS\x10\x00\x12\x0b\n\x07\x46\x41ILURE\x10\x01\x12\x11\n\rAWAITING_DATA\x10\x02\x12\x10\n\x0cINCONCLUSIVE\x10\x03\">\n\x16\x44iscardSubtasksRequest\x12\x0f\n\x07task_id\x18\x01 \x01(\t\x12\x13\n\x0bsubtask_ids\x18\x02 \x03(\t\"5\n\x14\x44iscardSubtasksReply\x12\x1d\n\x15\x64iscarded_subtask_ids\x18\x01 \x03(\t\"\x15\n\x13RunBenchmarkRequest\"\"\n\x11RunBenchmarkReply\x12\r\n\x05score\x18\x01 \x01(\x02\",\n\x19HasPendingSubtasksRequest\x12\x0f\n\x07task_id\x18\x01 \x01(\t\"7\n\x17HasPendingSubtasksReply\x12\x1c\n\x14has_pending_subtasks\x18\x01 \x01(\x08\"#\n\x10\x41\x62ortTaskRequest\x12\x0f\n\x07task_id\x18\x01 \x01(\t\"\x10\n\x0e\x41\x62ortTaskReply\":\n\x13\x41\x62ortSubtaskRequest\x12\x0f\n\x07task_id\x18\x01 \x01(\t\x12\x12\n\nsubtask_id\x18\x02 \x01(\t\"\x13\n\x11\x41\x62ortSubtaskReply\"\x11\n\x0fShutdownRequest\"\x0f\n\rShutdownReply2\xa3\x06\n\x0cRequestorApp\x12R\n\nCreateTask\x12!.golem_task_api.CreateTaskRequest\x1a\x1f.golem_task_api.CreateTaskReply\"\x00\x12U\n\x0bNextSubtask\x12\".golem_task_api.NextSubtaskRequest\x1a .golem_task_api.NextSubtaskReply\"\x00\x12\x46\n\x06Verify\x12\x1d.golem_task_api.VerifyRequest\x1a\x1b.golem_task_api.VerifyReply\"\x00\x12\x61\n\x0f\x44iscardSubtasks\x12&.golem_task_api.DiscardSubtasksRequest\x1a$.golem_task_api.DiscardSubtasksReply\"\x00\x12X\n\x0cRunBenchmark\x12#.golem_task_api.RunBenchmarkRequest\x1a!.golem_task_api.RunBenchmarkReply\"\x00\x12j\n\x12HasPendingSubtasks\x12).golem_task_api.HasPendingSubtasksRequest\x1a\'.golem_task_api.HasPendingSubtasksReply\"\x00\x12O\n\tAbortTask\x12 .golem_task_api.AbortTaskRequest\x1a\x1e.golem_task_api.AbortTaskReply\"\x00\x12X\n\x0c\x41\x62ortSubtask\x12#.golem_task_api.AbortSubtaskRequest\x1a!.golem_task_api.AbortSubtaskReply\"\x00\x12L\n\x08Shutdown\x12\x1f.golem_task_api.ShutdownRequest\x1a\x1d.golem_task_api.ShutdownReply\"\x00\x32\x80\x02\n\x0bProviderApp\x12I\n\x07\x43ompute\x12\x1e.golem_task_api.ComputeRequest\x1a\x1c.golem_task_api.ComputeReply\"\x00\x12X\n\x0cRunBenchmark\x12#.golem_task_api.RunBenchmarkRequest\x1a!.golem_task_api.RunBenchmarkReply\"\x00\x12L\n\x08Shutdown\x12\x1f.golem_task_api.ShutdownRequest\x1a\x1d.golem_task_api.ShutdownReply\"\x00\x62\x06proto3')
 )
 
 
@@ -50,21 +50,21 @@ _VERIFYREPLY_VERIFYRESULT = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   serialized_options=None,
-  serialized_start=869,
-  serialized_end=946,
+  serialized_start=818,
+  serialized_end=895,
 )
 _sym_db.RegisterEnumDescriptor(_VERIFYREPLY_VERIFYRESULT)
 
 
-_INFRASTRUCTURE_MEMORY = _descriptor.Descriptor(
-  name='Memory',
-  full_name='golem_task_api.Infrastructure.Memory',
+_INFRASTRUCTURE = _descriptor.Descriptor(
+  name='Infrastructure',
+  full_name='golem_task_api.Infrastructure',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='gib', full_name='golem_task_api.Infrastructure.Memory.gib', index=0,
+      name='min_memory_mib', full_name='golem_task_api.Infrastructure.min_memory_mib', index=0,
       number=1, type=2, cpp_type=6, label=1,
       has_default_value=False, default_value=float(0),
       message_type=None, enum_type=None, containing_type=None,
@@ -82,38 +82,8 @@ _INFRASTRUCTURE_MEMORY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=131,
-  serialized_end=152,
-)
-
-_INFRASTRUCTURE = _descriptor.Descriptor(
-  name='Infrastructure',
-  full_name='golem_task_api.Infrastructure',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='mem', full_name='golem_task_api.Infrastructure.mem', index=0,
-      number=1, type=11, cpp_type=10, label=1,
-      has_default_value=False, default_value=None,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR),
-  ],
-  extensions=[
-  ],
-  nested_types=[_INFRASTRUCTURE_MEMORY, ],
-  enum_types=[
-  ],
-  serialized_options=None,
-  is_extendable=False,
-  syntax='proto3',
-  extension_ranges=[],
-  oneofs=[
-  ],
   serialized_start=61,
-  serialized_end=152,
+  serialized_end=101,
 )
 
 
@@ -157,8 +127,8 @@ _CREATETASKREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=154,
-  serialized_end=244,
+  serialized_start=103,
+  serialized_end=193,
 )
 
 
@@ -202,8 +172,8 @@ _CREATETASKREPLY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=246,
-  serialized_end=365,
+  serialized_start=195,
+  serialized_end=314,
 )
 
 
@@ -247,8 +217,8 @@ _NEXTSUBTASKREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=367,
-  serialized_end=448,
+  serialized_start=316,
+  serialized_end=397,
 )
 
 
@@ -281,8 +251,8 @@ _NEXTSUBTASKREPLY = _descriptor.Descriptor(
       name='subtask_oneof', full_name='golem_task_api.NextSubtaskReply.subtask_oneof',
       index=0, containing_type=None, fields=[]),
   ],
-  serialized_start=450,
-  serialized_end=534,
+  serialized_start=399,
+  serialized_end=483,
 )
 
 
@@ -319,8 +289,8 @@ _SUBTASKREPLY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=536,
-  serialized_end=598,
+  serialized_start=485,
+  serialized_end=547,
 )
 
 
@@ -364,8 +334,8 @@ _COMPUTEREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=600,
-  serialized_end=682,
+  serialized_start=549,
+  serialized_end=631,
 )
 
 
@@ -395,8 +365,8 @@ _COMPUTEREPLY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=684,
-  serialized_end=723,
+  serialized_start=633,
+  serialized_end=672,
 )
 
 
@@ -433,8 +403,8 @@ _VERIFYREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=725,
-  serialized_end=777,
+  serialized_start=674,
+  serialized_end=726,
 )
 
 
@@ -472,8 +442,8 @@ _VERIFYREPLY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=780,
-  serialized_end=946,
+  serialized_start=729,
+  serialized_end=895,
 )
 
 
@@ -510,8 +480,8 @@ _DISCARDSUBTASKSREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=948,
-  serialized_end=1010,
+  serialized_start=897,
+  serialized_end=959,
 )
 
 
@@ -541,8 +511,8 @@ _DISCARDSUBTASKSREPLY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1012,
-  serialized_end=1065,
+  serialized_start=961,
+  serialized_end=1014,
 )
 
 
@@ -565,8 +535,8 @@ _RUNBENCHMARKREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1067,
-  serialized_end=1088,
+  serialized_start=1016,
+  serialized_end=1037,
 )
 
 
@@ -596,8 +566,8 @@ _RUNBENCHMARKREPLY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1090,
-  serialized_end=1124,
+  serialized_start=1039,
+  serialized_end=1073,
 )
 
 
@@ -627,8 +597,8 @@ _HASPENDINGSUBTASKSREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1126,
-  serialized_end=1170,
+  serialized_start=1075,
+  serialized_end=1119,
 )
 
 
@@ -658,8 +628,8 @@ _HASPENDINGSUBTASKSREPLY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1172,
-  serialized_end=1227,
+  serialized_start=1121,
+  serialized_end=1176,
 )
 
 
@@ -689,8 +659,8 @@ _ABORTTASKREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1229,
-  serialized_end=1264,
+  serialized_start=1178,
+  serialized_end=1213,
 )
 
 
@@ -713,8 +683,8 @@ _ABORTTASKREPLY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1266,
-  serialized_end=1282,
+  serialized_start=1215,
+  serialized_end=1231,
 )
 
 
@@ -751,8 +721,8 @@ _ABORTSUBTASKREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1284,
-  serialized_end=1342,
+  serialized_start=1233,
+  serialized_end=1291,
 )
 
 
@@ -775,8 +745,8 @@ _ABORTSUBTASKREPLY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1344,
-  serialized_end=1363,
+  serialized_start=1293,
+  serialized_end=1312,
 )
 
 
@@ -799,8 +769,8 @@ _SHUTDOWNREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1365,
-  serialized_end=1382,
+  serialized_start=1314,
+  serialized_end=1331,
 )
 
 
@@ -823,12 +793,10 @@ _SHUTDOWNREPLY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1384,
-  serialized_end=1399,
+  serialized_start=1333,
+  serialized_end=1348,
 )
 
-_INFRASTRUCTURE_MEMORY.containing_type = _INFRASTRUCTURE
-_INFRASTRUCTURE.fields_by_name['mem'].message_type = _INFRASTRUCTURE_MEMORY
 _CREATETASKREPLY.fields_by_name['inf_requirements'].message_type = _INFRASTRUCTURE
 _NEXTSUBTASKREPLY.fields_by_name['subtask'].message_type = _SUBTASKREPLY
 _NEXTSUBTASKREPLY.oneofs_by_name['subtask_oneof'].fields.append(
@@ -861,19 +829,11 @@ DESCRIPTOR.message_types_by_name['ShutdownReply'] = _SHUTDOWNREPLY
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
 Infrastructure = _reflection.GeneratedProtocolMessageType('Infrastructure', (_message.Message,), {
-
-  'Memory' : _reflection.GeneratedProtocolMessageType('Memory', (_message.Message,), {
-    'DESCRIPTOR' : _INFRASTRUCTURE_MEMORY,
-    '__module__' : 'golem_task_api.proto.golem_task_api_pb2'
-    # @@protoc_insertion_point(class_scope:golem_task_api.Infrastructure.Memory)
-    })
-  ,
   'DESCRIPTOR' : _INFRASTRUCTURE,
   '__module__' : 'golem_task_api.proto.golem_task_api_pb2'
   # @@protoc_insertion_point(class_scope:golem_task_api.Infrastructure)
   })
 _sym_db.RegisterMessage(Infrastructure)
-_sym_db.RegisterMessage(Infrastructure.Memory)
 
 CreateTaskRequest = _reflection.GeneratedProtocolMessageType('CreateTaskRequest', (_message.Message,), {
   'DESCRIPTOR' : _CREATETASKREQUEST,
@@ -1030,8 +990,8 @@ _REQUESTORAPP = _descriptor.ServiceDescriptor(
   file=DESCRIPTOR,
   index=0,
   serialized_options=None,
-  serialized_start=1402,
-  serialized_end=2205,
+  serialized_start=1351,
+  serialized_end=2154,
   methods=[
   _descriptor.MethodDescriptor(
     name='CreateTask',
@@ -1126,8 +1086,8 @@ _PROVIDERAPP = _descriptor.ServiceDescriptor(
   file=DESCRIPTOR,
   index=1,
   serialized_options=None,
-  serialized_start=2208,
-  serialized_end=2464,
+  serialized_start=2157,
+  serialized_end=2413,
   methods=[
   _descriptor.MethodDescriptor(
     name='Compute',
