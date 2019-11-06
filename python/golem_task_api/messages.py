@@ -5,6 +5,7 @@ from .proto.golem_task_api_pb2 import (
     AbortTaskReply,
     CreateTaskRequest,
     CreateTaskReply,
+    Infrastructure,
     NextSubtaskRequest,
     NextSubtaskReply,
     SubtaskReply,

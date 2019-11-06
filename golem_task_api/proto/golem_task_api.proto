@@ -22,6 +22,9 @@ service ProviderApp {
   rpc Shutdown (ShutdownRequest) returns (ShutdownReply) {}
 }
 
+message Infrastructure {
+  float min_memory_mib = 1;
+}
 
 message CreateTaskRequest {
   string task_id = 1;
@@ -32,6 +35,7 @@ message CreateTaskRequest {
 message CreateTaskReply {
   string env_id = 1;
   string prerequisites_json = 2;
+  Infrastructure inf_requirements = 3;
 }
 
 message NextSubtaskRequest {

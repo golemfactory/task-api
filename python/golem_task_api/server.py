@@ -27,6 +27,7 @@ from golem_task_api.messages import (
     CreateTaskReply,
     ComputeRequest,
     ComputeReply,
+    Infrastructure,
     NextSubtaskRequest,
     NextSubtaskReply,
     SubtaskReply,
@@ -84,9 +85,15 @@ class RequestorApp(RequestorAppBase):
             max_subtasks_count,
             task_params,
         )
+
+        inf_requirements = Infrastructure()
+        inf_requirements.min_memory_mib = task.inf_requirements.min_memory_mib
+
         reply = CreateTaskReply()
         reply.env_id = task.env_id
         reply.prerequisites_json = json.dumps(task.prerequisites)
+        reply.inf_requirements.CopyFrom(inf_requirements)
+
         await stream.send_message(reply)
 
     @forward_exceptions()
