@@ -3,7 +3,6 @@ from typing import Optional, List, Dict, Tuple, Type
 
 import peewee
 from golem_task_api.apputils.database import (
-    create_sqlite_database,
     database,
     initialize_database,
 )
@@ -45,6 +44,7 @@ class Subtask(peewee.Model):
 
 
 class DBTaskManager(TaskManager):
+    """ TaskManager subclass with a SQLite database backend for persistence """
 
     def __init__(
             self,
@@ -58,13 +58,22 @@ class DBTaskManager(TaskManager):
         models = [self._part, self._subtask]
 
         initialize_database(
-            db=self.database,
+            db=self._database,
             db_path=work_dir / 'task.db',
             models=models)
 
     @property
-    def database(self) -> peewee.Database:
-        return create_sqlite_database()
+    def _database(self) -> peewee.Database:
+        """ Return an instance of a chosen `peewee.Database` subclass """
+        return peewee.SqliteDatabase(
+            database=None,
+            thread_safe=True,
+            pragmas=(
+                ('foreign_keys', True),
+                ('busy_timeout', 1000),
+                ('journal_mode', 'WAL'),
+            ),
+        )
 
     def create_task(
             self,
@@ -81,7 +90,7 @@ class DBTaskManager(TaskManager):
         self._subtask.update(
             status=SubtaskStatus.ABORTED,
         ).where(
-            self._subtask.status != SubtaskStatus.FINISHED,
+            self._subtask.status != SubtaskStatus.SUCCESS,
             self._subtask.id.in_(
                 self._part.select(
                     self._part.subtask.id
@@ -158,7 +167,7 @@ class DBTaskManager(TaskManager):
     def get_subtasks_statuses(
             self,
             part_nums: List[int],
-    ) -> Dict[int, Tuple[SubtaskStatus, str]]:
+    ) -> Dict[int, Tuple[SubtaskStatus, Optional[str]]]:
 
         parts = self._part.select(
             self._part.num,
@@ -179,7 +188,7 @@ class DBTaskManager(TaskManager):
             for p in parts
         }
 
-    def get_next_pending_subtask(
+    def get_next_computable_part_num(
             self,
     ) -> Optional[int]:
 
@@ -193,7 +202,7 @@ class DBTaskManager(TaskManager):
                     self._subtask.id == self._part.subtask,
                     self._subtask.status.not_in((
                         SubtaskStatus.ABORTED,
-                        SubtaskStatus.FAILED
+                        SubtaskStatus.FAILURE
                     ))
                 )
             )

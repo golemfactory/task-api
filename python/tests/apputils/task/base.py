@@ -78,7 +78,7 @@ class TaskManagerTestBase:
         statuses = task_manager.get_subtasks_statuses([0])
 
         assert statuses == {0: (SubtaskStatus.COMPUTING, subtask_id)}
-        assert task_manager.get_next_pending_subtask() is None
+        assert task_manager.get_next_computable_part_num() is None
 
     def test_start_subtask_twice(self, task_manager):
         task_manager.create_task(1)
@@ -112,54 +112,54 @@ class TaskManagerTestBase:
 
         statuses = task_manager.get_subtasks_statuses([0])
         assert statuses == {0: (SubtaskStatus.WAITING, None)}
-        assert task_manager.get_next_pending_subtask() == 0
+        assert task_manager.get_next_computable_part_num() == 0
 
         task_manager.start_subtask(0, subtask_id)
         statuses = task_manager.get_subtasks_statuses([0])
         assert statuses == {0: (SubtaskStatus.COMPUTING, subtask_id)}
-        assert task_manager.get_next_pending_subtask() is None
+        assert task_manager.get_next_computable_part_num() is None
 
         task_manager.update_subtask_status(
             subtask_id,
             SubtaskStatus.ABORTED)
         statuses = task_manager.get_subtasks_statuses([0])
         assert statuses == {0: (SubtaskStatus.ABORTED, subtask_id)}
-        assert task_manager.get_next_pending_subtask() == 0
+        assert task_manager.get_next_computable_part_num() == 0
 
     def test_get_next_pending_subtask(self, task_manager):
         subtask_id = 'subtask'
         task_manager.create_task(1)
 
-        assert task_manager.get_next_pending_subtask() == 0
+        assert task_manager.get_next_computable_part_num() == 0
 
         task_manager.start_subtask(0, subtask_id)  # SubtaskStatus.COMPUTING
-        assert task_manager.get_next_pending_subtask() is None
+        assert task_manager.get_next_computable_part_num() is None
 
         task_manager.update_subtask_status(
             subtask_id,
             SubtaskStatus.VERIFYING)
-        assert task_manager.get_next_pending_subtask() is None
+        assert task_manager.get_next_computable_part_num() is None
 
         task_manager.update_subtask_status(
             subtask_id,
-            SubtaskStatus.FINISHED)
-        assert task_manager.get_next_pending_subtask() is None
+            SubtaskStatus.SUCCESS)
+        assert task_manager.get_next_computable_part_num() is None
 
         task_manager.update_subtask_status(
             subtask_id,
             SubtaskStatus.ABORTED)
-        assert task_manager.get_next_pending_subtask() == 0
+        assert task_manager.get_next_computable_part_num() == 0
 
         task_manager.update_subtask_status(
             subtask_id,
-            SubtaskStatus.FAILED)
-        assert task_manager.get_next_pending_subtask() == 0
+            SubtaskStatus.FAILURE)
+        assert task_manager.get_next_computable_part_num() == 0
 
     def test_get_next_pending_subtask_twice(self, task_manager):
         task_manager.create_task(1)
 
-        assert task_manager.get_next_pending_subtask() == 0
-        assert task_manager.get_next_pending_subtask() == 0
+        assert task_manager.get_next_computable_part_num() == 0
+        assert task_manager.get_next_computable_part_num() == 0
 
     def test_get_subtasks_statuses(self, task_manager):
         subtask_count = 4
@@ -197,9 +197,9 @@ class TaskManagerTestBase:
 
         task_manager.update_subtask_status(
             subtask_id,
-            SubtaskStatus.FINISHED)
+            SubtaskStatus.SUCCESS)
         statuses = task_manager.get_subtasks_statuses([0])
-        assert statuses == {0: (SubtaskStatus.FINISHED, subtask_id)}
+        assert statuses == {0: (SubtaskStatus.SUCCESS, subtask_id)}
 
     def test_update_subtask_without_starting(self, task_manager):
         subtask_id = 'subtask'
