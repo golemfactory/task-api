@@ -10,6 +10,7 @@ setup(
         'golem_task_api',
         'golem_task_api.envs',
         'golem_task_api.proto',
+        'golem_task_api.apputils',
         'golem_task_api.testutils',
     ],
     python_requires='>=3.6',
