@@ -11,6 +11,8 @@ setup(
         'golem_task_api.envs',
         'golem_task_api.proto',
         'golem_task_api.apputils',
+        'golem_task_api.apputils.database',
+        'golem_task_api.apputils.task',
         'golem_task_api.testutils',
     ],
     python_requires='>=3.6',
