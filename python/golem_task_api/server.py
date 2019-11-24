@@ -1,9 +1,12 @@
 import asyncio
 import functools
 import json
+import ssl
 import traceback
 from pathlib import Path
+from typing import Optional
 
+from golem_task_api.ssl import create_server_ssl_context
 from grpclib import const
 from grpclib import server
 from grpclib.health.service import Health
@@ -228,7 +231,8 @@ class AppServer:
             self,
             golem_app,
             port: int,
-            lifecycle: AppLifecycleHandler
+            lifecycle: AppLifecycleHandler,
+            ssl_context: Optional[ssl.SSLContext] = None,
     ) -> None:
         self._server = server.Server(
             handlers=[golem_app, Health()],
@@ -236,11 +240,15 @@ class AppServer:
         )
         self._port = port
         self._lifecycle = lifecycle
+        self._ssl_context = ssl_context
 
     async def start(self):
         print(f'Starting server at port {self._port}', flush=True)
         await self._lifecycle.on_before_startup()
-        await self._server.start(host='', port=self._port, ssl=None)
+        await self._server.start(
+            host='',
+            port=self._port,
+            ssl=self._ssl_context)
         await self._lifecycle.on_after_startup()
 
     async def wait_until_shutdown(self):
@@ -262,8 +270,9 @@ class RequestorAppServer(AppServer):
             handler: RequestorAppHandler,
             lifecycle: AppLifecycleHandler,
     ) -> None:
+        ssl_context = create_server_ssl_context(work_dir)
         golem_app = RequestorApp(work_dir, handler, lifecycle)
-        super().__init__(golem_app, port, lifecycle)
+        super().__init__(golem_app, port, lifecycle, ssl_context=ssl_context)
 
 
 class ProviderAppServer(AppServer):
@@ -274,5 +283,6 @@ class ProviderAppServer(AppServer):
             handler: ProviderAppHandler,
             lifecycle: AppLifecycleHandler,
     ) -> None:
+        ssl_context = create_server_ssl_context(work_dir)
         golem_app = ProviderApp(work_dir, handler, lifecycle)
-        super().__init__(golem_app, port, lifecycle)
+        super().__init__(golem_app, port, lifecycle, ssl_context=ssl_context)
