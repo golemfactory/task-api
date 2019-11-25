@@ -65,10 +65,12 @@ def get_docker_container_port_mapping(
     else:
         ip_address = net_config['Networks']['bridge']['IPAddress']
 
+    if sys.platform != 'linux':
+        port = int(net_config['Ports'][f'{port}/tcp'][0]['HostPort'])
+
     if not ip_address:
         raise RuntimeError(f'Unable to read the IP address of {container_id}')
 
-    port = int(net_config['Ports'][f'{port}/tcp'][0]['HostPort'])
     return ip_address, port
 
 
