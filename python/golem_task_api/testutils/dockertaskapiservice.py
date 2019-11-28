@@ -1,75 +1,99 @@
 import os
+import shlex
 import subprocess
 import sys
+import uuid
 from pathlib import Path
 from typing import Tuple, Optional
 
-import docker
+from aiodocker import Docker
+from aiodocker.docker import DockerContainer
 from golem_task_api import constants, TaskApiService
 
 
-def is_docker_available():
+async def is_docker_available():
     """ Check the connection with Docker daemon """
+    docker = Docker()
     try:
-        client = docker.from_env()
-        client.ping()
-    except Exception:
+        await docker.system.info()
+        return True
+    except Exception:  # pylint: disable=broad-except
         return False
-    return True
+    finally:
+        await docker.close()
 
 
-def run_docker_container(
+async def run_container(
         image: str,
         work_dir: Path,
         command: str,
         port: int
-) -> docker.models.containers.Container:
+) -> DockerContainer:
     """" Start a detached container """
-    if sys.platform == 'linux':
-        ports = {}
-    else:
-        ports = {port: port}
+    ports = {}
+    if sys.platform != 'linux':
+        ports[f'{port}/tcp'] = port
 
-    client = docker.from_env()
-    return client.containers.run(
-        image=image,
-        command=command,
-        volumes={
+    config = dict(
+        Image=image,
+        Cmd=shlex.split(command),
+        Volumes={
             str(work_dir): {
                 'bind': f'/{constants.WORK_DIR}',
                 'mode': 'rw',
             }
         },
-        user=os.getuid(),
-        ports=ports,
-        detach=True,
+        User=str(os.getuid()),
+        HostConfig={
+            'Binds': [f'/{work_dir}:/{constants.WORK_DIR}'],
+            'PortBindings': {
+                f'{port}/tcp': [{
+                    'HostIp': '',
+                    'HostPort': f'{port}'
+                }]
+            },
+        },
+        ExposedPorts={
+            f'{port}/tcp': {}
+        },
+        Detach=True,
     )
 
+    return await Docker().containers.run(config, name=str(uuid.uuid4()))
 
-def get_docker_container_port_mapping(
-        container_id: str,
+
+async def get_docker_container_state(
+        container: DockerContainer,
+) -> str:
+    """ Retrieve container state """
+    container_config = await container.show()
+    return container_config['State']
+
+
+async def get_container_port_mapping(
+        container: DockerContainer,
         port: int,
         vm_name: str,
 ) -> Tuple[str, int]:
     """ Retrieve running container's IP address and port """
 
-    client = docker.APIClient()
-    container_config = client.inspect_container(container_id)
+    container_config = await container.show()
     net_config = container_config['NetworkSettings']
 
     if sys.platform == 'darwin':
         ip_address = '127.0.0.1'
     elif sys.platform == 'win32':
-        ip_address = subprocess.check_output(['docker-machine', 'ip', vm_name])
-        ip_address = ip_address.decode('utf-8').strip()
+        ip_command = ['docker-machine', 'ip', vm_name]
+        ip_output = subprocess.check_output(ip_command)
+        ip_address = ip_output.decode('utf-8').strip()
     else:
         ip_address = net_config['Networks']['bridge']['IPAddress']
 
-    if sys.platform != 'linux':
+    if net_config['Ports']:
         port = int(net_config['Ports'][f'{port}/tcp'][0]['HostPort'])
 
     if not ip_address:
-        raise RuntimeError(f'Unable to read the IP address of {container_id}')
+        raise RuntimeError(f'Unable to read the IP address of {container}')
 
     return ip_address, port
 
@@ -84,46 +108,45 @@ class DockerTaskApiService(TaskApiService):
     ) -> None:
         self._image = image
         self._work_dir = work_dir
-        self._vm_name = vm_name
-        self._container = None
+        self._vm_name: Optional[str] = vm_name
+        self._container: Optional[DockerContainer] = None
 
     async def start(
             self,
             command: str,
-            port: int
+            port: int,
     ) -> Tuple[str, int]:
-        self._container = run_docker_container(
+        self._container = await run_container(
             self._image,
             self._work_dir,
             command,
             port)
 
-        return get_docker_container_port_mapping(
-            self._container.id,
+        return await get_container_port_mapping(
+            self._container,
             port,
             self._vm_name)
 
     async def stop(self) -> None:
-        if not self.running():
-            return
-        self._container.stop()
+        if await self.running():
+            await self._container.stop()
+            await self._container.delete()
 
-    def running(self) -> bool:
+    async def running(self) -> bool:
         try:
-            self._container.reload()
-        except (AttributeError, docker.errors.APIError):
+            status = await get_docker_container_state(self._container)
+        except Exception:  # pylint: disable=broad-except
             return False
-        return self._container.status not in ['exited', 'error']
+        return status not in ['exited', 'error']
 
     async def wait_until_shutdown_complete(self) -> None:
-        print(f'Shutting down container with status: {self._container.status}')
-        if not self.running():
+        if not await self.running():
             return
 
-        logs = self._container.logs()
-        logs = logs.decode('utf-8')
+        logs = await self._container.log(stdout=True, stderr=True)
+        logs = "\n".join(logs)
 
         try:
-            self._container.remove(force=True)
+            await self.stop()
         finally:
             print(logs)

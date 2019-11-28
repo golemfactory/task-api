@@ -50,7 +50,7 @@ class InlineTaskApiService(TaskApiService):
         if exit_code != 0:
             raise ChildProcessError(f'Server exited with code {exit_code}')
 
-    def running(self) -> bool:
+    async def running(self) -> bool:
         assert self._server_process is not None
         return self._server_process.is_alive()
 
@@ -68,7 +68,7 @@ class InlineTaskApiService(TaskApiService):
         self._server_process.terminate()
 
     async def wait_until_shutdown_complete(self) -> None:
-        if not self.running():
+        if not await self.running():
             print('Service no longer running')
             return
         await asyncio.get_event_loop().run_in_executor(None, self._join)

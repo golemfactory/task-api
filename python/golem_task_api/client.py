@@ -73,7 +73,7 @@ class ShutdownException(Exception):
 class TaskApiService(abc.ABC):
 
     @abc.abstractmethod
-    def running(self) -> bool:
+    async def running(self) -> bool:
         """
         Checks if the service is still running.
         E.g. For inline this would be implemented as:
@@ -108,7 +108,7 @@ class TaskApiService(abc.ABC):
             host, port = await self.start(command, port)
             return await _wait_for_channel(host, port)
         except Exception:
-            if self.running():
+            if await self.running():
                 await self.stop()
             raise
 
@@ -135,7 +135,7 @@ class AppClient(abc.ABC):
             await self._shutdown_future
             return
         self._kill_switch.cancel(ShutdownException("Shutdown requested"))
-        if not self._service.running():
+        if not await self._service.running():
             return
         try:
             await asyncio.wait_for(self._soft_shutdown(), timeout=timeout)
@@ -147,7 +147,7 @@ class AppClient(abc.ABC):
             # Catching StreamTerminatedError and ConnectionRefusedError
             # because server might have stopped between calling
             # self._service.running() and self._soft_shutdown()
-            if self._service.running():
+            if await self._service.running():
                 await self._service.stop()
                 await self._service.wait_until_shutdown_complete()
         finally:
