@@ -70,6 +70,17 @@ async def get_docker_container_state(
     return container_config['State']
 
 
+async def get_docker_container_id(
+        container: DockerContainer,
+) -> str:
+    """ Retrieve container id """
+    container_id = getattr(container, '_id', None)
+    if container_id:
+        return container_id
+    container_config = await container.show()
+    return container_config['Id']
+
+
 async def get_container_port_mapping(
         container: DockerContainer,
         port: int,
@@ -93,7 +104,8 @@ async def get_container_port_mapping(
         port = int(net_config['Ports'][f'{port}/tcp'][0]['HostPort'])
 
     if not ip_address:
-        raise RuntimeError(f'Unable to read the IP address of {container}')
+        container_id = await get_docker_container_id(container)
+        raise RuntimeError(f'Unable to read the IP address of {container_id}')
 
     return ip_address, port
 
