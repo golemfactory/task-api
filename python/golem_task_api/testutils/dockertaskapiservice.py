@@ -1,6 +1,5 @@
 import os
 import shlex
-import subprocess
 import sys
 import uuid
 from pathlib import Path
@@ -9,6 +8,7 @@ from typing import Tuple, Optional
 from aiodocker import Docker
 from aiodocker.docker import DockerContainer
 from golem_task_api import constants, TaskApiService
+from golem_task_api.apputils.process import exec_cmd_output
 
 
 async def is_docker_available():
@@ -94,9 +94,8 @@ async def get_container_port_mapping(
     if sys.platform == 'darwin':
         ip_address = '127.0.0.1'
     elif sys.platform == 'win32':
-        ip_command = ['docker-machine', 'ip', vm_name]
-        ip_output = subprocess.check_output(ip_command)
-        ip_address = ip_output.decode('utf-8').strip()
+        stdout, _ = await exec_cmd_output(['docker-machine', 'ip', vm_name])
+        ip_address = stdout.decode('utf-8').strip()
     else:
         ip_address = net_config['Networks']['bridge']['IPAddress']
 
@@ -140,6 +139,8 @@ class DockerTaskApiService(TaskApiService):
             self._vm_name)
 
     async def stop(self) -> None:
+        if not self._container:
+            return
         if await self.running():
             await self._container.stop()
             await self._container.delete()

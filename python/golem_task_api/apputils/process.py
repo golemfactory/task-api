@@ -1,9 +1,9 @@
 import asyncio
 import time
+from typing import Tuple
 
 from dataclasses import dataclass
 from golem_task_api.threading import Executor
-from psutil import Process
 
 
 @dataclass
@@ -18,6 +18,8 @@ def _monitor_pid(
         usage: Usage,
         interval: float = 0.5
 ) -> None:
+    from psutil import Process
+
     proc = Process(pid)
     while proc.is_running() and not Executor.is_shutting_down():
         usage.cpu_time = sum(proc.cpu_times())
@@ -25,7 +27,7 @@ def _monitor_pid(
         time.sleep(interval)
 
 
-async def exec_and_monitor_cmd(cmd):
+async def exec_and_monitor_cmd(cmd) -> Tuple[int, Usage]:
     usage = Usage()
     time_started = time.time()
 
@@ -43,10 +45,19 @@ async def exec_and_monitor_cmd(cmd):
     return return_code, usage
 
 
-async def exec_cmd(cmd):
+async def exec_cmd(cmd) -> int:
     process = await asyncio.create_subprocess_exec(*cmd)
     try:
         return await process.wait()
+    except asyncio.CancelledError:
+        process.terminate()
+        raise
+
+
+async def exec_cmd_output(cmd) -> Tuple[bytes, bytes]:
+    process = await asyncio.create_subprocess_exec(*cmd)
+    try:
+        return await process.communicate()
     except asyncio.CancelledError:
         process.terminate()
         raise
