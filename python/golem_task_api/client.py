@@ -1,6 +1,7 @@
 import abc
 import asyncio
 import json
+import ssl
 import time
 from typing import ClassVar, List, Tuple, Optional
 from pathlib import Path
@@ -45,14 +46,19 @@ CONNECTION_TIMEOUT = 5.0  # seconds
 async def _wait_for_channel(
         host: str,
         port: int,
-        timeout: float = CONNECTION_TIMEOUT
+        timeout: float = CONNECTION_TIMEOUT,
+        ssl_context: Optional[ssl.SSLContext] = None,
 ) -> Channel:
     request = HealthCheckRequest()
     request.service = ''  # empty service name for a server check
 
     deadline = time.time() + timeout
     while time.time() < deadline:
-        channel = Channel(host, port, loop=asyncio.get_event_loop())
+        channel = Channel(
+            host,
+            port,
+            ssl=ssl_context,
+            loop=asyncio.get_event_loop())
         client = HealthStub(channel)
         try:
             response = await client.Check(request)
@@ -98,7 +104,12 @@ class TaskApiService(abc.ABC):
     async def stop(self) -> None:
         """ Force service shutdown. E.g. by calling `docker stop` """
 
-    async def open_channel(self, command: str, port: int) -> Channel:
+    async def open_channel(
+            self,
+            command: str,
+            port: int,
+            ssl_context: Optional[ssl.SSLContext] = None,
+    ) -> Channel:
         """
         Start the service and wait for it to start listening. Return GRPC
         channel for connecting to the service. In case any exception is raised
@@ -106,7 +117,10 @@ class TaskApiService(abc.ABC):
         """
         try:
             host, port = await self.start(command, port)
-            return await _wait_for_channel(host, port)
+            return await _wait_for_channel(
+                host,
+                port,
+                ssl_context=ssl_context)
         except Exception:
             if await self.running():
                 await self.stop()
@@ -165,9 +179,13 @@ class RequestorAppClient(AppClient):
     async def create(
             cls,
             service: TaskApiService,
-            port: int = DEFAULT_PORT
+            port: int = DEFAULT_PORT,
+            ssl_context: Optional[ssl.SSLContext] = None,
     ) -> 'RequestorAppClient':
-        channel = await service.open_channel(f'requestor {port}', port)
+        channel = await service.open_channel(
+            f'requestor {port}',
+            port,
+            ssl_context)
         app_stub = RequestorAppStub(channel)
         return cls(service, app_stub)
 
@@ -276,9 +294,13 @@ class ProviderAppClient(AppClient):
     async def create(
             cls,
             service: TaskApiService,
-            port: int = DEFAULT_PORT
+            port: int = DEFAULT_PORT,
+            ssl_context: Optional[ssl.SSLContext] = None,
     ) -> 'ProviderAppClient':
-        channel = await service.open_channel(f'provider {port}', port)
+        channel = await service.open_channel(
+            f'provider {port}',
+            port,
+            ssl_context)
         app_stub = ProviderAppStub(channel)
         return cls(service, app_stub)
 
