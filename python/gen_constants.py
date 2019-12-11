@@ -9,7 +9,8 @@ def main(input_module_name: str, output_file: Path):
 
 """
     input_module = importlib.import_module(input_module_name)
-    for field, value in input_module.DESCRIPTOR.GetOptions().ListFields():
+    fields = input_module.DESCRIPTOR.GetOptions().ListFields()  # type: ignore
+    for field, value in fields:
         src += f"{field.name} = '{value}'\n"
     with open(output_file, 'w') as f:
         f.write(src)

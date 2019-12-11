@@ -1,5 +1,6 @@
 import sys
 from pathlib import Path
+from typing import Any, Dict
 
 from google.protobuf.descriptor import EnumDescriptor
 
@@ -9,7 +10,7 @@ def main(input_module_file: Path, output_file: Path):
 from enum import Enum"""
 
     input_module_src = input_module_file.read_text('utf-8')
-    input_module = dict()
+    input_module: Dict[str, Any] = dict()
     exec(input_module_src, input_module)
 
     def enum_src(enum_name: str, enum_descriptor: EnumDescriptor) -> str:

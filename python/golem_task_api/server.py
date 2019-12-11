@@ -38,11 +38,9 @@ from golem_task_api.messages import (
     VerifyReply,
     DiscardSubtasksRequest,
     DiscardSubtasksReply,
-    RunBenchmarkRequest,
     RunBenchmarkReply,
     HasPendingSubtasksRequest,
     HasPendingSubtasksReply,
-    ShutdownRequest,
     ShutdownReply,
 )
 

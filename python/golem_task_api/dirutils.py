@@ -1,9 +1,13 @@
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 from golem_task_api import constants
 
-# Concrete path type appropriate for the platform (WindowsPath or PosixPath)
-FlavouredPath = type(Path())
+if TYPE_CHECKING:
+    FlavouredPath = Path
+else:
+    # Concrete path type appropriate for the platform (WindowsPath or PosixPath)
+    FlavouredPath = type(Path())
 
 
 class RequestorTaskDir(FlavouredPath):
@@ -65,4 +69,3 @@ class ProviderDir(FlavouredPath):
 
     def subtask_dir(self, task_id: str, subtask_id: str) -> Path:
         return self.task_dir(task_id).subtask_dir(subtask_id)
-

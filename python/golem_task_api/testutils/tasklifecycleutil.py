@@ -196,6 +196,7 @@ class TaskLifecycleUtil:
             subtask_id,
             opaque_node_id
         )
+        assert subtask is not None
 
         self.copy_resources_from_requestor(subtask.resources, task_id)
         self.prov_dir.subtask_dir(task_id, subtask_id).mkdir()

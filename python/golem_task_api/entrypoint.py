@@ -8,6 +8,7 @@ from golem_task_api.handlers import (
 )
 
 from golem_task_api.server import (
+    AppServer,
     ProviderAppServer,
     RequestorAppServer,
 )
@@ -24,13 +25,15 @@ async def entrypoint(
     cmd = argv[0]
     argv = argv[1:]
     if cmd == 'requestor':
-        server = RequestorAppServer(
+        assert requestor_handler is not None
+        server: AppServer = RequestorAppServer(
             work_dir,
             port=int(argv[0]),
             handler=requestor_handler,
             lifecycle=requestor_lifecycle_handler or AppLifecycleHandler(),
         )
     elif cmd == 'provider':
+        assert provider_handler is not None
         server = ProviderAppServer(
             work_dir,
             port=int(argv[0]),

@@ -2,7 +2,7 @@ import os
 import subprocess
 import sys
 from pathlib import Path
-from typing import Tuple, Optional
+from typing import Tuple, Optional, Dict
 
 import docker
 from golem_task_api import constants, TaskApiService
@@ -26,7 +26,7 @@ def run_docker_container(
 ) -> docker.models.containers.Container:
     """" Start a detached container """
     if sys.platform == 'linux':
-        ports = {}
+        ports: Dict[int, int] = {}
     else:
         ports = {port: port}
 
@@ -49,7 +49,7 @@ def run_docker_container(
 def get_docker_container_port_mapping(
         container_id: str,
         port: int,
-        vm_name: str,
+        vm_name: Optional[str],
 ) -> Tuple[str, int]:
     """ Retrieve running container's IP address and port """
 
@@ -60,6 +60,7 @@ def get_docker_container_port_mapping(
     if sys.platform == 'darwin':
         ip_address = '127.0.0.1'
     elif sys.platform == 'win32':
+        assert isinstance(vm_name, str)
         ip_address = subprocess.check_output(['docker-machine', 'ip', vm_name])
         ip_address = ip_address.decode('utf-8').strip()
     else:
@@ -85,7 +86,7 @@ class DockerTaskApiService(TaskApiService):
         self._image = image
         self._work_dir = work_dir
         self._vm_name = vm_name
-        self._container = None
+        self._container: Optional[docker.models.containers.Container] = None
 
     async def start(
             self,
@@ -97,6 +98,7 @@ class DockerTaskApiService(TaskApiService):
             self._work_dir,
             command,
             port)
+        assert isinstance(self._container, docker.models.containers.Container)
 
         return get_docker_container_port_mapping(
             self._container.id,
@@ -104,11 +106,13 @@ class DockerTaskApiService(TaskApiService):
             self._vm_name)
 
     async def stop(self) -> None:
+        assert isinstance(self._container, docker.models.containers.Container)
         if not self.running():
             return
         self._container.stop()
 
     def running(self) -> bool:
+        assert isinstance(self._container, docker.models.containers.Container)
         try:
             self._container.reload()
         except (AttributeError, docker.errors.APIError):
@@ -116,6 +120,7 @@ class DockerTaskApiService(TaskApiService):
         return self._container.status not in ['exited', 'error']
 
     async def wait_until_shutdown_complete(self) -> None:
+        assert isinstance(self._container, docker.models.containers.Container)
         print(f'Shutting down container with status: {self._container.status}')
         if not self.running():
             return
