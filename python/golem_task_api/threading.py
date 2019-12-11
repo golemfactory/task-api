@@ -42,8 +42,15 @@ class Executor:
             return
 
         tasks = list(cls._tasks)
-        cls._tasks = set()
         await asyncio.wait(tasks, timeout=timeout)
+        cls._tasks = set()
+
+    @classmethod
+    def force_shutdown(cls) -> None:
+        tasks = list(cls._tasks)
+        for task in tasks:
+            task.cancel()
+        cls._tasks = set()
 
     @classmethod
     def is_shutting_down(cls) -> bool:

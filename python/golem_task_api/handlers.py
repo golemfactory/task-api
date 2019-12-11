@@ -22,7 +22,12 @@ class AppLifecycleHandler:
         pass
 
     async def on_before_shutdown(self) -> None:
-        await threading.Executor.wait_for_shutdown()
+        try:
+            await threading.Executor.wait_for_shutdown()
+        except asyncio.TimeoutError:
+            threading.Executor.force_shutdown()
+        except asyncio.CancelledError:
+            pass
 
     async def on_after_shutdown(self) -> None:
         pass
