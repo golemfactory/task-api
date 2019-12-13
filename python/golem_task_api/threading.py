@@ -1,11 +1,11 @@
 import asyncio
 import functools
 from collections import Callable
-from typing import Any
+from typing import Any, Set, Coroutine
 
 
 class Executor:
-    _tasks = set()
+    _tasks: Set[Coroutine[Any, Any, Any]] = set()
     _shutting_down = asyncio.Event()
 
     @classmethod

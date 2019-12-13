@@ -6,16 +6,32 @@ jobs:
      steps:
        - checkout
        - run:
-           working_directory: python
+          name: Check protobuf auto-generated files
+          command: |
+            python3 -m venv venv
+            . venv/bin/activate
+            pip install -r python/requirements-build.txt
+            make
+            rm -rf venv
+            git diff --exit-code
+       - run:
            name: Install dependencies
+           working_directory: python
            command: |
              python3 -m venv venv
              . venv/bin/activate
              pip install .
              pip install -r requirements-test.txt
        - run:
+           name: Run linters
            working_directory: python
+           command: |
+             . venv/bin/activate
+             flake8
+             mypy .
+       - run:
            name: Run tests
+           working_directory: python
            command: |
              . venv/bin/activate
              pytest
