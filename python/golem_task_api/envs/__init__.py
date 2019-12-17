@@ -17,7 +17,8 @@ def _create_docker_task(
     prerequisites = DockerPrerequisites()
     prerequisites.image = image
     prerequisites.tag = tag
-    prerequisites.extra_vars = extra_vars
+    if extra_vars:
+        prerequisites.extra_vars = extra_vars
     prerequisites_dict = MessageToDict(
         prerequisites,
         preserving_proto_field_name=True)
