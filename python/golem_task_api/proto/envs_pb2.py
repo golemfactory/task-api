@@ -21,7 +21,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   package='golem_task_api',
   syntax='proto3',
   serialized_options=_b('\202\262\031\ndocker_cpu\212\262\031\ndocker_gpu'),
-  serialized_pb=_b('\n\x1fgolem_task_api/proto/envs.proto\x12\x0egolem_task_api\x1a google/protobuf/descriptor.proto\"1\n\x13\x44ockerPrerequisites\x12\r\n\x05image\x18\x01 \x01(\t\x12\x0b\n\x03tag\x18\x02 \x01(\t:9\n\x11\x44OCKER_CPU_ENV_ID\x12\x1c.google.protobuf.FileOptions\x18\xa0\x96\x03 \x01(\t:9\n\x11\x44OCKER_GPU_ENV_ID\x12\x1c.google.protobuf.FileOptions\x18\xa1\x96\x03 \x01(\tB\x1c\x82\xb2\x19\ndocker_cpu\x8a\xb2\x19\ndocker_gpub\x06proto3')
+  serialized_pb=_b('\n\x1fgolem_task_api/proto/envs.proto\x12\x0egolem_task_api\x1a google/protobuf/descriptor.proto\"E\n\x13\x44ockerPrerequisites\x12\r\n\x05image\x18\x01 \x01(\t\x12\x0b\n\x03tag\x18\x02 \x01(\t\x12\x12\n\nextra_vars\x18\x03 \x01(\t:9\n\x11\x44OCKER_CPU_ENV_ID\x12\x1c.google.protobuf.FileOptions\x18\xa0\x96\x03 \x01(\t:9\n\x11\x44OCKER_GPU_ENV_ID\x12\x1c.google.protobuf.FileOptions\x18\xa1\x96\x03 \x01(\tB\x1c\x82\xb2\x19\ndocker_cpu\x8a\xb2\x19\ndocker_gpub\x06proto3')
   ,
   dependencies=[google_dot_protobuf_dot_descriptor__pb2.DESCRIPTOR,])
 
@@ -65,6 +65,13 @@ _DOCKERPREREQUISITES = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='extra_vars', full_name='golem_task_api.DockerPrerequisites.extra_vars', index=2,
+      number=3, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
   ],
   extensions=[
   ],
@@ -78,7 +85,7 @@ _DOCKERPREREQUISITES = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=85,
-  serialized_end=134,
+  serialized_end=154,
 )
 
 DESCRIPTOR.message_types_by_name['DockerPrerequisites'] = _DOCKERPREREQUISITES

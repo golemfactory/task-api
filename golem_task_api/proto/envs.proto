@@ -16,4 +16,5 @@ option (DOCKER_GPU_ENV_ID) = 'docker_gpu';
 message DockerPrerequisites {
     string image = 1;
     string tag = 2;
+    string extra_vars = 3;
 }
