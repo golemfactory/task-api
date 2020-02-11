@@ -1,5 +1,6 @@
 from setuptools import setup
 
+
 setup(
     name='Golem-Task-Api',
     version='0.24.4',
@@ -19,6 +20,14 @@ setup(
     install_requires=[
         'async-generator==1.10',
         'dataclasses==0.6',
+        'dataclasses-json==0.3.0',
+        'grpclib==0.2.4',
+        'protobuf==3.7.1',
+    ],
+    setup_requires=[
+        'async-generator==1.10',
+        'dataclasses==0.6',
+        'dataclasses-json==0.3.0',
         'grpclib==0.2.4',
         'protobuf==3.7.1',
     ],
