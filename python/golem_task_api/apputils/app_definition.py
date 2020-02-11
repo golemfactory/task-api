@@ -4,7 +4,7 @@ import json
 import shutil
 
 from pathlib import Path
-from typing import Dict, Any, Iterator, Type
+from typing import Dict, Any
 
 from dataclasses import dataclass, field
 from dataclasses_json import dataclass_json, config
@@ -26,9 +26,10 @@ class AppDefinitionBase:
     description: str = ''
     author: str = ''
     license: str = ''
-    market_strategy: mm_fields.Str(
-        validate=validate.OneOf(["brass", "wasm"])
-    ) = 'brass'
+    market_strategy: str = mm_fields.Str(
+        validate=validate.OneOf(["brass", "wasm"]),
+        default='brass'
+    )
 
     @property
     def id(self) -> AppId:
@@ -53,7 +54,7 @@ def save_app_to_json_file(app_def: AppDefinitionBase, json_file: Path) -> None:
         json_file.write_text(app_def.to_json())
     except OSError:
         msg = f"Error writing app definition to file '{json_file}."
-        logger.exception(msg)
+        print(msg)
         raise ValueError(msg)
 
 
@@ -61,7 +62,8 @@ class BuildAppDefCommand(cmd.Command):
     description = 'build app definition for distribution in golem'
     user_options = [
         # The format is (long option, short option, description).
-        ('dist-path', 'd', 'Path to output build results, will be deleted before build'),
+        ('dist-path', 'd',
+            'Path to output build results, will be deleted before build'),
         ('config-path', 'c', 'Config file with task-api settings'),
     ]
 
@@ -107,6 +109,6 @@ class BuildAppDefCommand(cmd.Command):
             max_benchmark_score=self.config['max_benchmark_score'],
         )
         file = self.dist_path / f'{name.replace("/", "_")}_{version}_' \
-                f'{app_definition.id}.json'
+            f'{app_definition.id}.json'
         save_app_to_json_file(app_definition, file)
         print(f'Saved app_definition to "{file}"')
