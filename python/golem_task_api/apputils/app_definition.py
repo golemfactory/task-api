@@ -1,6 +1,7 @@
 from distutils import cmd
 import hashlib
 import json
+import logging
 import shutil
 
 from pathlib import Path
@@ -11,6 +12,8 @@ from dataclasses_json import dataclass_json, config
 from marshmallow import fields as mm_fields, validate
 
 AppId = str
+
+logger = logging.getLogger(__name__)
 
 
 @dataclass_json
@@ -54,7 +57,7 @@ def save_app_to_json_file(app_def: AppDefinitionBase, json_file: Path) -> None:
         json_file.write_text(app_def.to_json())
     except OSError:
         msg = f"Error writing app definition to file '{json_file}."
-        print(msg)
+        logger.error(msg)
         raise ValueError(msg)
 
 
@@ -111,4 +114,4 @@ class BuildAppDefCommand(cmd.Command):
         file = self.dist_path / f'{name.replace("/", "_")}_{version}_' \
             f'{app_definition.id}.json'
         save_app_to_json_file(app_definition, file)
-        print(f'Saved app_definition to "{file}"')
+        logger.info('Saved app_definition to "%r"', file)
