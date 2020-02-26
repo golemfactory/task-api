@@ -1,4 +1,5 @@
 flake8==3.7.9
+mock
 mypy==0.750
 peewee==3.11.2
 pytest==3.6.3
