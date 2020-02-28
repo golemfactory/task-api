@@ -71,11 +71,13 @@ async def _wait_for_channel(
         except (StreamTerminatedError, ConnectionError):
             pass
         channel.close()
+        sleep_time = 0.1
         logger.debug(
-            'Service health check failed, will try again in 100ms. deadline=%r',
+            'Service health check failed, will try again in %fs. deadline=%r',
+            sleep_time,
             deadline,
         )
-        await asyncio.sleep(0.1)
+        await asyncio.sleep(sleep_time)
 
     raise TimeoutError
 

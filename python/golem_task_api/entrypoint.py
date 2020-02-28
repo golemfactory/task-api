@@ -1,4 +1,5 @@
 import logging
+import logging.config
 
 from pathlib import Path
 from typing import List, Optional
@@ -28,7 +29,7 @@ async def entrypoint(
         log_level: str = None,
 ):
     level = log_level or logging.INFO
-    logging.basicConfig()
+    logging.config.dictConfig({'version': 1})
     logging.getLogger().setLevel(level)
     external_loggers = ['hpack', 'peewee']
     for logger_name in external_loggers:
