@@ -1,11 +1,14 @@
+import logging
 import os
+from pathlib import Path
 import subprocess
 import sys
-from pathlib import Path
 from typing import Tuple, Optional, Dict
 
 import docker
 from golem_task_api import constants, TaskApiService
+
+logger = logging.getLogger(__name__)
 
 
 def is_docker_available():
@@ -121,7 +124,10 @@ class DockerTaskApiService(TaskApiService):
 
     async def wait_until_shutdown_complete(self) -> None:
         assert isinstance(self._container, docker.models.containers.Container)
-        print(f'Shutting down container with status: {self._container.status}')
+        logger.info(
+            'Shutting down container with status: %r',
+            self._container.status
+        )
         if not self.running():
             return
 

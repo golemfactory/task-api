@@ -1,6 +1,7 @@
 import abc
 import asyncio
 import json
+import logging
 import ssl
 import time
 from typing import ClassVar, List, Tuple, Optional
@@ -41,6 +42,7 @@ from golem_task_api.proto.golem_task_api_grpc import (
 from golem_task_api.structs import Subtask, Task, Infrastructure
 
 CONNECTION_TIMEOUT = 5.0  # seconds
+logger = logging.getLogger(__name__)
 
 
 async def _wait_for_channel(
@@ -49,6 +51,7 @@ async def _wait_for_channel(
         timeout: float = CONNECTION_TIMEOUT,
         ssl_context: Optional[ssl.SSLContext] = None,
 ) -> Channel:
+    logger.debug('Starting service health check')
     request = HealthCheckRequest()
     request.service = ''  # empty service name for a server check
 
@@ -63,11 +66,18 @@ async def _wait_for_channel(
         try:
             response = await client.Check(request)
             if response.status == HealthCheckResponse.SERVING:
+                logger.debug('Service health check completed with success')
                 return channel
         except (StreamTerminatedError, ConnectionError):
             pass
         channel.close()
-        await asyncio.sleep(0.1)
+        sleep_time = 0.1
+        logger.debug(
+            'Service health check failed, will try again in %fs. deadline=%r',
+            sleep_time,
+            deadline,
+        )
+        await asyncio.sleep(sleep_time)
 
     raise TimeoutError
 
@@ -145,13 +155,18 @@ class AppClient(abc.ABC):
         self._shutdown_future = asyncio.get_event_loop().create_future()
 
     async def shutdown(self, timeout: float = SOFT_SHUTDOWN_TIMEOUT) -> None:
+        logger.debug('shutdown(%r) called', timeout)
         if self._kill_switch.cancelled:
+            logger.debug('kill_switch already cancelled.')
             await self._shutdown_future
             return
+        logger.debug('triggering kill switch')
         self._kill_switch.cancel(ShutdownException("Shutdown requested"))
         if not self._service.running():
+            logger.debug('service already stopped, early exit')
             return
         try:
+            logger.debug('waiting for service to stop')
             await asyncio.wait_for(self._soft_shutdown(), timeout=timeout)
         except (
                 asyncio.TimeoutError,
@@ -166,6 +181,7 @@ class AppClient(abc.ABC):
                 await self._service.wait_until_shutdown_complete()
         finally:
             self._shutdown_future.set_result(None)
+            logger.debug('finished shutdown')
 
     @abc.abstractmethod
     async def _soft_shutdown(self) -> None:
@@ -203,6 +219,12 @@ class RequestorAppClient(AppClient):
             max_subtasks_count: int,
             task_params: dict,
     ) -> Task:
+        logger.debug(
+            'Creating task. task_id=%r, max_subtasks=%r, task_params=%r',
+            task_id,
+            max_subtasks_count,
+            task_params,
+        )
         request = CreateTaskRequest()
         request.task_id = task_id
         request.max_subtasks_count = max_subtasks_count
@@ -217,6 +239,14 @@ class RequestorAppClient(AppClient):
             prerequisites=json.loads(reply.prerequisites_json),
             inf_requirements=inf_requirements)
 
+        logger.debug(
+            'Task created. '
+            'task_id=%r, env_id=%r, prerequisites=%r, inf_requirements=%r',
+            task_id,
+            task.env_id,
+            task.prerequisites,
+            task.inf_requirements,
+        )
         return task
 
     async def next_subtask(
@@ -225,17 +255,31 @@ class RequestorAppClient(AppClient):
             subtask_id: str,
             opaque_node_id: str,
     ) -> Optional[Subtask]:
+        logger.debug(
+            'Preparing next subtask. task_id=%r, subtask_id=%r, node_id=%r',
+            task_id,
+            subtask_id,
+            opaque_node_id,
+        )
         request = NextSubtaskRequest()
         request.task_id = task_id
         request.subtask_id = subtask_id
         request.opaque_node_id = opaque_node_id
         reply = await self._golem_app.NextSubtask(request)
         if not reply.HasField('subtask'):
+            logger.debug('No next subtask given')
             return None
-        return Subtask(
+        subtask = Subtask(
             params=json.loads(reply.subtask.subtask_params_json),
             resources=reply.subtask.resources,
         )
+        logger.debug(
+            'Next subtask ready! subtask_id=%r, params=%r, resources=%r',
+            subtask_id,
+            subtask.params,
+            subtask.resources,
+        )
+        return subtask
 
     async def verify(
             self,

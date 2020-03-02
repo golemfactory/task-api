@@ -7,9 +7,7 @@ from .client import (
     RequestorAppClient,
 )
 
-from .entrypoint import (
-    entrypoint,
-)
+from .entrypoint import entrypoint as main
 
 from .handlers import (
     AppLifecycleHandler,

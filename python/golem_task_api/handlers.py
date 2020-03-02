@@ -1,6 +1,6 @@
 import abc
 import asyncio
-
+import logging
 from pathlib import Path
 from typing import List, Tuple, Optional
 
@@ -8,6 +8,8 @@ from golem_task_api import threading
 from golem_task_api.dirutils import ProviderTaskDir, RequestorTaskDir
 from golem_task_api.enums import VerifyResult
 from golem_task_api.structs import Subtask, Task
+
+logger = logging.getLogger(__name__)
 
 
 class AppLifecycleHandler:
@@ -30,11 +32,11 @@ class AppLifecycleHandler:
     def request_shutdown(self) -> None:
         # Do not call shutdown multiple times, this can happen in case of errors
         if not self.shutdown_future.done():
-            print('Triggering shutdown', flush=True)
+            logger.info('Triggering shutdown')
             threading.Executor.request_shutdown()
             self.shutdown_future.set_result(None)
         else:
-            print('Shutdown already triggered', flush=True)
+            logger.info('Shutdown already triggered')
 
 
 class RequestorAppHandler:

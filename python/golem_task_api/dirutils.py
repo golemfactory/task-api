@@ -1,3 +1,4 @@
+import logging
 from pathlib import Path
 from typing import TYPE_CHECKING
 
@@ -8,6 +9,9 @@ if TYPE_CHECKING:
 else:
     # Concrete path type appropriate for the platform (WindowsPath or PosixPath)
     FlavouredPath = type(Path())
+
+
+logger = logging.getLogger(__name__)
 
 
 class RequestorTaskDir(FlavouredPath):
@@ -32,6 +36,7 @@ class RequestorTaskDir(FlavouredPath):
         return self.subtask_outputs_top_dir / subtask_id
 
     def prepare(self) -> None:
+        logger.debug('Preparing RequestorTaskDir. %s', self)
         self.mkdir()
         self.task_inputs_dir.mkdir()
         self.task_outputs_dir.mkdir()
@@ -58,6 +63,7 @@ class ProviderTaskDir(FlavouredPath):
         return Path(self / subtask_id)
 
     def prepare(self) -> None:
+        logger.debug('Preparing ProviderTaskDir. %s', self)
         self.mkdir()
         self.subtask_inputs_dir.mkdir()
 
