@@ -23,6 +23,5 @@ setup(
         'dataclasses-json==0.3.0',
         'grpclib==0.2.4',
         'protobuf==3.7.1',
-        'peewee==3.11.2',
     ]
 )
