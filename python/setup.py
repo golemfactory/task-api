@@ -3,7 +3,7 @@ from setuptools import setup
 
 setup(
     name='Golem-Task-Api',
-    version='0.24.4',
+    version='0.24.5',
     url='https://github.com/golemfactory/golem/task-api/python',
     maintainer='The Golem team',
     maintainer_email='tech@golem.network',
@@ -23,6 +23,5 @@ setup(
         'dataclasses-json==0.3.0',
         'grpclib==0.2.4',
         'protobuf==3.7.1',
-        'peewee==3.11.2',
     ]
 )
