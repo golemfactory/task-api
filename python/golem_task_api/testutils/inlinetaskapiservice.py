@@ -6,7 +6,7 @@ from typing import Optional, Tuple
 
 from golem_task_api import (
     TaskApiService,
-    main,
+    entrypoint,
     AppLifecycleHandler,
     ProviderAppHandler,
     RequestorAppHandler,
@@ -34,7 +34,7 @@ class InlineTaskApiService(TaskApiService):
         loop = asyncio.new_event_loop()
         loop.add_signal_handler(signal.SIGTERM, loop.stop)
         asyncio.set_event_loop(loop)
-        loop.run_until_complete(main(
+        loop.run_until_complete(entrypoint.main(
             self._work_dir,
             command.split(' '),
             requestor_handler=self._requestor_handler,

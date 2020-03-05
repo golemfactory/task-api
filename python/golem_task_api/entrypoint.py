@@ -19,23 +19,15 @@ from golem_task_api.server import (
 logger = logging.getLogger(__name__)
 
 
-async def entrypoint(
+async def main(
         work_dir: Path,
         argv: List[str],
         requestor_handler: Optional[RequestorAppHandler] = None,
         requestor_lifecycle_handler: Optional[AppLifecycleHandler] = None,
         provider_handler: Optional[ProviderAppHandler] = None,
         provider_lifecycle_handler: Optional[AppLifecycleHandler] = None,
-        log_level: str = None,
 ):
-    level = log_level or logging.INFO
-    logging.config.dictConfig({'version': 1})
-    logging.getLogger().setLevel(level)
-    external_loggers = ['hpack', 'peewee']
-    for logger_name in external_loggers:
-        logging.getLogger(logger_name).setLevel(logging.INFO)
-    logger.debug('entrypoint(%r, %r, ..., %r)', work_dir, argv, log_level)
-
+    logger.debug('entrypoint(%r, %r, ...)', work_dir, argv)
     cmd = argv[0]
     argv = argv[1:]
     if cmd == 'requestor':
