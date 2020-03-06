@@ -1,5 +1,4 @@
 import logging
-import logging.config
 
 from pathlib import Path
 from typing import List, Optional
