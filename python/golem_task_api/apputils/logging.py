@@ -4,7 +4,7 @@ from typing import Dict, List, Optional, Union
 
 # consts
 DEFAULT_LEVEL = logging.INFO
-DEFAUTL_EXTERNAL_LOGGERS = ['hpack', 'peewee']
+DEFAULT_EXTERNAL_LOGGERS = ['hpack', 'peewee']
 LOG_LEVEL_VALUES = [
     'CRITICAL',
     'ERROR',
@@ -22,7 +22,7 @@ def init_logging(
     log_config: Optional[Dict] = None,
     log_level_arg: Optional[LogLevelArg] = None,
     log_level_default: int = DEFAULT_LEVEL,
-    external_loggers: List[str] = DEFAUTL_EXTERNAL_LOGGERS,
+    external_loggers: List[str] = DEFAULT_EXTERNAL_LOGGERS,
     external_log_level: LogLevelArg = DEFAULT_LEVEL
 ):
     level = log_level_arg or log_level_default
@@ -42,7 +42,11 @@ def init_logging(
             level,
             e
         )
-    logger.debug('configured logger, level=%r', root_logger.getEffectiveLevel())
+    logger.debug('root logger level=%r', root_logger.getEffectiveLevel())
+    logger.debug(
+        '3rd party loggers level=%r, loggers=%r',
+        external_log_level,
+        external_loggers,
+    )
     for logger_name in external_loggers:
-        logger.debug('lowering level of 3rd party logger, name=%r', logger_name)
         logging.getLogger(logger_name).setLevel(external_log_level)
