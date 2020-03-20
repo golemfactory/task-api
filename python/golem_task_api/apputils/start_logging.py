@@ -1,6 +1,6 @@
-import logging.config
+import logging
 
-from typing import Dict, List, Optional, Union
+from typing import List, Optional, Union
 
 # consts
 DEFAULT_LEVEL = logging.INFO
@@ -18,18 +18,18 @@ LogLevelArg = Union[str, int]
 logger = logging.getLogger(__name__)
 
 
-def init_logging(
-    log_config: Optional[Dict] = None,
+def from_arg(
     log_level_arg: Optional[LogLevelArg] = None,
     log_level_default: int = DEFAULT_LEVEL,
     external_loggers: List[str] = DEFAULT_EXTERNAL_LOGGERS,
     external_log_level: LogLevelArg = DEFAULT_LEVEL
 ):
+    """
+    Configure simple python logging.
+    For more options use logging.config.dictConfig()
+    """
     level = log_level_arg or log_level_default
-    if log_config:
-        logging.config.dictConfig(log_config)
-    else:
-        logging.basicConfig(level=level)
+    logging.basicConfig(level=level)
 
     root_logger = logging.getLogger()
     try:
