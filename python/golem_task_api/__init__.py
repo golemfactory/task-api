@@ -7,8 +7,6 @@ from .client import (
     RequestorAppClient,
 )
 
-from .entrypoint import entrypoint as main
-
 from .handlers import (
     AppLifecycleHandler,
     ProviderAppHandler,

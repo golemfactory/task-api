@@ -1,4 +1,3 @@
-import logging
 from pathlib import Path
 import pytest
 from mock import Mock, MagicMock
@@ -18,25 +17,24 @@ class TestEntrypoint():
 
     @pytest.mark.asyncio
     @pytest.fixture(autouse=True)
-    async def test_entrypoint(self, monkeypatch):
+    async def test_main(self, monkeypatch):
 
         mock_server = AsyncMock()
-
-        def mock_create(*_args, **_kwargs):
-            return mock_server
+        mock_create = Mock(return_value=mock_server)
 
         monkeypatch.setattr(
             'golem_task_api.entrypoint.RequestorAppServer',
             mock_create
         )
-        await entrypoint.entrypoint(
+        await entrypoint.main(
             Path('a'),
             ['requestor', 1],
             Mock(),
             None,
             None,
             None,
-            'DEBUG',
         )
-        assert entrypoint.logger.getEffectiveLevel() == logging.DEBUG
-        assert logging.getLogger().getEffectiveLevel() == logging.DEBUG
+        mock_create.assert_called_once()
+        mock_server.start.assert_called_once_with()
+        mock_server.wait_until_shutdown.assert_called_once_with()
+        mock_server.stop.assert_called_once_with()

@@ -99,6 +99,8 @@ class TaskLifecycleUtil:
             task_params: dict,
             resources: List[Path],
     ) -> RequestorTaskDir:
+        print('simulate_task()', flush=True)
+
         async with self.init_requestor(get_task_api_service):
             task_id = 'test_task_id123'
             opaque_node_id = 'node_id123'
@@ -200,6 +202,7 @@ class TaskLifecycleUtil:
 
         self.copy_resources_from_requestor(subtask.resources, task_id)
         self.prov_dir.subtask_dir(task_id, subtask_id).mkdir()
+        print('starting provider', flush=True)
 
         await self.start_provider()
         output_filepath = await self.provider_client.compute(
