@@ -41,7 +41,7 @@ from golem_task_api.proto.golem_task_api_grpc import (
 )
 from golem_task_api.structs import Subtask, Task, Infrastructure
 
-CONNECTION_TIMEOUT = 5.0  # seconds
+CONNECTION_TIMEOUT = 15.0  # seconds
 logger = logging.getLogger(__name__)
 
 
