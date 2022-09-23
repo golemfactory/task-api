@@ -22,6 +22,6 @@ setup(
         'dataclasses==0.6',
         'dataclasses-json==0.3.0',
         'grpclib==0.2.4',
-        'protobuf==3.7.1',
+        'protobuf==3.18.3',
     ]
 )
